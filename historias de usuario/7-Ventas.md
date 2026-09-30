@@ -102,19 +102,5 @@
 
 <hr/>
 
-<h2> HU-7.6 Consultar ventas pendientes - <span style="color:blue"> CONSULTA</span></h2>
 
-**Como** administrador o empleado, **quiero** consultar las ventas pendientes de pago **para** dar seguimiento a las deudas de los clientes.
-
-<h4>Criterios de aceptación</h4>
-
-<ul>
-    <li>El sistema muestra las ventas que tienen pago pendiente.</li>
-    <li>Se muestra el CLIENTE asociado.</li>
-    <li>Se muestra el monto original.</li>
-    <li>Se muestra el monto pagado.</li>
-    <li>Se muestra el saldo pendiente.</li>
-    <li>Se muestra la fecha estimada de pago.</li>
-    <li>La información se actualiza después de registrar un pago.</li>
-</ul>
 
