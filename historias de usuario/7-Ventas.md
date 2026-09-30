@@ -27,24 +27,8 @@
 
 <hr/>
 
-<h2> HU-7.2 Generar salida de inventario por venta - <span style="color:green"> AUTOMÁTICA</span></h2>
 
-**Como** empleado, **quiero** que al confirmar una venta se genere automáticamente la salida de inventario **para** mantener actualizado el stock de los productos vendidos.
-
-<h4>Criterios de aceptación</h4>
-
-<ul>
-    <li>Al confirmar una venta, el sistema genera una salida por cada producto vendido.</li>
-    <li>La cantidad descontada corresponde con la cantidad vendida.</li>
-    <li>El stock no puede modificarse manualmente desde la venta.</li>
-    <li>El sistema no permite una salida superior al stock disponible.</li>
-    <li>La salida queda asociada a la venta correspondiente.</li>
-    <li>El movimiento conserva su historial para fines de trazabilidad.</li>
-</ul>
-
-<hr/>
-
-<h2> HU-7.3 Consultar historial de ventas - <span style="color:blue"> CONSULTA</span></h2>
+<h2> HU-7.2 Consultar historial de ventas - <span style="color:blue"> CONSULTA</span></h2>
 
 **Como** administrador o empleado, **quiero** consultar el historial de ventas **para** revisar las operaciones realizadas en el negocio.
 
@@ -62,7 +46,7 @@
 
 <hr/>
 
-<h2> HU-7.4 Anular venta - <span style="color:orange"> ACTUALIZACIÓN</span></h2>
+<h2> HU-7.3 Anular venta - <span style="color:orange"> ACTUALIZACIÓN</span></h2>
 
 **Como** empleado, **quiero** anular una venta indicando un motivo **para** corregir una operación que ya no debe considerarse válida.
 
@@ -81,7 +65,7 @@
 
 <hr/>
 
-<h2> HU-7.5 Registrar venta a crédito - <span style="color:red"> ALTA</span></h2>
+<h2> HU-7.4 Registrar venta a crédito - <span style="color:red"> ALTA</span></h2>
 
 **Como** empleado, **quiero** registrar una venta con pago pendiente asociada a un cliente **para** permitir que el cliente pague la compra posteriormente.
 
@@ -99,7 +83,7 @@
 
 <hr/>
 
-<h2> HU-7.6 Registrar pago de venta pendiente - <span style="color:orange"> ACTUALIZACIÓN</span></h2>
+<h2> HU-7.5 Registrar pago de venta pendiente - <span style="color:orange"> ACTUALIZACIÓN</span></h2>
 
 **Como** empleado, **quiero** registrar el pago total o parcial de una venta pendiente **para** actualizar el saldo que el cliente aún debe.
 
@@ -118,7 +102,7 @@
 
 <hr/>
 
-<h2> HU-7.7 Consultar ventas pendientes - <span style="color:blue"> CONSULTA</span></h2>
+<h2> HU-7.6 Consultar ventas pendientes - <span style="color:blue"> CONSULTA</span></h2>
 
 **Como** administrador o empleado, **quiero** consultar las ventas pendientes de pago **para** dar seguimiento a las deudas de los clientes.
 
