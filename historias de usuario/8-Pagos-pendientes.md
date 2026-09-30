@@ -30,3 +30,16 @@
     <li>Una venta anulada no aparece en este listado.</li>
     <li>Al tocar una venta se puede ver su historial de actualizaciones de pago.</li>
 </ul>
+
+
+<h2> HU-8.3 Consultar mis compras con pago pendiente - <span style="color:yellow"> MEDIA</span></h2>
+
+**Como** CLIENTE , **quiero** consultar mis compras con pago pendiente y su fecha estimada de pago **para** dar seguimiento a la cobranza.
+
+<h4>Criterios de aceptación</h4>
+<ul>
+    <li>El listado muestra el monto original, monto pagado, saldo pendiente y fecha estimada de pago.</li>
+    <li>Se puede filtrar por rango de fechas.</li>
+    <li>Una venta anulada no aparece en este listado.</li>
+    <li>Al tocar una venta se puede ver su historial de actualizaciones de pago.</li>
+</ul>    
