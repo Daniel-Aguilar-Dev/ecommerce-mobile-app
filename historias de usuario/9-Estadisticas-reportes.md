@@ -6,21 +6,23 @@
  
 **Criterios de aceptación:**
 1. Se puede cambiar el periodo entre día, semana y mes.
-2. El resumen muestra ingresos por ventas, gastos operativos, compras de mercancía y pérdidas por mermas del periodo elegido.
+2. El resumen muestra ingresos por ventas, compras de mercancía y pérdidas por mermas del periodo elegido.
 3. Los datos se recalculan cada vez que se consulta.
 4. Las ventas anuladas y los pedidos cancelados no se cuentan.
 5. Este resumen solo es visible para ADMIN.
 ---
  
-### US-DB-02 · Utilidad neta estimada
+### US-DB-02 · Utilidad estimada
  
-**Como** ADMIN, **quiero** ver la utilidad neta estimada del periodo **para** saber si el negocio está ganando o perdiendo dinero.
+**Como** ADMIN, **quiero** ver la utilidad estimada del periodo **para** saber si el negocio está ganando o perdiendo dinero.
  
 **Criterios de aceptación:**
-1. La utilidad neta se calcula como: ingresos por ventas − costo de mercancía vendida − gastos operativos − pérdidas por mermas.
+1. La utilidad estimada se calcula como: ingresos por ventas − costo de mercancía vendida − pérdidas por mermas.
 2. El costo de mercancía vendida usa el costo promedio del producto.
 3. Si el resultado es negativo, se muestra visualmente diferenciado de una utilidad positiva.
 4. El valor no es editable manualmente.
+
+⚠️ Señal para el equipo: sin restar gastos operativos, esto deja de ser una "utilidad neta" en sentido estricto (es más bien utilidad bruta operativa). Confirmar con el Product Owner si se debe renombrar la historia/métrica antes de cerrar el sprint.
 ---
  
 ### US-DB-03 · Alertas de stock bajo
@@ -44,17 +46,6 @@
 3. Las ventas con fecha estimada vencida se resaltan visualmente.
 4. Al registrarse un pago, total o parcial, los montos se actualizan automáticamente.
 5. Las ventas anuladas no cuentan como pendientes.
----
- 
-### US-DB-05 · Envases retornables prestados y devueltos
- 
-**Como** ADMIN, **quiero** ver la cantidad total de envases prestados y devueltos **para** controlar cuántos envases siguen fuera de la tienda.
- 
-**Criterios de aceptación:**
-1. Se muestra el total de envases prestados, el total devuelto y el total pendiente de devolución.
-2. El pendiente es igual a prestados menos devueltos, y nunca es negativo.
-3. Los valores reflejan las devoluciones parciales registradas.
-4. Se puede desglosar por tipo de envase.
 ---
  
 ### US-DB-06 · Control de acceso y cálculo confiable del dashboard *(tarea técnica, transversal)*

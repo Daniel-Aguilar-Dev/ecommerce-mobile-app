@@ -118,38 +118,3 @@
     <li>La información se actualiza después de registrar un pago.</li>
 </ul>
 
-<h2>HU-7.8 Registrar préstamo de envases - <span style="color:red"> ALTA</span></h2>
-
-**Como** empleado, **quiero** registrar los envases retornables entregados junto con una venta **para** llevar el control de los envases que el cliente tiene pendientes de devolver.
-
-<h4>Criterios de aceptación</h4>
-
-<ul>
-    <li>El sistema permite agregar envases retornables a una venta.</li>
-    <li>Debe registrarse el tipo de envase.</li>
-    <li>Debe registrarse la cantidad de envases entregados.</li>
-    <li>Debe registrarse el importe asociado.</li>
-    <li>El registro queda asociado a la venta.</li>
-    <li>El registro queda asociado al CLIENTE.</li>
-    <li>El estado inicial de la devolución es "Pendiente".</li>
-    <li>El sistema conserva el historial del registro.</li>
-</ul>
-
-<h2>HU-7.9 Registrar devolución de envases - <span style="color:orange"> ACTUALIZACIÓN</span></h2>
-
-**Como** empleado, **quiero** registrar la devolución total o parcial de los envases prestados **para** actualizar la cantidad de envases que el cliente aún tiene pendientes.
-
-<h4>Criterios de aceptación</h4>
-
-<ul>
-    <li>El sistema permite registrar una devolución de envases.</li>
-    <li>Se permite registrar una devolución total o parcial.</li>
-    <li>El sistema registra la cantidad devuelta.</li>
-    <li>Se registra la fecha y hora de la devolución.</li>
-    <li>Se registra automáticamente el empleado que realizó la actualización.</li>
-    <li>El sistema calcula el importe que debe devolverse o descontarse.</li>
-    <li>No se permite devolver una cantidad superior a los envases pendientes.</li>
-    <li>Si todos los envases son devueltos, el estado cambia a "Devuelto".</li>
-    <li>El registro existente se actualiza en lugar de crear uno nuevo.</li>
-    <li>El sistema conserva el historial de las actualizaciones.</li>
-</ul>

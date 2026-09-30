@@ -46,14 +46,3 @@
 5. Este flujo nunca permite seleccionar un rol distinto a CLIENTE.
 ---
  
-### US-AUTH-05 · Recuperar contraseña
- 
-**Como** usuario de cualquier rol, **quiero** recuperar mi contraseña mediante mi correo registrado **para** volver a acceder si la olvido.
- 
-**Criterios de aceptación:**
-1. Se solicita el correo registrado para iniciar la recuperación.
-2. Si el correo existe, se envía un enlace o código de recuperación a esa dirección.
-3. Si el correo no existe, el sistema no revela si la cuenta existe o no (mismo mensaje genérico).
-4. El enlace o código de recuperación expira después de un tiempo definido.
-5. Al completar la recuperación, la contraseña anterior deja de funcionar.
----

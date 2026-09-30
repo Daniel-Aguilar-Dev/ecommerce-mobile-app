@@ -33,17 +33,4 @@
 
 ---
 
-### HU-3.3-03
-**Gestionar proveedores**
-
-**Como** administrador, **quiero** registrar, consultar y actualizar proveedores **para** identificarlos y asociarlos a las entradas de mercancía.
-
-**CRITERIOS DE ACEPTACIÓN**
-
-1. El sistema permite registrar un proveedor con nombre obligatorio y contacto opcional.
-2. Si el nombre está vacío, se informa el error y no se guarda el registro.
-3. El proveedor registrado aparece en el listado y puede seleccionarse al registrar una entrada.
-4. Al actualizar sus datos, la consulta posterior muestra los cambios y las entradas anteriores conservan su asociación.
-5. Registrar o actualizar un proveedor no modifica el stock ni genera gastos.
-6. Un usuario sin autorización no puede registrar ni actualizar proveedores.
 
