@@ -1,6 +1,10 @@
 # Módulo 7: Ventas
 
-<h2>HU-7.1 Registrar venta presencial - <span style="color:red"> ALTA</span></h2>
+### Registro, consulta y control de ventas
+
+#### Versión 1.2
+
+<h2> HU-7.1 Registrar venta presencial - <span style="color:red"> ALTA</span></h2>
 
 **Como** empleado, **quiero** registrar una venta presencial agregando los productos mediante el escaneo de su código de barras, **para** generar la venta física de manera rápida y evitar tener que buscar manualmente cada producto.
 
@@ -21,7 +25,9 @@
     <li>La venta queda asociada al empleado responsable y registra la fecha y hora de realización.  </li>
 </ul>
 
-<h2>HU-7.2 Generar salida de inventario por venta - <span style="color:green"> AUTOMÁTICA</span></h2>
+<hr/>
+
+<h2> HU-7.2 Generar salida de inventario por venta - <span style="color:green"> AUTOMÁTICA</span></h2>
 
 **Como** empleado, **quiero** que al confirmar una venta se genere automáticamente la salida de inventario **para** mantener actualizado el stock de los productos vendidos.
 
@@ -36,7 +42,9 @@
     <li>El movimiento conserva su historial para fines de trazabilidad.</li>
 </ul>
 
-<h2>HU-7.3 Consultar historial de ventas - <span style="color:blue"> CONSULTA</span></h2>
+<hr/>
+
+<h2> HU-7.3 Consultar historial de ventas - <span style="color:blue"> CONSULTA</span></h2>
 
 **Como** administrador o empleado, **quiero** consultar el historial de ventas **para** revisar las operaciones realizadas en el negocio.
 
@@ -52,7 +60,9 @@
     <li>Las ventas permanecen disponibles en el historial.</li>
 </ul>
 
-<h2>HU-7.4 Anular venta - <span style="color:orange"> ACTUALIZACIÓN</span></h2>
+<hr/>
+
+<h2> HU-7.4 Anular venta - <span style="color:orange"> ACTUALIZACIÓN</span></h2>
 
 **Como** empleado, **quiero** anular una venta indicando un motivo **para** corregir una operación que ya no debe considerarse válida.
 
@@ -69,7 +79,9 @@
     <li>El historial de la operación se conserva.</li>
 </ul>
 
-<h2>HU-7.5 Registrar venta a crédito - <span style="color:red"> ALTA</span></h2>
+<hr/>
+
+<h2> HU-7.5 Registrar venta a crédito - <span style="color:red"> ALTA</span></h2>
 
 **Como** empleado, **quiero** registrar una venta con pago pendiente asociada a un cliente **para** permitir que el cliente pague la compra posteriormente.
 
@@ -85,7 +97,9 @@
     <li>La venta conserva toda su información original.</li>
 </ul>
 
-<h2>HU-7.6 Registrar pago de venta pendiente - <span style="color:orange"> ACTUALIZACIÓN</span></h2>
+<hr/>
+
+<h2> HU-7.6 Registrar pago de venta pendiente - <span style="color:orange"> ACTUALIZACIÓN</span></h2>
 
 **Como** empleado, **quiero** registrar el pago total o parcial de una venta pendiente **para** actualizar el saldo que el cliente aún debe.
 
@@ -102,7 +116,9 @@
     <li>Se registra el empleado y usuario que realizó la actualización.</li>
 </ul>
 
-<h2>HU-7.7 Consultar ventas pendientes - <span style="color:blue"> CONSULTA</span></h2>
+<hr/>
+
+<h2> HU-7.7 Consultar ventas pendientes - <span style="color:blue"> CONSULTA</span></h2>
 
 **Como** administrador o empleado, **quiero** consultar las ventas pendientes de pago **para** dar seguimiento a las deudas de los clientes.
 

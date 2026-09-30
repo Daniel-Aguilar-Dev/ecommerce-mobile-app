@@ -1,6 +1,10 @@
 # Módulo 6: Gestión de pedidos
 
-<h2>HU-6.1 Generar pedido - <span style="color:red"> ALTA</span></h2>
+### Gestión y seguimiento de pedidos de clientes
+
+#### Versión 1.2
+
+<h2> HU-6.1 Generar pedido - <span style="color:red"> ALTA</span></h2>
 
 **Como** cliente, **quiero** generar un pedido a partir de mi carrito confirmado **para** solicitar los productos que deseo recoger en la tienda.
 
@@ -16,7 +20,9 @@
     <li>La creación del pedido no descuenta el stock del producto.</li>
 </ul>
 
-<h2>HU-6.2 Consultar mis pedidos - <span style="color:blue"> CONSULTA</span></h2>
+<hr/>
+
+<h2> HU-6.2 Consultar mis pedidos - <span style="color:blue"> CONSULTA</span></h2>
 
 **Como** cliente, **quiero** consultar el historial de mis pedidos **para** conocer los pedidos que he realizado y su estado actual.
 
@@ -31,7 +37,9 @@
     <li>Los pedidos conservan su historial y no se eliminan físicamente.</li>
 </ul>
 
-<h2>HU-6.3 Cancelar pedido pendiente - <span style="color:orange"> ACTUALIZACIÓN</span></h2>
+<hr/>
+
+<h2> HU-6.3 Cancelar pedido pendiente - <span style="color:orange"> ACTUALIZACIÓN</span></h2>
 
 **Como** cliente, **quiero** cancelar un pedido que se encuentre pendiente **para** detener la solicitud antes de que sea confirmada por la tienda.
 
@@ -45,7 +53,9 @@
     <li>El CLIENTE no puede cancelar directamente un pedido que ya haya sido confirmado por la tienda.</li>
 </ul>
 
-<h2>HU-6.4 Consultar pedidos entrantes - <span style="color:blue"> CONSULTA</span></h2>
+<hr/>
+
+<h2> HU-6.4 Consultar pedidos entrantes - <span style="color:blue"> CONSULTA</span></h2>
 
 **Como** empleado, **quiero** consultar los pedidos realizados por los clientes **para** revisar y gestionar las solicitudes que debe preparar la tienda.
 
@@ -59,7 +69,9 @@
     <li>Cada pedido está asociado al CLIENTE que lo realizó.</li>
 </ul>
 
-<h2>HU-6.5 Confirmar pedido - <span style="color:orange"> ACTUALIZACIÓN</span></h2>
+<hr/>
+
+<h2> HU-6.5 Confirmar pedido - <span style="color:orange"> ACTUALIZACIÓN</span></h2>
 
 **Como** empleado, **quiero** confirmar un pedido pendiente **para** aceptar la solicitud y reservar las existencias necesarias para prepararlo.
 
@@ -74,7 +86,9 @@
     <li>La confirmación queda asociada al usuario que realizó la acción.</li>
 </ul>
 
-<h2>HU-6.6 Rechazar pedido - <span style="color:orange"> ACTUALIZACIÓN</span></h2>
+<hr/>
+
+<h2> HU-6.6 Rechazar pedido - <span style="color:orange"> ACTUALIZACIÓN</span></h2>
 
 **Como** empleado, **quiero** rechazar un pedido cuando no pueda ser atendido **para** evitar comprometer productos que no están realmente disponibles.
 
@@ -89,7 +103,9 @@
     <li>El sistema registra el usuario que realizó la acción.</li>
 </ul>
 
-<h2>HU-6.7 Marcar pedido como listo para recoger - <span style="color:orange"> ACTUALIZACIÓN</span></h2>
+<hr/>
+
+<h2> HU-6.7 Marcar pedido como listo para recoger - <span style="color:orange"> ACTUALIZACIÓN</span></h2>
 
 **Como** empleado, **quiero** marcar un pedido confirmado como "Listo para recoger" **para** indicar que la tienda ya preparó físicamente el pedido.
 
@@ -102,7 +118,9 @@
     <li>El cambio queda asociado al usuario que lo realizó.</li>
 </ul>
 
-<h2>HU-6.8 Generar código QR para pedido listo para recoger - <span style="color:green"> AUTOMÁTICA</span></h2>
+<hr/>
+
+<h2> HU-6.8 Generar código QR para pedido listo para recoger - <span style="color:green"> AUTOMÁTICA</span></h2>
 
 **Como** cliente, **quiero** obtener un código QR cuando mi pedido esté listo para recoger **para** identificar mi pedido al momento de recogerlo en la tienda.
 
@@ -118,7 +136,9 @@
     <li>El pedido conserva su código QR durante todo su historial.</li>
 </ul>
 
-<h2>HU-6.9 Escanear código QR del pedido - <span style="color:orange"> ACTUALIZACIÓN</span></h2>
+<hr/>
+
+<h2> HU-6.9 Escanear código QR del pedido - <span style="color:orange"> ACTUALIZACIÓN</span></h2>
 
 **Como** empleado, **quiero** escanear el código QR presentado por el cliente **para** identificar rápidamente el pedido que va a recoger.
 
@@ -137,7 +157,9 @@
     <li>El escaneo queda asociado al usuario que realizó la acción.</li>
 </ul>
 
-<h2>HU-6.10 Confirmar entrega mediante código QR - <span style="color:orange"> ACTUALIZACIÓN</span></h2>
+<hr/>
+
+<h2> HU-6.10 Confirmar entrega mediante código QR - <span style="color:orange"> ACTUALIZACIÓN</span></h2>
 
 **Como** empleado, **quiero** confirmar la entrega del pedido después de escanear su código QR **para** asegurar que estoy entregando el pedido correcto al cliente.
 

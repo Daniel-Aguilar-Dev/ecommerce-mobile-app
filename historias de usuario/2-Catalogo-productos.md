@@ -78,7 +78,7 @@
     <li> Si el código no corresponde a ningún producto, se muestra una pantalla de registro no encontrado.</li>
     <li>Tras escanear, el empleado puede asignar el producto a una venta o solo consultar su información.</li>
     <li> Para agregar un producto a una venta, debe haberse escaneado.</li>
-    <li>Requiere sesión iniciada.</li>D
+    <li>Requiere sesión iniciada.</li>
 </ul>
     
 <hr/>
@@ -92,7 +92,7 @@
     <li>Se pueden editar nombre, descripción, SKU, categoría, precio de compra, precio de venta, stock mínimo, unidad de medida e imagen.</li>
     <li>Si el nombre pertenece a otro producto, muestra "Ya existe un producto con ese nombre".</li>
     <li>Si el SKU pertenece a otro producto, muestra un error de SKU duplicado.</li>
-    <li>Se mantienen las mismas validaciones de longitud y valores mayores a cero que en el registro (US-2.1)</li>
+    <li>Se mantienen las mismas validaciones de longitud y valores mayores a cero que en el registro (HU-2.1).</li>
     <li> Los errores se muestran debajo del campo correspondiente.</li>
     <li>El stock actual no es editable; solo cambia mediante movimientos de entrada o salida.</li>
     <li>Si no existen categorías registradas, la modificación no puede continuar.</li>

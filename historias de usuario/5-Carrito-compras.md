@@ -73,5 +73,4 @@
     <li>El pedido se genera con el contenido del carrito y con estado "Pendiente", en espera de que un empleado lo atienda.</li>
     <li>Al generarse, se muestra "Pedido generado correctamente".</li>
     <li>El carrito se vacía solo si el pedido se generó por completo.</li>
-    <li></li>
 </ul>
