@@ -37,7 +37,34 @@ Los paquetes de `shared` contienen funcionalidades transversales. Los módulos p
 
 ## Ejecutar la API
 
-Desde la carpeta raíz del proyecto:
+Antes de arrancar, verifica que MySQL esté activo, que exista la base `ecommerce_db` y que `src/main/resources/application.properties` tenga las credenciales locales correctas. Ese archivo está ignorado por Git: cada integrante debe crear su propia copia a partir de `application-example.properties` y completar los valores en su equipo. No compartan ni suban contraseñas o claves JWT.
+
+En PowerShell, desde la raíz del proyecto, puede crear el archivo local con:
+
+```powershell
+Copy-Item .\src\main\resources\application-example.properties .\src\main\resources\application.properties
+```
+
+La configuración JWT también debe estar completa en `application.properties`:
+
+```properties
+app.jwt.secret=CLAVE_BASE64_ALEATORIA_DE_AL_MENOS_32_BYTES
+app.jwt.expiration-ms=43200000
+```
+
+`43200000` equivale a 12 horas. Cada desarrollador puede generar su propia clave desde PowerShell y pegar el resultado en su archivo local:
+
+```powershell
+$rng = [System.Security.Cryptography.RandomNumberGenerator]::Create()
+$bytes = New-Object byte[] 32
+$rng.GetBytes($bytes)
+[Convert]::ToBase64String($bytes)
+$rng.Dispose()
+```
+
+La clave debe permanecer privada. Si alguien cambia la clave mientras la API está corriendo, los tokens creados con la clave anterior dejarán de validarse al reiniciar.
+
+Desde la carpeta raíz del proyecto, arranca la API:
 
 ```powershell
 .\mvnw.cmd spring-boot:run
@@ -49,7 +76,7 @@ En Linux o macOS:
 ./mvnw spring-boot:run
 ```
 
-La aplicación necesita MySQL disponible. La configuración local actual está en `src/main/resources/application.properties`; revisa URL, base de datos, usuario y contraseña antes de iniciar. No publiques credenciales ni las incluyas en un commit.
+Durante desarrollo, `spring.jpa.hibernate.ddl-auto=update` permite que Hibernate actualice el esquema al iniciar. Úsalo solo con la base local; para producción o cambios compartidos de esquema se deben revisar y versionar las migraciones. Si el arranque falla al crear el `EntityManagerFactory`, revisa primero que MySQL responda en el host/puerto configurado y que la base y credenciales existan.
 
 ## Swagger / OpenAPI
 
@@ -57,7 +84,7 @@ Con la aplicación ejecutándose, abre:
 
 - Swagger UI: <http://localhost:8080/swagger-ui.html>
 - Documento OpenAPI en JSON: <http://localhost:8080/v3/api-docs>
-- Endpoint temporal de estado: <http://localhost:8080/api/v1/ping>
+- Endpoint de prueba protegido: <http://localhost:8080/api/v1/ping>
 
 Swagger agrupa las operaciones por tags. Usa `@Tag` en el controller y `@Operation` en los endpoints para agregar nombres y resúmenes útiles:
 
@@ -75,7 +102,17 @@ public class ProductoController {
 }
 ```
 
-`OpenApiConfig` agrega el esquema HTTP Bearer JWT y el requisito de seguridad de OpenAPI. En Swagger, el botón **Authorize** permite pegar un token para incluirlo en las llamadas. El esquema documentado no valida por sí solo un token: `SecurityConfigTemporal` actualmente permite todas las solicitudes. Cuando se implemente `auth`, reemplaza esa configuración temporal por la definitiva y conserva acceso público para `/v3/api-docs/**`, `/swagger-ui/**`, `/swagger-ui.html`, `/api/v1/auth/login` y `/api/v1/auth/registro`.
+`OpenApiConfig` agrega el esquema HTTP Bearer JWT a Swagger. La seguridad real la aplica `SecurityConfig` junto con `JwtAuthenticationFilter`: Swagger UI y OpenAPI, el registro y el login son públicos; las demás rutas, incluido el ping, requieren un JWT válido. Por eso el botón **Authorize** sirve para probar rutas protegidas, y documentar un esquema Bearer sin configurar Spring Security no bastaría para protegerlas.
+
+Para probar el ciclo actual desde Swagger:
+
+1. Ejecuta `POST /api/v1/auth/registro` con los datos válidos de `RegistroRequest`, o usa una cuenta ya registrada.
+2. Ejecuta `POST /api/v1/auth/login`. La respuesta envuelve el token en `data.token` y contiene `data.tipo: "Bearer"`.
+3. Sin autorizar Swagger, llama `GET /api/v1/ping`: debe devolver HTTP 401 y `error: "NO_AUTENTICADO"`.
+4. Pulsa **Authorize**, pega solo el valor de `data.token` y confirma. Swagger agrega el prefijo `Bearer` al encabezado.
+5. Vuelve a llamar el ping: un token vigente debe devolver HTTP 200 y `message: "pong"`. Un token alterado o vencido debe devolver HTTP 401.
+
+Si Swagger conserva un token anterior, usa **Authorize / Logout** antes de probar el caso sin token. El access token actual dura 12 horas; todavía no hay refresh token. La renovación se puede agregar después en `auth` sin modificar cada endpoint protegido, porque la validación del access token está centralizada en el filtro.
 
 La configuración de rutas y orden de Swagger está en `src/main/resources/application.properties`:
 
@@ -95,12 +132,13 @@ springdoc.api-docs.path=/v3/api-docs
 | `spring-boot-starter-webmvc` | Controladores REST y Spring MVC. En este proyecto con Boot 4 es el starter MVC. |
 | `spring-boot-starter-data-jpa` | Persistencia JPA, repositorios y auditoría de entidades. |
 | `spring-boot-starter-validation` | Validar DTOs con Jakarta Validation y generar errores de validación uniformes. |
-| `spring-boot-starter-security` | Spring Security; hoy se combina con la configuración temporal abierta. |
+| `spring-boot-starter-security` | Cadena de filtros y protección de rutas con Spring Security. |
+| `jjwt-api`, `jjwt-impl`, `jjwt-jackson` 0.13.0 | Crear y validar JWT firmados; `impl` y `jackson` se cargan en ejecución. |
 | `mysql-connector-j` | Driver JDBC de MySQL. |
 | `lombok` | Anotaciones como `@Getter`, `@Setter` y `@Slf4j`; el procesador de anotaciones está configurado en Maven. |
 | `springdoc-openapi-starter-webmvc-ui` 3.1.1 | Generación OpenAPI y Swagger UI, compatible con Spring Boot 4. |
 
-Bloque agregado para Swagger:
+Dependencias principales agregadas para Swagger, validación y JWT:
 
 ```xml
 <dependency>
@@ -116,9 +154,26 @@ Bloque agregado para Swagger:
     <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
     <version>3.1.1</version>
 </dependency>
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-api</artifactId>
+    <version>0.13.0</version>
+</dependency>
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-impl</artifactId>
+    <version>0.13.0</version>
+    <scope>runtime</scope>
+</dependency>
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-jackson</artifactId>
+    <version>0.13.0</version>
+    <scope>runtime</scope>
+</dependency>
 ```
 
-Las dos primeras agregan validación y Spring Security; la tercera integra Swagger. Spring Boot administra la versión de sus propios starters. El driver MySQL, JPA, MVC y Lombok ya estaban declarados en el `pom.xml`.
+Validation permite validar DTOs, Spring Security protege rutas, springdoc integra Swagger y JJWT firma y valida los tokens. Spring Boot administra la versión de sus propios starters. El driver MySQL, JPA, MVC y Lombok ya estaban declarados en el `pom.xml`.
 
 Al actualizar Spring Boot, vuelve a comprobar la compatibilidad y versión publicada de springdoc. La línea 3.x corresponde a Spring Boot 4; para Spring Boot 3 se usa springdoc 2.x. Después de cambiar dependencias, compila con:
 
@@ -265,9 +320,17 @@ Con `@EnableJpaAuditing` en `JpaConfig`, JPA administra los campos heredados:
 
 `AuditorAwareImpl` obtiene el usuario actual mediante `SecurityUtils`. En operaciones sin sesión, como el autorregistro, los campos de usuario pueden quedar nulos deliberadamente. Las columnas de fecha sí están declaradas no nulas. Extiende esta clase solo en entidades que requieran estos campos; no copies sus campos o listeners en cada entidad.
 
+Al crear una entidad nueva, hereda `AuditableEntity` si necesita `createdAt`, `updatedAt`, `createdBy` y `updatedBy`. No declares de nuevo esas propiedades ni agregues las mismas columnas manualmente. El principal autenticado usa un ID `Long`; `AuditorAwareImpl` guarda ese ID como `created_by` y `updated_by`. El registro público ocurre sin principal, así que esos dos campos pueden ser nulos. `JpaConfig` activa los listeners de auditoría.
+
+### Relación entre usuario y rol
+
+El rol del usuario es una relación a la entidad `Rol`, no un campo enum directamente en `Usuario`. `Usuario.rol` es el lado dueño con `@ManyToOne` y `@JoinColumn(name = "rolId")`; `Rol.usuarios` es la colección inversa con `@OneToMany(mappedBy = "rol")`. `Rol.nombreRol` guarda el valor de `RolEnum` como texto (`EnumType.STRING`). `RolSeeder` crea los roles al iniciar.
+
+Al desarrollar otra entidad relacionada con un usuario o rol, modela la clave foránea como una asociación JPA y usa DTOs para las entradas y salidas del API. No expongas directamente `Rol.usuarios` ni otras colecciones de entidades, porque podrías serializar relaciones de forma recursiva o cargar datos que el endpoint no necesita.
+
 ## Utilidades de seguridad compartidas
 
-`shared/util/UsuarioAutenticado.java` define el principal esperado en `SecurityContext`: `id`, `correo` y `rol`. El futuro filtro JWT debe guardar este record como principal.
+`shared/util/UsuarioAutenticado.java` define el principal que `JwtAuthenticationFilter` deja en `SecurityContext`: `id`, `correo` y `rol`. Los módulos pueden usar `SecurityUtils` sin depender del paquete `auth`.
 
 `shared/util/SecurityUtils.java` evita que los módulos dependan directamente del módulo `auth` para conocer al usuario:
 
@@ -275,10 +338,10 @@ Con `@EnableJpaAuditing` en `JpaConfig`, JPA administra los campos heredados:
 Long id = SecurityUtils.usuarioActualId();
 UsuarioAutenticado usuario = SecurityUtils.usuarioActual();
 Optional<Long> idOpcional = SecurityUtils.usuarioActualIdOpcional();
-boolean esAdmin = SecurityUtils.tieneRol("ADMIN");
+boolean esAdmin = SecurityUtils.tieneRol("ADMINISTRADOR");
 ```
 
-`usuarioActual()` y `usuarioActualId()` lanzan `BusinessException` con `NO_AUTENTICADO` si el principal no es `UsuarioAutenticado`. Usa la versión opcional para flujos que también pueden ocurrir sin sesión. `tieneRol` recibe el nombre sin prefijo, por ejemplo `ADMIN` o `CLIENTE`.
+`usuarioActual()` y `usuarioActualId()` lanzan `BusinessException` con `NO_AUTENTICADO` si el principal no es `UsuarioAutenticado`. Usa la versión opcional para flujos que también pueden ocurrir sin sesión. `tieneRol` compara el nombre del enum sin prefijo: `ADMINISTRADOR`, `EMPLEADO` o `CLIENTE`. Spring Security recibe la autoridad con prefijo `ROLE_`; por ejemplo, en `hasRole` se escribe `hasRole("ADMINISTRADOR")`.
 
 ## Archivos comunes y ubicación
 
@@ -288,7 +351,10 @@ boolean esAdmin = SecurityUtils.tieneRol("ADMIN");
 | `shared/audit/AuditorAwareImpl.java` | Proporciona a Spring Data el ID del usuario actual. |
 | `shared/config/JpaConfig.java` | Activa la auditoría JPA. |
 | `shared/config/OpenApiConfig.java` | Nombre, descripción, versión y esquema Bearer JWT de OpenAPI. |
-| `shared/config/SecurityConfigTemporal.java` | Permite todas las solicitudes durante el desarrollo inicial; eliminar al integrar la seguridad real de `auth`. |
+| `shared/config/SecurityConfig.java` | Configura rutas públicas, rutas autenticadas, sesiones sin estado y el filtro JWT. |
+| `auth/security/JwtAuthenticationFilter.java` | Lee el encabezado Bearer, valida el JWT y construye el principal y la autoridad del rol. |
+| `auth/security/JwtService.java` | Firma JWT y valida firma, expiración e información del usuario. |
+| `shared/exception/ApiSecurityErrorHandler.java` | Devuelve JSON uniforme para 401 (no autenticado) y 403 (sin permisos). |
 | `shared/exception/ErrorCode.java` | Códigos de error y sus HTTP status. |
 | `shared/exception/BusinessException.java` | Excepción para errores de negocio con código estable. |
 | `shared/exception/RecursoNoEncontradoException.java` | Excepción común para recursos no encontrados. |
@@ -296,20 +362,23 @@ boolean esAdmin = SecurityUtils.tieneRol("ADMIN");
 | `shared/response/ApiResponse.java` | Envoltorio común para respuestas de éxito y error. |
 | `shared/util/UsuarioAutenticado.java` | Tipo del principal para el usuario autenticado. |
 | `shared/util/SecurityUtils.java` | Acceso al usuario actual, su ID y su rol. |
-| `shared/web/PingController.java` | Endpoint temporal `GET /api/v1/ping`; eliminar o conservar como healthcheck cuando haya endpoints reales. |
+| `shared/web/PingController.java` | Endpoint de prueba protegido `GET /api/v1/ping` para revisar respuestas sin token, con token válido y con token inválido. |
 
 ## Verificación manual
 
-1. Arranca MySQL y luego ejecuta `mvnw.cmd spring-boot:run`.
-2. Abre Swagger UI y comprueba que aparece el tag **Sistema** con `GET /api/v1/ping`.
-3. Llama al ping; debe devolver `success: true` y `message: "pong"`.
-4. Envía una solicitud inválida a un endpoint que use `@Valid` para comprobar el formato de errores cuando exista ese endpoint.
-5. Llama a una ruta inexistente y comprueba que la respuesta sea JSON, sin página HTML ni stack trace.
+1. Configura y arranca MySQL, completa `application.properties` y ejecuta `mvnw.cmd spring-boot:run`.
+2. Abre Swagger UI. Debe aparecer el tag **Sistema** con `GET /api/v1/ping`.
+3. Sin token, el ping debe devolver HTTP 401, `success: false` y `error: "NO_AUTENTICADO"`.
+4. Obtén un JWT con login, autoriza Swagger y vuelve a llamar el ping; debe devolver HTTP 200 y `message: "pong"`.
+5. Prueba un token alterado o vencido: debe devolver HTTP 401. Para revisar una ruta inexistente, autentícate primero; la respuesta depende del manejo de rutas no encontradas de Spring MVC y del handler global.
+6. Envía una solicitud inválida a un endpoint que use `@Valid` para comprobar el formato de validación cuando exista ese endpoint.
 
-## Pendientes para la implementación de `auth`
+## Notas para desarrollar otros módulos
 
-- Reemplazar `SecurityConfigTemporal` por la configuración definitiva.
-- Implementar el filtro JWT y guardar `UsuarioAutenticado(id, correo, rol)` en el `SecurityContext`, con autoridad `ROLE_` más el rol.
-- Responder errores de autenticación y autorización desde `AuthenticationEntryPoint` y `AccessDeniedHandler` con `ApiResponse`.
-- Decidir si `PingController` se elimina o se mantiene como healthcheck.
-- Actualizar el ERD para reflejar que `created_by` y `updated_by` pueden ser nulos durante el autorregistro.
+- Mantén cada entidad, repository, service, DTO y controller dentro de su módulo. `shared` es para comportamiento realmente transversal.
+- Las rutas nuevas quedan protegidas por defecto. No agregues `permitAll` para un endpoint de módulo; si un caso de negocio debe ser público, acuerda explícitamente el acceso y añádelo a `SecurityConfig`.
+- En una entidad con relación a `Usuario`, usa la asociación JPA adecuada (`@ManyToOne` o `@OneToOne`) en vez de duplicar una relación como `Long usuarioId` y objeto `Usuario` a la vez. Define el lado dueño con `@JoinColumn` y usa DTOs para evitar serializar grafos JPA.
+- Para obtener el ID del usuario que crea o modifica un registro, usa `SecurityUtils.usuarioActualId()`. Para operaciones que legítimamente puedan ejecutarse sin sesión, usa `usuarioActualIdOpcional()` y define si el actor debe quedar nulo.
+- Los errores de autenticación emitidos antes de entrar al controller los procesa `ApiSecurityErrorHandler`; errores de negocio y validación de controllers/services los procesa `GlobalExceptionHandler`.
+- Al compartir cambios de base, revisa las columnas de auditoría heredadas y las claves foráneas. `ddl-auto=update` es solo una ayuda local, no reemplaza la revisión del esquema.
+- Antes de entregar cambios, ejecuta `mvnw.cmd clean compile`. No cambies la clave JWT local de otra persona ni agregues `application.properties` al commit.
