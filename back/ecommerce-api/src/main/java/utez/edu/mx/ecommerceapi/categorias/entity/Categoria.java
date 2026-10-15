@@ -18,8 +18,8 @@ public class Categoria extends AuditableEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 50, unique = true)
+    @Column(nullable = false, length = 25, unique = true)
     private String nombre;
-    @Column(nullable = true, length = 100)
+    @Column(nullable = true, length = 50)
     private String descripcion;
 }

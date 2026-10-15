@@ -12,12 +12,12 @@ import utez.edu.mx.ecommerceapi.categorias.entity.Categoria;
 public class CategoriaDto {
     private Long id;
 
-    @Length(max = 50, message = "El nombre del producto no puede tener más de 50 caracteres")
-    @NotBlank(message = "El nombre del producto no puede estar vacío")
+    @Length(max = 25, message = "El nombre de la categoría no puede tener más de 25 caracteres")
+    @NotBlank(message = "El nombre de la categoría no puede estar vacío")
     private String nombre;
 
-    @Length(max = 100, message = "La descripción del producto no puede tener más de 100 caracteres")
-    @NotBlank(message = "La descripción del producto no puede estar vacía")
+    @Length(max = 50, message = "La descripción de la categoría no puede tener más de 50 caracteres")
+    @NotBlank(message = "La descripción de la categoría no puede estar vacía")
     private String descripcion;
 
     private boolean tieneProductos;
