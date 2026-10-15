@@ -16,7 +16,7 @@ public class CategoriaDto {
     @NotBlank(message = "El nombre del producto no puede estar vacío")
     private String nombre;
 
-    @Length(max = 150, message = "La descripción del producto no puede tener más de 150 caracteres")
+    @Length(max = 100, message = "La descripción del producto no puede tener más de 100 caracteres")
     @NotBlank(message = "La descripción del producto no puede estar vacía")
     private String descripcion;
 

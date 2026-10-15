@@ -5,7 +5,6 @@ import java.util.List;
 
 import lombok.Data;
 import utez.edu.mx.ecommerceapi.categorias.dto.CategoriaPublicDto;
-import utez.edu.mx.ecommerceapi.categorias.entity.Categoria;
 import utez.edu.mx.ecommerceapi.productos.entity.Producto;
 import utez.edu.mx.ecommerceapi.productos.entity.ProductoEstadoEnum;
 
