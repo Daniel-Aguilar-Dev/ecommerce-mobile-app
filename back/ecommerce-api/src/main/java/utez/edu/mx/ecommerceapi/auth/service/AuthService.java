@@ -58,8 +58,7 @@ public class AuthService {
 
         Usuario usuario = new Usuario();
         usuario.setNombre(solicitud.nombre().trim());
-        usuario.setApellidoP(solicitud.apellidoP().trim());
-        usuario.setApellidoM(solicitud.apellidoM().trim());
+        usuario.setApellidos(solicitud.apellidos().trim());
         usuario.setCorreo(correo);
         usuario.setTelefono(solicitud.telefono().trim());
         usuario.setContrasena(passwordEncoder.encode(solicitud.contrasena()));

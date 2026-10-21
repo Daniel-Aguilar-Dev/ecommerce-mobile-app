@@ -28,11 +28,8 @@ public class Usuario extends AuditableEntity {
     private String nombre;
 
 
-    @Column(name = "apellido_p", nullable = false, length = 100)
-    private String apellidoP;
-
-    @Column(name = "apellido_m", nullable = false, length = 100)
-    private String apellidoM;
+    @Column(name = "apellidos", nullable = false, length = 100)
+    private String apellidos;
 
 
     @Column(name = "correo", nullable = false, unique = true, length = 255)
