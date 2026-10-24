@@ -2,6 +2,7 @@ package utez.edu.mx.ecommerceapi.categorias.service;
 
 import java.util.Comparator;
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -40,7 +41,7 @@ public class CategoriaService {
         return categoriaRepository.existsByNombreIgnoreCaseAndIdNot(nombre, id);
     }
 
-    private Categoria obtenerCategoriaPorId(Long id) throws RecursoNoEncontradoException {
+    public Categoria obtenerCategoriaPorId(Long id) throws RecursoNoEncontradoException {
         return categoriaRepository.findById(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Categoría no encontrada", id));
     }

@@ -15,6 +15,12 @@ public interface ProductoRepository extends JpaRepository<Producto, Long> {
     // minúsculas
     Optional<Producto> findBySkuIgnoreCase(String sku);
 
+    // Busca un producto por su nombre, pero que no sea el del id dado
+    Optional<Producto> findByNombreIgnoreCaseAndIdNot(String nombre, Long id);
+
+    // Busca un producto por su nombre, pero que no sea el del id dado
+    Optional<Producto> findBySkuIgnoreCaseAndIdNot(String sku, Long id);
+
     // Busca productos por su categoría, devolviendo una lista de productos
     List<Producto> findByCategoriaId(Long categoriaId);
 

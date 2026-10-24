@@ -17,7 +17,8 @@ public enum ErrorCode {
     PAGO_EXCEDE_SALDO(HttpStatus.BAD_REQUEST),
     CREDENCIALES_INVALIDAS(HttpStatus.UNAUTHORIZED),
     USUARIO_DESACTIVADO(HttpStatus.FORBIDDEN),
-    DATO_DUPLICADO(HttpStatus.CONFLICT);
+    DATO_DUPLICADO(HttpStatus.CONFLICT),
+    IMAGEN_INCORRECTA(HttpStatus.BAD_REQUEST);
 
     private final HttpStatus status;
 

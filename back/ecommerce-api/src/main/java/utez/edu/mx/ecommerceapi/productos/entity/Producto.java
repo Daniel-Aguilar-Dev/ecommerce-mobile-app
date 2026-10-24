@@ -38,7 +38,7 @@ public class Producto extends AuditableEntity {
     @Column(nullable = false, length = 25)
     private String marca;
 
-    @Column(nullable = false, length = 25, unique = true)
+    @Column(length = 25, unique = true)
     private String sku;
 
     @PositiveOrZero
@@ -60,20 +60,16 @@ public class Producto extends AuditableEntity {
     @Column(nullable = false, length = 25, name = "unidad_medida")
     private String unidadMedida;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
-    private String imagen;
+    @Column(nullable = false, name = "imagen_public_id")
+    private String imagenPublicId;
+
+    @Column(nullable = false, name = "imagen_version")
+    private Long imagenVersion;
 
     @Column(nullable = false, name = "estado")
     private ProductoEstadoEnum estado;
 
     @ManyToOne(optional = false, fetch = FetchType.EAGER)
-    @JoinColumn (nullable = false, name = "categoria_id")
+    @JoinColumn(nullable = false, name = "categoria_id")
     private Categoria categoria;
-
-    @Column(nullable = false, name = "etiquetas", columnDefinition = "json")
-    @JdbcTypeCode(SqlTypes.JSON)
-    private List<String> etiquetas;
-
-    @Column(nullable = false)
-    private boolean status;
 }
