@@ -18,12 +18,11 @@ public class ProductoPublicDto {
     private BigDecimal precio;
     private String unidadMedida;
     private String imagen;
-    private Long imagenVersion;
     private ProductoEstadoEnum estado = ProductoEstadoEnum.PROD_ACTIVO;
     private CategoriaPublicDto categoria;
     private String estadoStock;
 
-    public static ProductoPublicDto fromEntity(Producto producto) {
+    public static ProductoPublicDto fromEntity(Producto producto, String imagenUrl) {
         ProductoPublicDto productoDto = new ProductoPublicDto();
         String estadoStock = "Disponible";
         if (producto.getStockActual() == 0) {
@@ -44,6 +43,7 @@ public class ProductoPublicDto {
         productoDto.setEstado(producto.getEstado());
         productoDto.setCategoria(CategoriaPublicDto.fromEntity(producto.getCategoria()));
         productoDto.setEstadoStock(estadoStock);
+        productoDto.setImagen(imagenUrl);
         return productoDto;
     }
 }

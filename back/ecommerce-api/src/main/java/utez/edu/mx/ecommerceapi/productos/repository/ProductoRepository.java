@@ -3,8 +3,14 @@ package utez.edu.mx.ecommerceapi.productos.repository;
 import java.util.List;
 import java.util.Optional;
 
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import utez.edu.mx.ecommerceapi.categorias.entity.Categoria;
 import utez.edu.mx.ecommerceapi.productos.entity.Producto;
 
 public interface ProductoRepository extends JpaRepository<Producto, Long> {
@@ -24,9 +30,20 @@ public interface ProductoRepository extends JpaRepository<Producto, Long> {
     // Busca productos por su categoría, devolviendo una lista de productos
     List<Producto> findByCategoriaId(Long categoriaId);
 
-    // Busca productos por su marca, devolviendo una lista de productos
-    List<Producto> findByMarcaContainingIgnoreCase(String marca);
+    // Busca productos que contengan el nombre del producto
+    List<Producto> findByNombreContainingIgnoreCase(String nombre);
+
+    // Busca productos que contengan el nombre del producto y el id de la categoría
+    List<Producto> findByNombreContainingIgnoreCaseAndCategoria(String nombre, Categoria categoria);
+
+    // Busca las marcas preregistradas
+    @Query("SELECT DISTINCT LOWER(p.marca) FROM Producto p ORDER BY LOWER(p.marca) ASC")
+    List<String> findMarcasDistintas();
 
     // Verifica si existen productos asociados a una categoría específica
     boolean existsByCategoriaId(Long categoriaId);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select p from Producto p where p.id = :id")
+    Optional<Producto> findByIdForUpdate(@Param("id") Long id);
 }

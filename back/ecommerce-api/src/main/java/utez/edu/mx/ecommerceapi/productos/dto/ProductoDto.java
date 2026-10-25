@@ -43,6 +43,9 @@ public class ProductoDto {
     @Min(value = 1, message = "El stock mínimo del producto no puede ser negativo ni cero")
     private Integer stockMinimo;
 
+    @Min(value = 0, message = "El stock reservado del producto no puede ser negativo")
+    private Integer stockReservado = 0;
+
     @NotNull(message = "El precio de compra del producto no puede estar vacío")
     @DecimalMin(value = "0. ", inclusive = true, message = "El precio de compra del producto no puede ser negativo ni cero")
     private BigDecimal precioCompra;
@@ -58,8 +61,10 @@ public class ProductoDto {
     // Campos de imagen que no deberían venir en el request
     private String imagenPublicId;
     private Long imagenVersion;
+    private String imagenUrl;
 
     private ProductoEstadoEnum estado = ProductoEstadoEnum.PROD_ACTIVO;
+    private BigDecimal costoPromedio = BigDecimal.ZERO;
 
     @NotNull(message = "La categoría del producto no puede estar vacía")
     private CategoriaDto categoria;
@@ -85,15 +90,17 @@ public class ProductoDto {
         }
         producto.setStockActual(this.stockActual);
         producto.setStockMinimo(this.stockMinimo);
+        producto.setStockReservado(this.stockReservado);
         producto.setPrecioCompra(this.precioCompra);
         producto.setPrecioVenta(this.precioVenta);
         producto.setUnidadMedida(this.unidadMedida);
         producto.setCategoria(categoriaEntity);
         producto.setEstado(this.estado);
+        producto.setCostoPromedio(this.getCostoPromedio());
         return producto;
     }
 
-    public static ProductoDto fromEntity(Producto producto) {
+    public static ProductoDto fromEntity(Producto producto, String imagenUrl) {
         ProductoDto productoDto = new ProductoDto();
         productoDto.setId(producto.getId());
         productoDto.setNombre(producto.getNombre());
@@ -105,13 +112,17 @@ public class ProductoDto {
         }
         productoDto.setStockActual(producto.getStockActual());
         productoDto.setStockMinimo(producto.getStockMinimo());
+        productoDto.setStockReservado(producto.getStockReservado());
         productoDto.setPrecioCompra(producto.getPrecioCompra());
         productoDto.setPrecioVenta(producto.getPrecioVenta());
         productoDto.setUnidadMedida(producto.getUnidadMedida());
         productoDto.setImagenPublicId(producto.getImagenPublicId());
-        productoDto.setImagenPublicId(producto.getImagenPublicId());
+        if (imagenUrl != null) {
+            productoDto.setImagenUrl(imagenUrl);
+        }
         productoDto.setEstado(producto.getEstado());
         productoDto.setCategoria(CategoriaDto.fromEntity(producto.getCategoria()));
+        productoDto.setCostoPromedio(producto.getCostoPromedio());
         // Campos auditables
         productoDto.setCreatedAt(producto.getCreatedAt());
         productoDto.setUpdatedAt(producto.getUpdatedAt());
