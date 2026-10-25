@@ -254,8 +254,6 @@ public class ProductoService {
         return ApiResponse.ok("¡Producto eliminado permanentemente!");
     }
 
-    //TODO función para validar stock, que regrese el nuevo stock y la imagen thumbnail del producto
-
     /*
      * Manejo de stocks
      * */
