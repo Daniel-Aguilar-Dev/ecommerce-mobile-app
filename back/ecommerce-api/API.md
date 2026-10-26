@@ -107,12 +107,30 @@ public class ProductoController {
 Para probar el ciclo actual desde Swagger:
 
 1. Ejecuta `POST /api/v1/auth/registro` con los datos válidos de `RegistroRequest`, o usa una cuenta ya registrada.
-2. Ejecuta `POST /api/v1/auth/login`. La respuesta envuelve el token en `data.token` y contiene `data.tipo: "Bearer"`.
+2. Ejecuta `POST /api/v1/auth/login`. La respuesta envuelve el access token en `data.token`, contiene `data.tipo: "Bearer"` y devuelve `data.refreshToken`.
 3. Sin autorizar Swagger, llama `GET /api/v1/ping`: debe devolver HTTP 401 y `error: "NO_AUTENTICADO"`.
 4. Pulsa **Authorize**, pega solo el valor de `data.token` y confirma. Swagger agrega el prefijo `Bearer` al encabezado.
 5. Vuelve a llamar el ping: un token vigente debe devolver HTTP 200 y `message: "pong"`. Un token alterado o vencido debe devolver HTTP 401.
 
-Si Swagger conserva un token anterior, usa **Authorize / Logout** antes de probar el caso sin token. El access token actual dura 12 horas; todavía no hay refresh token. La renovación se puede agregar después en `auth` sin modificar cada endpoint protegido, porque la validación del access token está centralizada en el filtro.
+Si Swagger conserva un token anterior, usa **Authorize / Logout** antes de probar el caso sin token. El access token dura 15 minutos. El refresh token opaco dura 30 días por defecto, se guarda como hash en la base y rota en cada renovación.
+
+### Renovar y cerrar una sesión
+
+Envía el refresh token en el cuerpo de `POST /api/v1/auth/refresh`:
+
+```json
+{
+  "refreshToken": "<refresh-token-recibido-en-login>"
+}
+```
+
+La respuesta tiene el mismo formato de tokens que login. Reemplaza ambos tokens en el cliente: el refresh token anterior queda revocado y no puede volver a usarse. Cada access JWT contiene un identificador de sesión; el filtro comprueba que esa sesión siga activa. Por eso, el endpoint de logout invalida inmediatamente todos los access JWT de esa sesión.
+
+Para cerrar la sesión, envía el refresh token vigente a `POST /api/v1/auth/logout` con el mismo formato. La operación revoca el refresh token y, por medio del identificador de sesión, también invalida todos los access JWT emitidos para esa sesión.
+
+Refresh tokens son credenciales: el backend solo guarda su hash SHA-256, y el cliente debe almacenarlos en almacenamiento seguro. Configura `app.jwt.refresh-expiration-ms`; el valor de ejemplo es `2592000000` (30 días). El refresh token no usa el encabezado Bearer: solo el access token va en `Authorization: Bearer <token>`.
+
+La entidad de refresh token se crea mediante JPA. La validación de cada access JWT consulta si su sesión sigue activa en la base de datos; esto habilita revocación inmediata y añade una consulta por petición autenticada. En una base persistente usa `spring.jpa.hibernate.ddl-auto=update` o una migración versionada; con `create`, Hibernate recrea el esquema al arrancar y se pierden las sesiones y demás datos anteriores. No uses `create` en un entorno con datos que deban conservarse.
 
 La configuración de rutas y orden de Swagger está en `src/main/resources/application.properties`:
 

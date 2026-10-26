@@ -29,10 +29,6 @@ public record RegistroRequest (
 
         @NotBlank
         @Size(min = 8, max = 255)
-        String contrasena,
-
-        @NotBlank
-        String fotoPerfil
-
+        String contrasena
 ) {
 }

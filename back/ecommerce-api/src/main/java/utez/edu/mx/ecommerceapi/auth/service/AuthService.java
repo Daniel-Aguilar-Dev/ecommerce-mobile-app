@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import utez.edu.mx.ecommerceapi.auth.dto.LoginRequest;
 import utez.edu.mx.ecommerceapi.auth.dto.LoginResponse;
+import utez.edu.mx.ecommerceapi.auth.dto.RefreshTokenRequest;
 import utez.edu.mx.ecommerceapi.auth.dto.RegistroRequest;
 import utez.edu.mx.ecommerceapi.auth.dto.RegistroResponse;
 import utez.edu.mx.ecommerceapi.auth.security.JwtService;
@@ -29,6 +30,7 @@ public class AuthService {
     private final RolRepository rolRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final RefreshTokenService refreshTokenService;
 
 
 
@@ -62,7 +64,6 @@ public class AuthService {
         usuario.setCorreo(correo);
         usuario.setTelefono(solicitud.telefono().trim());
         usuario.setContrasena(passwordEncoder.encode(solicitud.contrasena()));
-        usuario.setFotoPerfil(solicitud.fotoPerfil().trim());
         usuario.setRol(rolCliente);
         usuario.setStatus(true);
 
@@ -77,7 +78,7 @@ public class AuthService {
     }
 
 
-    @Transactional(readOnly = true)
+    @Transactional
     public LoginResponse login(LoginRequest solicitud) {
         String correo = solicitud.correo()
                 .trim()
@@ -106,19 +107,43 @@ public class AuthService {
             );
         }
 
-        String rol = usuario.getRol().getNombreRol().name();
+        RefreshTokenService.Rotacion sesion = refreshTokenService.emitir(usuario);
+        return crearRespuestaTokens(usuario, sesion.refreshToken(), sesion.sessionId());
+    }
 
+    @Transactional
+    public LoginResponse renovar(RefreshTokenRequest solicitud) {
+        RefreshTokenService.Rotacion rotacion = refreshTokenService.rotar(solicitud.refreshToken());
+        return crearRespuestaTokens(
+                rotacion.usuario(),
+                rotacion.refreshToken(),
+                rotacion.sessionId()
+        );
+    }
+
+    @Transactional
+    public void cerrarSesion(RefreshTokenRequest solicitud) {
+        refreshTokenService.revocar(solicitud.refreshToken());
+    }
+
+    private LoginResponse crearRespuestaTokens(
+            Usuario usuario,
+            String refreshToken,
+            String sessionId
+    ) {
+        String rol = usuario.getRol().getNombreRol().name();
         UsuarioAutenticado principal = new UsuarioAutenticado(
                 usuario.getId(),
                 usuario.getCorreo(),
                 rol
         );
 
-        String token = jwtService.generarToken(principal);
+        String accessToken = jwtService.generarToken(principal, sessionId);
 
         return new LoginResponse(
-                token,
+                accessToken,
                 "Bearer",
+                refreshToken,
                 new LoginResponse.UsuarioInfo(
                         usuario.getId(),
                         usuario.getCorreo(),
