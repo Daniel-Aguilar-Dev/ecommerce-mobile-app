@@ -1,19 +1,9 @@
 package utez.edu.mx.ecommerceapi.productos.entity;
 
 import java.math.BigDecimal;
-import java.util.List;
 
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
+import jakarta.persistence.*;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
 import utez.edu.mx.ecommerceapi.categorias.entity.Categoria;
@@ -24,6 +14,15 @@ import utez.edu.mx.ecommerceapi.shared.audit.AuditableEntity;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Table(
+        name = "productos",
+        check = {
+                @CheckConstraint(
+                        name = "chk_stock_reservado",
+                        constraint = "stock_reservado >= stock_actual"
+                )
+        }
+)
 public class Producto extends AuditableEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,7 +37,7 @@ public class Producto extends AuditableEntity {
     @Column(nullable = false, length = 25)
     private String marca;
 
-    @Column(nullable = false, length = 25, unique = true)
+    @Column(length = 25, unique = true)
     private String sku;
 
     @PositiveOrZero
@@ -50,30 +49,37 @@ public class Producto extends AuditableEntity {
     private int stockMinimo;
 
     @PositiveOrZero
-    @Column(nullable = false, name = "precio_compra")
+    @Column(nullable = false, name = "stock_reservado")
+    private int stockReservado = 0;
+
+    @PositiveOrZero
+    @Column(nullable = false, name = "precio_compra", precision = 12, scale = 4)
     private BigDecimal precioCompra;
 
     @PositiveOrZero
-    @Column(nullable = false, name = "precio_venta")
+    @Column(nullable = false, name = "precio_venta", precision = 12, scale = 4)
     private BigDecimal precioVenta;
 
     @Column(nullable = false, length = 25, name = "unidad_medida")
     private String unidadMedida;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
-    private String imagen;
+    @Column(nullable = false, name = "imagen_public_id")
+    private String imagenPublicId;
+
+    @Column(nullable = false, name = "imagen_version")
+    private Long imagenVersion;
 
     @Column(nullable = false, name = "estado")
     private ProductoEstadoEnum estado;
 
+    @Column(name = "costo_promedio", nullable = false, precision = 12, scale = 4)
+    private BigDecimal costoPromedio = BigDecimal.ZERO;
+
     @ManyToOne(optional = false, fetch = FetchType.EAGER)
-    @JoinColumn (nullable = false, name = "categoria_id")
+    @JoinColumn(nullable = false, name = "categoria_id")
     private Categoria categoria;
 
-    @Column(nullable = false, name = "etiquetas", columnDefinition = "json")
-    @JdbcTypeCode(SqlTypes.JSON)
-    private List<String> etiquetas;
-
-    @Column(nullable = false)
-    private boolean status;
+    public int getStockDisponible() {
+        return stockActual - stockReservado;
+    }
 }

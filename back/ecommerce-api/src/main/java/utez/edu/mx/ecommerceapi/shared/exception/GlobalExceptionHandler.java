@@ -60,6 +60,12 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.error("No tienes permiso para realizar esta acción", ErrorCode.ACCESO_DENEGADO.name()));
     }
 
+    @ExceptionHandler(ImagenException.class)
+    public ResponseEntity<ApiResponse<Void>> handleBadImageUpload(ImagenException e) {
+        return ResponseEntity.status(ErrorCode.IMAGEN_INCORRECTA.getStatus())
+                .body(ApiResponse.error(e.getMessage(), ErrorCode.IMAGEN_INCORRECTA.name()));
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Void>> handleGeneric(Exception ex) {
         log.error("Error no controlado", ex);

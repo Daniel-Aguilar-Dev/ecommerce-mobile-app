@@ -18,7 +18,8 @@ public enum ErrorCode {
     CREDENCIALES_INVALIDAS(HttpStatus.UNAUTHORIZED),
     REFRESH_TOKEN_INVALIDO(HttpStatus.UNAUTHORIZED),
     USUARIO_DESACTIVADO(HttpStatus.FORBIDDEN),
-    DATO_DUPLICADO(HttpStatus.CONFLICT);
+    DATO_DUPLICADO(HttpStatus.CONFLICT),
+    IMAGEN_INCORRECTA(HttpStatus.BAD_REQUEST);
 
     private final HttpStatus status;
 
