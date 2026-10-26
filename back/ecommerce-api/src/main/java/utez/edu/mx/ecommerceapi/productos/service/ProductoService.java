@@ -47,8 +47,64 @@ public class ProductoService {
      * CRUD del producto
      * */
     @Transactional(readOnly = true)
-    public ApiResponse<List<ProductoDto>> getAllProducts() {
-        return ApiResponse.ok("Lista por devolver");
+    public ApiResponse<List<ProductoDto>> getAllProducts(
+            boolean stockBajo,
+            boolean stockCero,
+            boolean descontinuados,
+            boolean activos,
+            String query,
+            String orden,
+            String marca,
+            Long categoriaId
+    ) {
+        boolean hasCategoriaId = categoriaId != null && categoriaId > 0;
+        boolean hasQuery = query != null && !query.isBlank();
+        boolean hasOrden = orden != null && !orden.isBlank();
+        boolean hasMarca = marca != null && !marca.isBlank();
+
+        List<Producto> productos = productoRepository.findAll();
+
+        if (hasQuery) {
+            if (hasCategoriaId) {
+                Categoria categoria = categoriaService.obtenerCategoriaPorId(categoriaId);
+                productos = productoRepository.findByNombreContainingIgnoreCaseAndCategoria(query, categoria);
+            } else {
+                productos = productoRepository.findByNombreContainingIgnoreCase(query);
+            }
+        } else if (hasMarca) {
+            if (hasCategoriaId) {
+                Categoria categoria = categoriaService.obtenerCategoriaPorId(categoriaId);
+                productos = productoRepository.findByMarcaIgnoreCaseAndCategoria(query, categoria);
+            } else {
+                productos = productoRepository.findByMarcaIgnoreCase(query);
+            }
+        } else if (hasCategoriaId) {
+            productos = productoRepository.findByCategoriaId(categoriaId);
+        }
+
+        if (hasOrden) {
+            if (orden.equals("nombre_asc")) productos.sort(Comparator.comparing(Producto::getNombre).reversed());
+            if (orden.equals("nombre_desc")) productos.sort(Comparator.comparing(Producto::getNombre));
+        }
+
+        List<ProductoDto> productoDtos = productos.stream()
+                .map(p -> {
+                    String url = urlBuilder.thumbnail(p.getImagenPublicId(), p.getImagenVersion());
+                    return ProductoDto.fromEntity(p, url);
+                })
+                .filter(p -> !stockBajo || p.getStockActual() <= p.getStockMinimo())
+                .filter(p -> !stockCero || p.getStockActual() <= 0)
+                .filter(p -> {
+                    //Solo descontinuados
+                    if (descontinuados) return p.getEstado() == ProductoEstadoEnum.PROD_DESCONTINUADO;
+                    //Solo activos
+                    if (activos) return p.getEstado() == ProductoEstadoEnum.PROD_ACTIVO;
+                    //Todos
+                    return true;
+                })
+                .toList();
+
+        return ApiResponse.ok("Productos encontrados", productoDtos);
     }
 
     @Transactional(readOnly = true)
@@ -248,7 +304,7 @@ public class ProductoService {
         Producto existente = findByIdOrThrow(id);
 
         if (tieneMovimientosAsociados(id))
-            throw new BusinessException(ErrorCode.PRODUCTO_CON_MOVIMIENTOS, "No se puede elimminar un producto con movimientos registrados");
+            throw new BusinessException(ErrorCode.PRODUCTO_CON_MOVIMIENTOS, "No se puede eliminar un producto con movimientos registrados");
 
         productoRepository.delete(existente);
         return ApiResponse.ok("¡Producto eliminado permanentemente!");
@@ -419,7 +475,8 @@ public class ProductoService {
     }
 
     private boolean tieneMovimientosAsociados(Long id) {
-        //TODO Validar qué no esté asociado a una venta o pedido antes de eliminar
-        return true;
+        boolean inSales = productoRepository.existSalesWithProduct(id);
+        boolean inOrders = productoRepository.existOrdersWithProduct(id);
+        return inOrders || inSales;
     }
 }

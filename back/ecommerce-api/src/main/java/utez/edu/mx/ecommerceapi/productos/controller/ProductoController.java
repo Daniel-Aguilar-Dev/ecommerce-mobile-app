@@ -2,9 +2,13 @@ package utez.edu.mx.ecommerceapi.productos.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import utez.edu.mx.ecommerceapi.carrito.entity.Carrito;
 
 import utez.edu.mx.ecommerceapi.productos.dto.ProductoDto;
@@ -39,8 +43,34 @@ public class ProductoController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "Obtiene todas los productos para el uso del personal")
+    @GetMapping()
+    public ResponseEntity<ApiResponse<List<ProductoDto>>> getProductos(
+            @RequestParam(required = false, defaultValue = "false") boolean stockBajo,
+            @RequestParam(required = false, defaultValue = "false") boolean stockCero,
+            @RequestParam(required = false, defaultValue = "false") boolean solo_descontinuados,
+            @RequestParam(required = false, defaultValue = "false") boolean solo_vigentes,
+            @RequestParam(required = false, defaultValue = "") String query,
+            @RequestParam(required = false, defaultValue = "") String orden,
+            @RequestParam(required = false, defaultValue = "") String marca,
+            @RequestParam(required = false) Long categoria
+    ) {
+        ApiResponse<List<ProductoDto>> response = productoService.getAllProducts(
+                stockBajo,
+                stockCero,
+                solo_descontinuados,
+                solo_vigentes,
+                query,
+                orden,
+                marca,
+                categoria
+        );
+        return ResponseEntity.ok(response);
+    }
+
+
     @Operation(summary = "Obtiene un producto por su ID para el uso del personal")
-    @GetMapping("/{id}")
+    @GetMapping("/id/{id}")
     public ResponseEntity<ApiResponse<ProductoDto>> getProductoById(@PathVariable Long id) {
         ApiResponse<ProductoDto> response = productoService.getProductById(id);
         return ResponseEntity.ok(response);
@@ -61,14 +91,14 @@ public class ProductoController {
     }
 
     @Operation(summary = "Obtiene todas las distintas marcas para filtrar productos para personal")
-    @GetMapping("/marcas")
+    @GetMapping("/public/marcas")
     public ResponseEntity<ApiResponse<List<String>>> getMarcas() {
         ApiResponse<List<String>> response = productoService.getMarcas();
         return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "Valida que un producto cuente con la cantidad solicitada en stock")
-    @PostMapping("/public/validar")
+    @PostMapping("/public/validar/producto/{id}")
     public ResponseEntity<ApiResponse<Integer>> validarStockProducto(@RequestBody int cantidad, @PathVariable Long id) {
         ApiResponse<Integer> response = productoService.validarStockIndividual(id, cantidad);
         return ResponseEntity.ok(response);
@@ -78,6 +108,25 @@ public class ProductoController {
     @PostMapping("/public/validar/carrito")
     public ResponseEntity<ApiResponse<List<StockLineaDto>>> validarStockCarrito(@RequestBody Carrito carrito) {
         ApiResponse<List<StockLineaDto>> response = productoService.validarStockCarrito(carrito);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<ProductoDto>> crearProducto(
+            @Valid @RequestPart("data") ProductoDto data,
+            @RequestPart("imagen") MultipartFile imagen
+    ) {
+        ApiResponse<ProductoDto> response = productoService.postProduct(data, imagen);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @PutMapping(path = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<ProductoDto>> modificarProducto(
+            @PathVariable Long id,
+            @Valid @RequestPart("data") ProductoDto data,
+            @RequestPart(value = "imagen", required = false) MultipartFile imagen
+    ) {
+        ApiResponse<ProductoDto> response = productoService.putProduct(data, imagen, id);
         return ResponseEntity.ok(response);
     }
 
