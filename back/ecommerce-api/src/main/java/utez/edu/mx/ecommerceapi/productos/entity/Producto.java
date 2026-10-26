@@ -19,7 +19,7 @@ import utez.edu.mx.ecommerceapi.shared.audit.AuditableEntity;
         check = {
                 @CheckConstraint(
                         name = "chk_stock_reservado",
-                        constraint = "stock_reservado >= stockActual"
+                        constraint = "stock_reservado >= stock_actual"
                 )
         }
 )
