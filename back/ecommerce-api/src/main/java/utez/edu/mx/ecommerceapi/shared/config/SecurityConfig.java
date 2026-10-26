@@ -10,6 +10,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import utez.edu.mx.ecommerceapi.auth.security.JwtAuthenticationFilter;
 import utez.edu.mx.ecommerceapi.auth.security.JwtService;
+import utez.edu.mx.ecommerceapi.auth.service.RefreshTokenService;
 import utez.edu.mx.ecommerceapi.shared.exception.ApiSecurityErrorHandler;
 
 @Configuration
@@ -19,8 +20,12 @@ public class SecurityConfig {
         public SecurityFilterChain filterChain(
                         HttpSecurity http,
                         JwtService jwtService,
+                        RefreshTokenService refreshTokenService,
                         ApiSecurityErrorHandler errorHandler) throws Exception {
-                JwtAuthenticationFilter jwtFilter = new JwtAuthenticationFilter(jwtService, errorHandler);
+                JwtAuthenticationFilter jwtFilter = new JwtAuthenticationFilter(
+                                jwtService,
+                                refreshTokenService,
+                                errorHandler);
 
                 http
                                 .csrf(AbstractHttpConfigurer::disable)
@@ -41,6 +46,8 @@ public class SecurityConfig {
                                                                 "/v3/api-docs/**",
                                                                 "/api/v1/auth/login",
                                                                 "/api/v1/auth/registro",
+                                                                "/api/v1/auth/refresh",
+                                                                "/api/v1/auth/logout",
                                                                 "/api/v1/categorias/public/**",
                                                                 "/api/v1/productos/public/**")
                                                 .permitAll()

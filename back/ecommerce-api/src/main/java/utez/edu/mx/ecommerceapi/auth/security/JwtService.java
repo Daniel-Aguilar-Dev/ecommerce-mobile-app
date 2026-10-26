@@ -40,11 +40,13 @@ public class JwtService {
         this.expirationMs = expirationMs;
     }
 
-    public String generarToken(UsuarioAutenticado usuario) {
+    public String generarToken(UsuarioAutenticado usuario, String sessionId) {
         Instant ahora = Instant.now();
 
         return Jwts.builder()
                 .subject(usuario.id().toString())
+                // Permite invalidar todos los access tokens de una sesión al cerrar sesión.
+                .claim("sid", sessionId)
                 .claim("correo", usuario.correo())
                 // El valor es CLIENTE, EMPLEADO o ADMINISTRADOR;
                 // el filtro añadirá ROLE_ al crear la autoridad.
@@ -56,27 +58,35 @@ public class JwtService {
     }
 
     public UsuarioAutenticado leerUsuario(String token) {
+        return leerTokenAutenticado(token).usuario();
+    }
+
+    public TokenAutenticado leerTokenAutenticado(String token) {
         Claims claims = parser.parseSignedClaims(token).getPayload();
 
         Long id = Long.valueOf(claims.getSubject());
         String correo = claims.get("correo", String.class);
         String rol = claims.get("rol", String.class);
+        String sessionId = claims.get("sid", String.class);
 
-        if (correo == null || rol == null) {
+        if (correo == null || rol == null || sessionId == null || sessionId.isBlank()) {
             throw new IllegalArgumentException(
-                    "El token no contiene los datos requeridos"
+                    "El access token no contiene los datos requeridos"
             );
         }
 
-        return new UsuarioAutenticado(id, correo, rol);
+        return new TokenAutenticado(new UsuarioAutenticado(id, correo, rol), sessionId);
     }
 
     public boolean esValido(String token) {
         try {
-            leerUsuario(token);
+            leerTokenAutenticado(token);
             return true;
         } catch (JwtException | IllegalArgumentException ex) {
             return false;
         }
+    }
+
+    public record TokenAutenticado(UsuarioAutenticado usuario, String sessionId) {
     }
 }

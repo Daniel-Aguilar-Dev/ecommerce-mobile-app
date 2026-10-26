@@ -12,6 +12,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.web.filter.OncePerRequestFilter;
+import utez.edu.mx.ecommerceapi.auth.service.RefreshTokenService;
 import utez.edu.mx.ecommerceapi.shared.util.UsuarioAutenticado;
 
 import java.io.IOException;
@@ -22,13 +23,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final String PREFIJO_BEARER = "Bearer ";
 
     private final JwtService jwtService;
+    private final RefreshTokenService refreshTokenService;
     private final AuthenticationEntryPoint authenticationEntryPoint;
 
     public JwtAuthenticationFilter(
             JwtService jwtService,
+            RefreshTokenService refreshTokenService,
             AuthenticationEntryPoint authenticationEntryPoint
     ) {
         this.jwtService = jwtService;
+        this.refreshTokenService = refreshTokenService;
         this.authenticationEntryPoint = authenticationEntryPoint;
     }
 
@@ -40,7 +44,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 || path.equals("/v3/api-docs")
                 || path.startsWith("/v3/api-docs/")
                 || path.equals("/api/v1/auth/login")
-                || path.equals("/api/v1/auth/registro");
+                || path.equals("/api/v1/auth/registro")
+                || path.equals("/api/v1/auth/refresh")
+                || path.equals("/api/v1/auth/logout");
     }
 
     @Override
@@ -64,7 +70,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         final UsuarioAutenticado usuario;
         try {
-            usuario = jwtService.leerUsuario(token);
+            JwtService.TokenAutenticado tokenAutenticado = jwtService.leerTokenAutenticado(token);
+            if (!refreshTokenService.sesionActiva(tokenAutenticado.sessionId())) {
+                SecurityContextHolder.clearContext();
+                rechazarToken(request, response);
+                return;
+            }
+            usuario = tokenAutenticado.usuario();
         } catch (JwtException | IllegalArgumentException ex) {
             SecurityContextHolder.clearContext();
             rechazarToken(request, response);

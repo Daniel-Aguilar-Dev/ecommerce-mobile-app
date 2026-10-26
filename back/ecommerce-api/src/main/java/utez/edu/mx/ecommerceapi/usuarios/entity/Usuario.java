@@ -42,8 +42,7 @@ public class Usuario extends AuditableEntity {
     @Column(name = "contrasena", nullable = false, length = 255)
     private String contrasena;
 
-    @Column(name = "foto_perfil", nullable = false, columnDefinition = "TEXT")
-    private String fotoPerfil;
+
 
 
 
