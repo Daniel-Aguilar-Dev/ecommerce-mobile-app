@@ -49,13 +49,10 @@ class _AppShellState extends State<AppShell>{
       },
       drawer: role == "ADMINISTRADOR" ? AdminDrawer(items: listAdmin, index: index, onSelect: (i) => setState(() => _index = i)) : null,
       body: SafeArea(child:
-        Padding(
-          padding: .all(16),
-          child: IndexedStack(
-            index: index,
-            children: [for (final i in pages) i.page],
-          ),
-        )
+        IndexedStack(
+          index: index,
+          children: [for (final i in pages) i.page],
+        ),
       ),
       bottomNavigationBar: role != "ADMINISTRADOR" ?
         DecoratedBox(
