@@ -5,6 +5,7 @@ class ECommerceAppTheme {
   ECommerceAppTheme._();
 
   static ThemeData build() {
+    const foreground = Color(0xFF2F3A4F);
     final base = ThemeData(
       useMaterial3: true,
       colorScheme: .fromSeed(seedColor: AppColors.primario.c400).copyWith(
@@ -16,6 +17,29 @@ class ECommerceAppTheme {
         error: AppColors.error.main
       ),
       fontFamily: 'PlusJakartaSans',
+      appBarTheme: const AppBarTheme(
+        backgroundColor: Colors.white,
+        foregroundColor: foreground,
+        elevation: 0,
+        centerTitle: false,
+      ),
+      navigationBarTheme: NavigationBarThemeData(
+        indicatorColor: Colors.transparent,
+        labelTextStyle: WidgetStateProperty.resolveWith((states) {
+          final selected = states.contains(WidgetState.selected);
+          return TextStyle(
+            fontSize: 12,
+            fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
+            color: selected ? AppColors.primario.c400 : AppColors.texto.c900,
+          );
+        }),
+        iconTheme: WidgetStateProperty.resolveWith((states) {
+          final selected = states.contains(WidgetState.selected);
+          return IconThemeData(
+            color: selected ? AppColors.primario.c400 : AppColors.texto.c900,
+          );
+        }),
+      ),
     );
 
     return base.copyWith(
