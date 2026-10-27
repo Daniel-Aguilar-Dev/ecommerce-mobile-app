@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:ecommerce_app/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -18,7 +19,7 @@ void main() {
   // En el emulador Android, 10.0.2.2 apunta al host donde corre Spring Boot.
   const baseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'http://10.0.2.2:8080',
+    defaultValue: 'http://172.22.192.1:8080',
   );
   final apiClient = ApiClient(baseUrl: baseUrl);
   final tokenStorage = SecureAuthTokenStorage();
@@ -55,28 +56,10 @@ class EcommerceApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const navy = Color(0xFF303C55);
-    const orange = Color(0xFFFF8438);
-
     return MaterialApp(
       title: 'EcoTrack Store',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        useMaterial3: true,
-        scaffoldBackgroundColor: Colors.white,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: orange,
-          primary: orange,
-          secondary: navy,
-          surface: Colors.white,
-        ),
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.white,
-          foregroundColor: navy,
-          elevation: 0,
-          centerTitle: false,
-        ),
-      ),
+      theme: ECommerceAppTheme.build(),
       home: const AuthGate(),
     );
   }

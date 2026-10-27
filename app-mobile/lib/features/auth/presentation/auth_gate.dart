@@ -1,3 +1,5 @@
+import 'package:ecommerce_app/core/layout/app_shell.dart';
+import 'package:ecommerce_app/core/layout/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -8,19 +10,20 @@ import 'login_view.dart';
 class AuthGate extends StatelessWidget {
   const AuthGate({super.key});
 
+  //Ves Juan, no le moví nada aquí, sigue habiendo contexto
   @override
   Widget build(BuildContext context) {
     return Consumer<AuthViewModel>(
       builder: (context, viewModel, _) {
         switch (viewModel.status) {
           case AuthStatus.checking:
-            return const Scaffold(
-              body: Center(child: CircularProgressIndicator()),
-            );
+            return const SplashScreen();
           case AuthStatus.authenticated:
-            return const AuthenticatedHomeView();
+            //return const AuthenticatedHomeView();
+            return const AppShell();
           case AuthStatus.unauthenticated:
-            return const LoginView();
+            //return const LoginView();
+            return const AppShell();
         }
       },
     );
