@@ -1,5 +1,4 @@
 import 'package:ecommerce_app/features/auth/domain/role_enum.dart';
-import 'package:ecommerce_app/features/auth/presentation/login_view.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
