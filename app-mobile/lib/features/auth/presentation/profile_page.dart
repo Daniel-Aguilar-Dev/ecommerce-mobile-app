@@ -1,3 +1,4 @@
+import 'package:ecommerce_app/features/auth/domain/role_enum.dart';
 import 'package:ecommerce_app/features/auth/presentation/login_view.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -33,9 +34,12 @@ class ProfileScreen extends StatefulWidget {
 //Este es para el cliente, es lo mismo pero sin el appbar
 class _ProfileScreenState extends State<ProfileScreen>{
   Future<void> _salir(AuthViewModel viewModel) async {
+    final role = viewModel.session?.usuario.rol;
+    final isCliente = role == RoleEnum.CLIENTE.name;
     await viewModel.cerrarSesion();
-    Route route = MaterialPageRoute(builder: (context) => LoginView());
-    Navigator.pushReplacement(context, route);
+    if(!isCliente) {
+      Navigator.pop(context);
+    }
   }
 
   @override
