@@ -137,7 +137,7 @@ public class ProductoController {
         return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "Elimina un producto definitivamente")
+    @Operation(summary = "Elimina lógicamente un producto del catálogo")
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> eliminarProducto(@PathVariable Long id) {
         ApiResponse<Void> response = productoService.deleteProduct(id);
