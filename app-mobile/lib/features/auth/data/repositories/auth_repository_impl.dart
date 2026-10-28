@@ -7,6 +7,7 @@ import 'package:ecommerce_app/features/auth/domain/auth_repository.dart';
 import 'package:ecommerce_app/features/auth/domain/auth_session.dart';
 import 'package:ecommerce_app/features/auth/domain/auth_token_storage.dart';
 import 'package:ecommerce_app/features/auth/domain/auth_user.dart';
+import 'package:flutter/cupertino.dart';
 
 // Los nombres públicos de inyección son claros; los campos internos son privados.
 // ignore_for_file: prefer_initializing_formals
@@ -101,6 +102,7 @@ class AuthRepositoryImpl implements AuthRepository {
     } finally {
       // Limpia el dispositivo incluso si el servidor no está disponible.
       await _tokenStorage.borrarTokens();
+      debugPrint("[AUTH] Cerrando sesión");
     }
   }
 

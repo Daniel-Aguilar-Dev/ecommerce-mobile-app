@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-
 import 'notificaciones_page.dart';
 
 class AppBarCliente extends StatefulWidget implements PreferredSizeWidget {
