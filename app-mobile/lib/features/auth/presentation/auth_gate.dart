@@ -4,13 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'auth_view_model.dart';
-import 'authenticated_home_view.dart';
+
 import 'login_view.dart';
 
 class AuthGate extends StatelessWidget {
   const AuthGate({super.key});
 
-  //Ves Juan, no le moví nada aquí, sigue habiendo contexto
+
   @override
   Widget build(BuildContext context) {
     return Consumer<AuthViewModel>(
@@ -23,7 +23,7 @@ class AuthGate extends StatelessWidget {
             return const AppShell();
           case AuthStatus.unauthenticated:
             //return const LoginView();
-            return const AppShell();
+            return const LoginView();
         }
       },
     );

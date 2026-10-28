@@ -19,7 +19,7 @@ void main() {
   // En el emulador Android, 10.0.2.2 apunta al host donde corre Spring Boot.
   const baseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'http://172.22.192.1:8080',
+    defaultValue: 'http://10.0.2.2:8080',
   );
   final apiClient = ApiClient(baseUrl: baseUrl);
   final tokenStorage = SecureAuthTokenStorage();
@@ -57,7 +57,7 @@ class EcommerceApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'EcoTrack Store',
+      title: 'Ecommerce App',
       debugShowCheckedModeBanner: false,
       theme: ECommerceAppTheme.build(),
       home: const AuthGate(),
