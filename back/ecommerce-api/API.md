@@ -102,7 +102,21 @@ public class ProductoController {
 }
 ```
 
-`OpenApiConfig` agrega el esquema HTTP Bearer JWT a Swagger. La seguridad real la aplica `SecurityConfig` junto con `JwtAuthenticationFilter`: Swagger UI y OpenAPI, el registro y el login son públicos; las demás rutas, incluido el ping, requieren un JWT válido. Por eso el botón **Authorize** sirve para probar rutas protegidas, y documentar un esquema Bearer sin configurar Spring Security no bastaría para protegerlas.
+`OpenApiConfig` agrega el esquema HTTP Bearer JWT a Swagger. La seguridad real la aplica `SecurityConfig` junto con `JwtAuthenticationFilter`. Las rutas públicas y los permisos por rol son:
+
+| Rutas | Acceso |
+| --- | --- |
+| Swagger/OpenAPI, login, registro, refresh y logout | Público; logout y refresh validan el refresh token recibido. |
+| `/api/v1/productos/public/**`, `/api/v1/categorias/public/**` | Público, para consulta de catálogo y validación pública de stock. |
+| `/api/v1/productos/**` fuera de `/public/**` | `EMPLEADO` o `ADMINISTRADOR`. |
+| `GET /api/v1/categorias`, `GET /api/v1/categorias/{id}`, `POST /api/v1/categorias` | `EMPLEADO` o `ADMINISTRADOR`. |
+| `PATCH /api/v1/categorias/{id}`, `DELETE /api/v1/categorias/{id}`, `/api/v1/usuarios/**` | Solo `ADMINISTRADOR`. |
+| `/api/v1/ping` | Cualquier usuario autenticado (`CLIENTE`, `EMPLEADO` o `ADMINISTRADOR`). |
+| Cualquier otra ruta | Denegada hasta que se asigne explícitamente una política. |
+
+Los permisos se verifican en el API con la autoridad `ROLE_<rol>` obtenida del JWT; ocultar opciones de navegación en la app no sustituye esta validación. El botón **Authorize** de Swagger permite probar las rutas protegidas.
+
+`DELETE /api/v1/productos/{id}` realiza una baja lógica: conserva el registro y lo marca `PROD_ELIMINADO`. Los listados, consultas por id/nombre/SKU, marcas y el catálogo público dejan de devolverlo. `PATCH /api/v1/productos/{id}` sigue alternando entre activo y descontinuado; no restaura productos eliminados. El nuevo estado se agrega al final de `ProductoEstadoEnum` para conservar los ordinales actuales de la columna existente.
 
 Para probar el ciclo actual desde Swagger:
 
@@ -394,7 +408,7 @@ boolean esAdmin = SecurityUtils.tieneRol("ADMINISTRADOR");
 ## Notas para desarrollar otros módulos
 
 - Mantén cada entidad, repository, service, DTO y controller dentro de su módulo. `shared` es para comportamiento realmente transversal.
-- Las rutas nuevas quedan protegidas por defecto. No agregues `permitAll` para un endpoint de módulo; si un caso de negocio debe ser público, acuerda explícitamente el acceso y añádelo a `SecurityConfig`.
+- Las rutas nuevas quedan denegadas por defecto. Asigna explícitamente los roles permitidos en `SecurityConfig`; no agregues `permitAll` para un endpoint de módulo salvo que el caso de negocio requiera acceso público.
 - En una entidad con relación a `Usuario`, usa la asociación JPA adecuada (`@ManyToOne` o `@OneToOne`) en vez de duplicar una relación como `Long usuarioId` y objeto `Usuario` a la vez. Define el lado dueño con `@JoinColumn` y usa DTOs para evitar serializar grafos JPA.
 - Para obtener el ID del usuario que crea o modifica un registro, usa `SecurityUtils.usuarioActualId()`. Para operaciones que legítimamente puedan ejecutarse sin sesión, usa `usuarioActualIdOpcional()` y define si el actor debe quedar nulo.
 - Los errores de autenticación emitidos antes de entrar al controller los procesa `ApiSecurityErrorHandler`; errores de negocio y validación de controllers/services los procesa `GlobalExceptionHandler`.

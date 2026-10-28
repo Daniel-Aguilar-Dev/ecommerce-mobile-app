@@ -51,7 +51,28 @@ public class SecurityConfig {
                                                                 "/api/v1/categorias/public/**",
                                                                 "/api/v1/productos/public/**")
                                                 .permitAll()
-                                                .anyRequest().authenticated())
+                                                .requestMatchers("/api/v1/usuarios/**")
+                                                .hasRole("ADMINISTRADOR")
+                                                .requestMatchers(
+                                                                HttpMethod.GET,
+                                                                "/api/v1/categorias",
+                                                                "/api/v1/categorias/*")
+                                                .hasAnyRole("EMPLEADO", "ADMINISTRADOR")
+                                                .requestMatchers(HttpMethod.POST, "/api/v1/categorias")
+                                                .hasAnyRole("EMPLEADO", "ADMINISTRADOR")
+                                                .requestMatchers(
+                                                                HttpMethod.PATCH,
+                                                                "/api/v1/categorias/*")
+                                                .hasRole("ADMINISTRADOR")
+                                                .requestMatchers(
+                                                                HttpMethod.DELETE,
+                                                                "/api/v1/categorias/*")
+                                                .hasRole("ADMINISTRADOR")
+                                                .requestMatchers("/api/v1/productos/**")
+                                                .hasAnyRole("EMPLEADO", "ADMINISTRADOR")
+                                                .requestMatchers("/api/v1/ping")
+                                                .hasAnyRole("CLIENTE", "EMPLEADO", "ADMINISTRADOR")
+                                                .anyRequest().denyAll())
                                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
                 return http.build();

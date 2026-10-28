@@ -7,11 +7,11 @@ import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import org.springframework.data.jpa.repository.Lock;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import utez.edu.mx.ecommerceapi.categorias.entity.Categoria;
 import utez.edu.mx.ecommerceapi.productos.entity.Producto;
+import utez.edu.mx.ecommerceapi.productos.entity.ProductoEstadoEnum;
 
 public interface ProductoRepository extends JpaRepository<Producto, Long> {
     // Busca un producto por su nombre, ignorando mayúsculas y minúsculas
@@ -42,34 +42,11 @@ public interface ProductoRepository extends JpaRepository<Producto, Long> {
     List<Producto> findByMarcaIgnoreCaseAndCategoria(String marca, Categoria categoria);
 
     // Busca las marcas preregistradas
-    @Query("SELECT DISTINCT LOWER(p.marca) FROM Producto p ORDER BY LOWER(p.marca) ASC")
-    List<String> findMarcasDistintas();
+    @Query("SELECT DISTINCT LOWER(p.marca) FROM Producto p WHERE p.estado <> :estado ORDER BY LOWER(p.marca) ASC")
+    List<String> findMarcasDistintasExceptoEstado(@Param("estado") ProductoEstadoEnum estado);
 
     // Verifica si existen productos asociados a una categoría específica
     boolean existsByCategoriaId(Long categoriaId);
-
-    // Verifica si existen ventas asociadas a un producto
-    @Query("SELECT EXISTS (SELECT d FROM DetalleVenta d WHERE d.producto.id = :id)")
-    boolean existSalesWithProduct(@Param("id") Long id);
-
-    // Verifica si existen pedidos asociadas a un producto
-    @Query(value = """
-            SELECT EXISTS (
-                SELECT 1
-                FROM pedidos p
-                JOIN JSON_TABLE(
-                    p.carrito,
-                    '$.items[*]'
-                    COLUMNS (
-                        productoId BIGINT PATH '$.producto.id'
-                    )
-                ) AS item
-                WHERE item.productoId = :productoId
-            )
-            """, nativeQuery = true)
-    boolean existOrdersWithProduct(
-            @Param("productoId") Long productoId
-    );
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select p from Producto p where p.id = :id")
