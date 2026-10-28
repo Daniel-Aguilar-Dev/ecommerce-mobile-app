@@ -1,8 +1,7 @@
 import 'package:ecommerce_app/core/theme/colors.dart';
+import 'package:ecommerce_app/features/auth/presentation/profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons_600.dart';
-
-import 'notificaciones_page.dart';
 
 class AppBarEmpleado extends StatefulWidget implements PreferredSizeWidget{
   const AppBarEmpleado({super.key, required this.title, this.avatarText});
@@ -22,7 +21,7 @@ class _AppBarEmpleadoState extends State<AppBarEmpleado>{
     Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (_) => const NotificacionesPage() //TODO Reemplazar por pantalla de perfil
+          builder: (_) => const ProfilePage()
       )
     );
   }

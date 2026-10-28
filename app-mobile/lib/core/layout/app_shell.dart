@@ -1,12 +1,15 @@
-import 'package:ecommerce_app/core/layout/layout_admin.dart';
-import 'package:ecommerce_app/core/layout/layout_cliente.dart';
-import 'package:ecommerce_app/core/layout/layout_empleado.dart';
-import 'package:ecommerce_app/features/clientes/presentation/main_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
 
-import '../../features/auth/presentation/auth_view_model.dart';
+import 'package:ecommerce_app/core/layout/layout_admin.dart';
+import 'package:ecommerce_app/core/layout/layout_cliente.dart';
+import 'package:ecommerce_app/core/layout/layout_empleado.dart';
+import 'package:ecommerce_app/features/auth/presentation/auth_view_model.dart';
+
+//Importar páginas aquí
+import 'package:ecommerce_app/features/auth/presentation/profile_page.dart';
+import 'package:ecommerce_app/features/carrito/presentation/main_menu.dart';
 
 class AppShell extends StatefulWidget {
   const AppShell({super.key});
@@ -88,7 +91,7 @@ List<NavItem> listCliente = [
   NavItem('Pedidos', LucideIcons.package, const Text("Pedidos"), "Tus pedidos"),
   NavItem('Carrito', LucideIcons.shoppingCart, const Text("Carrito"), "Tu carrito"),
   NavItem('Pagos', LucideIcons.banknote, const Text("Pagos"), "Pagos pendientes"),
-  NavItem('Cuenta', LucideIcons.user, const Text("Cuenta"), "Cuenta"),
+  NavItem('Cuenta', LucideIcons.user, const ProfileScreen(), "Cuenta"),
 ];
 
 List<NavItem> listEmpleado = [
