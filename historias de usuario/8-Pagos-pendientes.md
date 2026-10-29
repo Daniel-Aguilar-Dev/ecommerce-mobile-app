@@ -6,7 +6,7 @@
 
 <h2> HU-8.1 Actualizar una venta pendiente a “Pagada” - <span style="color:red"> ALTA</span></h2>
 
-**Como** EMPLEADO, **quiero** actualizar el estado de pago de una venta pendiente a “Pagada” **para** reflejar que el cliente liquidó su deuda.
+**Como** administrador o empleado, **quiero** actualizar el estado de pago de una venta pendiente a “Pagada” **para** reflejar que el cliente liquidó su deuda.
 
 <h4>Criterios de aceptación</h4>
 <ul>
@@ -21,7 +21,7 @@
 
 <h2> HU-8.2 Consultar ventas con pago pendiente - <span style="color:yellow"> MEDIA</span></h2>
 
-**Como** ADMIN o EMPLEADO, **quiero** consultar las ventas con pago pendiente y su fecha estimada de pago **para** dar seguimiento a la cobranza.
+**Como** administrador o empleado, **quiero** consultar las ventas con pago pendiente y su fecha estimada de pago **para** dar seguimiento a la cobranza.
 
 <h4>Criterios de aceptación</h4>
 <ul>
@@ -34,7 +34,7 @@
 
 <h2> HU-8.3 Consultar mis compras con pago pendiente - <span style="color:yellow"> MEDIA</span></h2>
 
-**Como** CLIENTE , **quiero** consultar mis compras con pago pendiente y su fecha estimada de pago **para** dar seguimiento a la cobranza.
+**Como** cliente , **quiero** consultar mis compras con pago pendiente y su fecha estimada de pago **para** dar seguimiento a la cobranza.
 
 <h4>Criterios de aceptación</h4>
 <ul>

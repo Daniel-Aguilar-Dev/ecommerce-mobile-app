@@ -6,7 +6,7 @@
 
 <h2> HU-9.1 Resumen financiero por periodo - <span style="color:red"> ALTA</span></h2>
 
-**Como** ADMIN, **quiero** ver un resumen financiero por día, semana o mes **para** entender cómo va el negocio en cada periodo.
+**Como** administrador, **quiero** ver un resumen financiero por día, semana o mes **para** entender cómo va el negocio en cada periodo.
 
 <h4>Criterios de aceptación</h4>
 <ul>
@@ -14,14 +14,14 @@
     <li>El resumen muestra ingresos por ventas, compras de mercancía y pérdidas por mermas del periodo elegido.</li>
     <li>Los datos se recalculan cada vez que se consulta.</li>
     <li>Las ventas anuladas y los pedidos cancelados no se cuentan.</li>
-    <li>Este resumen solo es visible para ADMIN.</li>
+    <li>Este resumen solo es visible para administrador.</li>
 </ul>
 
 <hr/>
 
 <h2> HU-9.2 Utilidad estimada - <span style="color:yellow"> MEDIA</span></h2>
 
-**Como** ADMIN, **quiero** ver la utilidad estimada del periodo **para** saber si el negocio está ganando o perdiendo dinero.
+**Como** administrador, **quiero** ver la utilidad estimada del periodo **para** saber si el negocio está ganando o perdiendo dinero.
 
 <h4>Criterios de aceptación</h4>
 <ul>
@@ -35,7 +35,7 @@
 
 <h2> HU-9.3 Alertas de stock bajo - <span style="color:yellow"> MEDIA</span></h2>
 
-**Como** ADMIN, **quiero** ver la lista de productos con stock bajo desde el dashboard **para** saber qué necesito reabastecer.
+**Como** administrador, **quiero** ver la lista de productos con stock bajo desde el dashboard **para** saber qué necesito reabastecer.
 
 <h4>Criterios de aceptación</h4>
 <ul>
@@ -49,7 +49,7 @@
 
 <h2> HU-9.4 Clientes con adeudos (pagos pendientes) - <span style="color:yellow"> MEDIA</span></h2>
 
-**Como** ADMIN, **quiero** ver qué clientes tienen pagos pendientes y el monto total adeudado **para** dar seguimiento al cobro de las ventas fiadas.
+**Como** administrador, **quiero** ver qué clientes tienen pagos pendientes y el monto total adeudado **para** dar seguimiento al cobro de las ventas fiadas.
 
 <h4>Criterios de aceptación</h4>
 <ul>
@@ -64,12 +64,12 @@
 
 <h2> HU-9.5 Control de acceso y cálculo confiable del dashboard - <span style="color:green"> TRANSVERSAL</span></h2>
 
-**Como** ADMIN, **quiero** que el dashboard respete los permisos por rol y calcule siempre desde datos confirmados **para** que la información sea segura y consistente.
+**Como** administrador, **quiero** que el dashboard respete los permisos por rol y calcule siempre desde datos confirmados **para** que la información sea segura y consistente.
 
 <h4>Criterios de aceptación</h4>
 <ul>
     <li>El CLIENTE no puede acceder al dashboard ni a sus datos.</li>
-    <li>El EMPLEADO no ve este dashboard (queda reservado a ADMIN, dado que incluye costos, utilidades y adeudos).</li>
+    <li>El EMPLEADO no ve este dashboard (queda reservado a administrador, dado que incluye costos, utilidades y adeudos).</li>
     <li>Todas las métricas se calculan al consultar a partir de los datos crudos, sin cifras guardadas y editables.</li>
     <li>Ninguna métrica cuenta ventas anuladas ni pedidos cancelados.</li>
 </ul>

@@ -6,23 +6,23 @@
 
 <h2> HU-7.1 Registrar venta presencial - <span style="color:red"> ALTA</span></h2>
 
-**Como** empleado, **quiero** registrar una venta presencial agregando los productos mediante el escaneo de su código de barras, **para** generar la venta física de manera rápida y evitar tener que buscar manualmente cada producto.
+**Como** empleado o administrador, **quiero** registrar una venta presencial agregando los productos mediante el escaneo de su código de barras, **para** generar la venta física de manera rápida y evitar tener que buscar manualmente cada producto.
 
 <h4>Criterios de aceptación</h4>
 
 <ul>
-    <li>El empleado puede iniciar una nueva venta presencial.</li>
+    <li>El empleado o administrador puede iniciar una nueva venta presencial.</li>
     <li>El sistema permite escanear el código de barras de un producto utilizando la cámara del dispositivo.</li>
     <li>Al escanear un código de barras válido, el sistema identifica el producto correspondiente y lo agrega a la venta.</li>
     <li>El sistema muestra el producto agregado, su cantidad y su precio de venta.</li>
     <li>Si el mismo producto se escanea nuevamente, el sistema incrementa su cantidad en la venta.</li>
-    <li>El empleado puede modificar la cantidad de los productos agregados.</li>
+    <li>El empleado o administrador puede modificar la cantidad de los productos agregados.</li>
     <li>El sistema valida que exista stock disponible antes de agregar el producto a la venta.</li>
     <li>Si el código de barras no corresponde a ningún producto registrado, el sistema muestra un mensaje indicando que el producto no fue encontrado.</li>
-    <li>El empleado puede agregar uno o varios productos a la misma venta.</li>
-    <li>El empleado puede seleccionar el método de pago: efectivo, tarjeta o transferencia.</li>
+    <li>El empleado o administrador puede agregar uno o varios productos a la misma venta.</li>
+    <li>El empleado o administrador puede seleccionar el método de pago: efectivo, tarjeta o transferencia.</li>
     <li>El sistema calcula automáticamente el total de la venta de acuerdo con los productos, cantidades y precios registrados.</li>
-    <li>La venta queda asociada al empleado responsable y registra la fecha y hora de realización.  </li>
+    <li>La venta queda asociada al empleado o administrador responsable y registra la fecha y hora de realización.  </li>
 </ul>
 
 <hr/>
@@ -38,6 +38,7 @@
     <li>El sistema muestra las ventas registradas.</li>
     <li>El sistema permite filtrar las ventas por fecha.</li>
     <li>El sistema permite filtrar las ventas por usuario.</li>
+    <li>El sistema permite filtrar las ventas por empleado que realizo la venta o se le asigno.</li>
     <li>El sistema permite filtrar las ventas por producto.</li>
     <li>El sistema permite filtrar las ventas por origen.</li>
     <li>Los orígenes distinguen entre "Venta directa" y "Pedido de cliente entregado".</li>
@@ -48,7 +49,7 @@
 
 <h2> HU-7.3 Anular venta - <span style="color:orange"> ACTUALIZACIÓN</span></h2>
 
-**Como** empleado, **quiero** anular una venta indicando un motivo **para** corregir una operación que ya no debe considerarse válida.
+**Como** empleado o administrador, **quiero** anular una venta indicando un motivo **para** corregir una operación que ya no debe considerarse válida.
 
 <h4>Criterios de aceptación</h4>
 
@@ -67,7 +68,7 @@
 
 <h2> HU-7.4 Registrar venta a crédito - <span style="color:red"> ALTA</span></h2>
 
-**Como** empleado, **quiero** registrar una venta con pago pendiente asociada a un cliente **para** permitir que el cliente pague la compra posteriormente.
+**Como** administrador o empleado, **quiero** registrar una venta con pago pendiente asociada a un cliente **para** permitir que el cliente pague la compra posteriormente.
 
 <h4>Criterios de aceptación</h4>
 
@@ -85,7 +86,7 @@
 
 <h2> HU-7.5 Registrar pago de venta pendiente - <span style="color:orange"> ACTUALIZACIÓN</span></h2>
 
-**Como** empleado, **quiero** registrar el pago total o parcial de una venta pendiente **para** actualizar el saldo que el cliente aún debe.
+**Como** empleado o administrador, **quiero** registrar el pago total o parcial de una venta pendiente **para** actualizar el saldo que el cliente aún debe.
 
 <h4>Criterios de aceptación</h4>
 
@@ -97,7 +98,7 @@
     <li>El sistema no crea una nueva venta al registrar el pago.</li>
     <li>El sistema conserva el historial de la venta y sus actualizaciones.</li>
     <li>Se registra la fecha y hora de la actualización.</li>
-    <li>Se registra el empleado y usuario que realizó la actualización.</li>
+    <li>Se registra el empleado  y usuario que realizó la actualización.</li>
 </ul>
 
 <hr/>

@@ -6,7 +6,7 @@
 
 <h2> HU-2.1 Registrar producto - <span style="color:red"> ALTA</span></h2>
 
-**Como** administrador, **quiero** dar de alta un nuevo producto en el catálogo **para** que los clientes puedan elegirlo y comprarlo.
+**Como** administrador/empleado, **quiero** dar de alta un nuevo producto en el catálogo **para** que los clientes puedan elegirlo y comprarlo.
 
 <h4>Criterios de aceptación</h4>
 <ul>
@@ -85,7 +85,7 @@
 
 <h2> HU-2.5 Modificar producto - <span style="color:red"> ALTA</span></h2>
 
-**Como** administrador, **quiero** modificar los datos de un producto existente **para** mantener el catálogo correcto y actualizado.
+**Como** administrador o empleado, **quiero** modificar los datos de un producto existente **para** mantener el catálogo correcto y actualizado.
 
 <h4>Criterios de aceptación</h4>
 <ul>
@@ -104,7 +104,7 @@
 
 <h2> HU-2.6 Cambiar estado de un producto - <span style="color:yellow"> MEDIA</span></h2>
 
-**Como** administrador, **quiero** cambiar el estado de un producto (activo/descontinuado) **para** limitar su disponibilidad según lo siga distribuyendo o no.
+**Como** administrador o empleado, **quiero** cambiar el estado de un producto (activo/descontinuado) **para** limitar su disponibilidad según lo siga distribuyendo o no.
 
 <h4>Criterios de aceptación</h4>
 <ul>
@@ -119,7 +119,7 @@
 
 <h2> HU-2.7 Eliminar producto - <span style="color:orange"> BAJA</span></h2>
 
-**Como** administrador, **quiero** eliminar un producto **para** que ya no aparezca en el catálogo.
+**Como** administrador o empleado, **quiero** eliminar un producto **para** que ya no aparezca en el catálogo.
 
 <h4>Criterios de aceptación</h4>
 <ul>
@@ -133,7 +133,7 @@
 
 <h2> HU-2.8 Registrar categoria de productos - <span style="color:red"> ALTA</span></h2>
 
-**Como** administrador, **quiero** dar de alta una categoría **para** agrupar los productos y facilitar su búsqueda y gestión.
+**Como** administrador o empleado, **quiero** dar de alta una categoría **para** agrupar los productos y facilitar su búsqueda y gestión.
 
 <h4>Criterios de aceptación</h4>
 <ul>
@@ -163,7 +163,7 @@
 
 <h2> HU-2.10 Modificar categoria de productos - <span style="color:yellow"> MEDIA</span></h2>
 
-**Como** administrador, **quiero** modificar los datos de una categoría **para** corregir información ingresada incorrectamente.
+**Como** administrador o empleado, **quiero** modificar los datos de una categoría **para** corregir información ingresada incorrectamente.
 
 <h4>Criterios de aceptación</h4>
 <ul>
@@ -179,7 +179,7 @@
 
 <h2> HU-2.11 Eliminar categorias de productos - <span style="color:orange"> BAJA</span></h2>
 
-**Como** administrador, **quiero** eliminar una categoría que ya no utilizo **para** que deje de aparecer en la lista.
+**Como** administrador o empleado, **quiero** eliminar una categoría que ya no utilizo **para** que deje de aparecer en la lista.
 
 <h4>Criterios de aceptación</h4>
 <ul>
