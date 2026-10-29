@@ -1,9 +1,11 @@
+import 'package:ecommerce_app/core/network/api_client.dart';
 import 'package:ecommerce_app/core/ui/custom_form_field.dart';
 import 'package:ecommerce_app/features/categorias/domain/categoria.dart';
 import 'package:ecommerce_app/features/categorias/presentation/widgets/categoria_card.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:lucide_icons_flutter/lucide_icons_600.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 import 'package:ecommerce_app/core/theme/colors.dart';
 
@@ -16,6 +18,12 @@ class CategoriasPage extends StatefulWidget {
 
 class _CategoriasPageState extends State<CategoriasPage>{
   final _searchController = TextEditingController();
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   void _newCategoriaModal() {}
 
