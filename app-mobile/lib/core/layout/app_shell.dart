@@ -1,3 +1,4 @@
+import 'package:ecommerce_app/features/categorias/presentation/categorias_page.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
@@ -107,6 +108,7 @@ List<NavItem> listAdmin = [
   NavItem('Usuarios', LucideIcons.userRoundGroup, const Text("Usuarios"), "Gestión de usuarios"),
   NavItem('Pedidos', LucideIcons.clipboardList, const Text("Pediods"), "Gestión de pedidos"),
   NavItem('Productos', LucideIcons.carton, const Text("Productos wey"), "Gestión de productos"),
+  NavItem('Categorías', LucideIcons.tags, const CategoriasPage(), "Gestión de categorías"),
   NavItem('Ventas', LucideIcons.fileChartColumn, const Text("Ventas"), "Ventas"),
   NavItem('Entradas', LucideIcons.packagePlus, const Text("Entradas"), "Entradas"),
   NavItem('Salidas', LucideIcons.packageMinus, const Text("Salidas"), "Salidas"),

@@ -5,7 +5,6 @@ class ECommerceAppTheme {
   ECommerceAppTheme._();
 
   static ThemeData build() {
-    const foreground = Color(0xFF2F3A4F);
     final base = ThemeData(
       useMaterial3: true,
       colorScheme: .fromSeed(seedColor: AppColors.primario.c400).copyWith(
@@ -14,12 +13,13 @@ class ECommerceAppTheme {
         onPrimary: Colors.white,
         secondary: AppColors.secundario.c200,
         tertiary: AppColors.terciario.c300,
+        onSurface: AppColors.texto.c900,
         error: AppColors.error.main
       ),
       fontFamily: 'PlusJakartaSans',
-      appBarTheme: const AppBarTheme(
+      appBarTheme: AppBarTheme(
         backgroundColor: Colors.white,
-        foregroundColor: foreground,
+        foregroundColor: AppColors.texto.c900,
         elevation: 0,
         centerTitle: false,
       ),
