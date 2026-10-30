@@ -14,6 +14,10 @@ class CustomField extends StatelessWidget {
     this.validator,
     this.textInputAction,
     this.suffix,
+    this.maxLines = 1,
+    this.minLines,
+    this.maxLength,
+    this.expands = false,
   });
 
   final TextEditingController controller;
@@ -25,6 +29,10 @@ class CustomField extends StatelessWidget {
   final String? Function(String?)? validator;
   final TextInputAction? textInputAction;
   final Widget? suffix;
+  final int? maxLines;
+  final int? minLines;
+  final int? maxLength;
+  final bool expands;
 
   @override
   Widget build(BuildContext context) {
@@ -76,6 +84,10 @@ class CustomField extends StatelessWidget {
             ),
           ),
           onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+          maxLines: maxLines,
+          minLines: minLines,
+          maxLength: maxLength,
+          expands: expands,
         ),
       ],
     );

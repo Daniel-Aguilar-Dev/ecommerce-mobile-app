@@ -44,17 +44,19 @@ class AppToast {
     messenger.showSnackBar(
       SnackBar(
         content: Card(
+          margin: EdgeInsets.zero,
           color: backColor,
           child: ListTile(
+            contentPadding: const EdgeInsets.only(left: 16, right: 8),
             leading: Icon(icon, color: textColor, size: 36,),
             title: Text(title, style: TextStyle(fontWeight: FontWeight.bold, color: textColor)),
             subtitle: message != null ? Text(message, style: TextStyle(color: textColor)) : null,
-            trailing: IconButton(onPressed: () => messenger.hideCurrentSnackBar(), icon: Icon(LucideIcons.x, color: textColor, size: 24)),
+            trailing: IconButton(onPressed: () => messenger.hideCurrentSnackBar(), icon: Icon(LucideIcons.x, color: textColor, size: 20)),
           ),
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
-        padding: EdgeInsets.only(left: 16, right: 16),
+        padding: .symmetric(horizontal: 16),
         behavior: SnackBarBehavior.fixed,
         //margin: const EdgeInsets.all(16),
         dismissDirection: DismissDirection.horizontal,

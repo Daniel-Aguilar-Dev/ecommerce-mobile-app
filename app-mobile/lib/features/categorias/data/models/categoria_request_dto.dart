@@ -4,7 +4,7 @@ class CategoriaRequestDto {
   final String nombre;
   final String descripcion;
 
-  Map<String, dynamic> toJsonCreate() {
+  Map<String, dynamic> toJson() {
     return {'nombre': nombre, 'descripcion': descripcion};
   }
 }

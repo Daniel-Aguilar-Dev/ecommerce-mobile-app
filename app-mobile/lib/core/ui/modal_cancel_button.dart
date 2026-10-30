@@ -10,9 +10,9 @@ class ModalCancelButton extends StatelessWidget{
     return TextButton(onPressed: onPressed, style: _buttonStyle, child: const Text("Cancelar"),);
   }
 }
+
 final _buttonStyle = ButtonStyle(
-  backgroundColor: WidgetStatePropertyAll(AppColors.primario.c400),
-  foregroundColor: WidgetStatePropertyAll(Colors.white),
+  foregroundColor: WidgetStatePropertyAll(AppColors.primario.c400),
   textStyle: WidgetStatePropertyAll(
     TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
   ),

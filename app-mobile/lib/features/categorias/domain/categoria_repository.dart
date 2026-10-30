@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:ecommerce_app/features/categorias/domain/categoria.dart';
 import 'package:ecommerce_app/features/categorias/domain/categoria_public.dart';
 
@@ -12,8 +10,6 @@ abstract class CategoriaRepository {
 
   Future<Categoria> unaPorId(int id);
 
-  Future<Categoria> unaPorNombre(String nombre);
-
   Future<Categoria> crear({
     required String nombre,
     required String descripcion
@@ -25,5 +21,5 @@ abstract class CategoriaRepository {
     required String descripcion
   });
 
-  Future<Void> eliminar(int id);
+  Future<void> eliminar(int id);
 }

@@ -1,5 +1,4 @@
 import 'package:ecommerce_app/core/network/api_client.dart';
-import 'package:ecommerce_app/core/network/api_exception.dart';
 
 class PublicApiClient {
   PublicApiClient({
@@ -26,17 +25,10 @@ class PublicApiClient {
     rutasPublicas.any((r) => path.startsWith(r)),
     'La ruta deseada no es un recurso público',
     );
-    try {
-      return await _apiClient.requestJson(
-        method,
-        path,
-        body: body,
-      );;
-    } on ApiException catch (error) {
-      throw ApiException(
-        message: error.message,
-        statusCode: error.statusCode,
-      );
-    }
+    return await _apiClient.requestJson(
+      method,
+      path,
+      body: body,
+    );
   }
 }
