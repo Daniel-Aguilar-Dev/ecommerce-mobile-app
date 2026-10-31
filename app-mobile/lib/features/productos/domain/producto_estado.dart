@@ -1,0 +1,5 @@
+enum ProductoEstado {
+  PROD_ACTIVO,
+  PROD_DESCONTINUADO,
+  PROD_ELIMINADO,
+}

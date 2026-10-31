@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:ecommerce_app/core/network/api_client.dart';
 import 'package:ecommerce_app/core/network/api_exception.dart';
 import 'package:ecommerce_app/features/auth/domain/auth_repository.dart';
@@ -38,7 +40,7 @@ class AuthenticatedApiClient {
     return requestJson('POST', path, body: body);
   }
 
-  /// Permite usar también PUT, PATCH o DELETE en recursos protegidos.
+  /// Permite usar también PUT, PATCH o DELETE en recursos protegidos en JSON.
   Future<Map<String, dynamic>> requestJson(
     String method,
     String path, {
@@ -47,7 +49,7 @@ class AuthenticatedApiClient {
     final tokenUsado = await _obtenerAccessToken();
 
     try {
-      return await _enviar(method, path, tokenUsado, body);
+      return await _enviarJson(method, path, tokenUsado, body);
     } on ApiException catch (error) {
       if (error.statusCode != 401) rethrow;
 
@@ -63,7 +65,7 @@ class AuthenticatedApiClient {
 
       // Se reintenta exactamente una vez. Un segundo 401 se entrega al caller.
       try {
-        return await _enviar(method, path, tokenParaReintento, body);
+        return await _enviarJson(method, path, tokenParaReintento, body);
       } on ApiException catch (retryError) {
         if (retryError.statusCode == 401) {
           await _tokenStorage.borrarTokens();
@@ -74,12 +76,65 @@ class AuthenticatedApiClient {
     }
   }
 
-  Future<Map<String, dynamic>> _enviar(
+  /// Permite usar también PUT, PATCH o DELETE en recursos protegidos en multipart.
+  Future<Map<String, dynamic>> requestMultipart(
+      String method,
+      String path, {
+        Map<String, Object?>? body,
+        File? file,
+      }) async {
+    final tokenUsado = await _obtenerAccessToken();
+
+    try {
+      return await _enviarFormData(method, path, tokenUsado, body, file);
+    } on ApiException catch (error) {
+      if (error.statusCode != 401) rethrow;
+
+      // Si otra solicitud ya renovó mientras esta esperaba su respuesta,
+      // reutiliza el token nuevo y evita rotar el refresh token otra vez.
+      final tokenActual = await _tokenStorage.leerAccessToken();
+      final tokenParaReintento =
+      tokenActual != null &&
+          tokenActual.isNotEmpty &&
+          tokenActual != tokenUsado
+          ? tokenActual
+          : await _renovarOExpirar();
+
+      // Se reintenta exactamente una vez. Un segundo 401 se entrega al caller.
+      try {
+        return await _enviarFormData(method, path, tokenParaReintento, body, file);
+      } on ApiException catch (retryError) {
+        if (retryError.statusCode == 401) {
+          await _tokenStorage.borrarTokens();
+          _onSessionExpired();
+        }
+        rethrow;
+      }
+    }
+  }
+
+  Future<Map<String, dynamic>> _enviarFormData(
     String method,
     String path,
     String accessToken,
     Map<String, Object?>? body,
+    File? file
   ) {
+    return _apiClient.requestMultipart(
+      method,
+      path,
+      body: body,
+      file: file,
+      headers: {'Authorization': 'Bearer $accessToken'},
+    );
+  }
+
+  Future<Map<String, dynamic>> _enviarJson(
+      String method,
+      String path,
+      String accessToken,
+      Map<String, Object?>? body,
+      ) {
     return _apiClient.requestJson(
       method,
       path,

@@ -47,7 +47,7 @@ public class ProductoDto {
     private Integer stockReservado = 0;
 
     @NotNull(message = "El precio de compra del producto no puede estar vacío")
-    @DecimalMin(value = "0. ", inclusive = true, message = "El precio de compra del producto no puede ser negativo ni cero")
+    @DecimalMin(value = "0", inclusive = true, message = "El precio de compra del producto no puede ser negativo ni cero")
     private BigDecimal precioCompra;
 
     @NotNull(message = "El precio de venta del producto no puede estar vacío")

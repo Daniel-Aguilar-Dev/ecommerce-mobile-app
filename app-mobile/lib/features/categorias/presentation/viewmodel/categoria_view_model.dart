@@ -40,7 +40,6 @@ class CategoriaViewModel extends ChangeNotifier{
   Future<void> cargar([String? query, bool silencioso = false]) async {
     if(!silencioso) _comenzarFetch();
     try {
-      debugPrint("[CATEGORIAS] Query: $query");
       _categorias = await _repository.listaPersonal(query);
     } catch (error) {
       _errorMessage = _mensaje(error);

@@ -5,6 +5,9 @@ import 'package:ecommerce_app/core/theme/app_theme.dart';
 import 'package:ecommerce_app/features/categorias/data/categoria_data_source.dart';
 import 'package:ecommerce_app/features/categorias/data/repositories/categoria_repository_impl.dart';
 import 'package:ecommerce_app/features/categorias/domain/categoria_repository.dart';
+import 'package:ecommerce_app/features/productos/data/producto_data_source.dart';
+import 'package:ecommerce_app/features/productos/data/repositories/producto_repository_impl.dart';
+import 'package:ecommerce_app/features/productos/domain/producto_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -46,6 +49,12 @@ void main() {
           apiClientPublic: publicApiClient
       )
   );
+  final productoRepository = ProductoRepositoryImpl(
+      datasource: ProductoDataSource(
+          apiClientAuth: protectedApiClient,
+          apiClientPublic: publicApiClient
+      )
+  );
 
   // La revisión inicial rota el refresh token guardado si todavía es válido.
   unawaited(authViewModel.inicializar());
@@ -55,6 +64,7 @@ void main() {
       providers: [
         Provider<AuthRepository>.value(value: authRepository),
         Provider<CategoriaRepository>.value(value: categoriaRepository),
+        Provider<ProductoRepository>.value(value: productoRepository),
         Provider<AuthenticatedApiClient>.value(value: protectedApiClient),
         ChangeNotifierProvider<AuthViewModel>.value(value: authViewModel),
       ],
