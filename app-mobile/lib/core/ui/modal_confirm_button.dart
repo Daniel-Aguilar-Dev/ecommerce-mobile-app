@@ -3,12 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:ecommerce_app/core/theme/colors.dart';
 
 class ModalConfirmButton extends StatelessWidget{
-  const ModalConfirmButton({ super.key, required this.onPressed, required this.isLoading });
+  const ModalConfirmButton({ super.key, required this.onPressed, required this.isLoading, this.label });
   final VoidCallback onPressed;
   final bool isLoading;
+  final String? label;
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
+    return FilledButton(
       style: _buttonStyle,
       onPressed: onPressed,
       child: isLoading
@@ -20,7 +21,7 @@ class ModalConfirmButton extends StatelessWidget{
             ),
           )
         :
-        const Text("Confirmar")
+        Text(label ?? "Confirmar")
     );
   }
 }

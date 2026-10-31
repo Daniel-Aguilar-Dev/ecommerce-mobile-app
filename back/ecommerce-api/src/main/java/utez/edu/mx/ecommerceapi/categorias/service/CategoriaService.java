@@ -64,10 +64,9 @@ public class CategoriaService {
                     categoriaDto.setTieneProductos(tieneProductos);
                     return categoriaDto;
                 })
+                .sorted(Comparator.comparing(CategoriaDto::isTieneProductos).reversed()
+                        .thenComparing(CategoriaDto::getNombre))
                 .toList();
-
-        categoriaDtos.sort(Comparator.comparing(CategoriaDto::isTieneProductos).reversed()
-                .thenComparing(CategoriaDto::getNombre));
 
         return ApiResponse.ok("Categorías encontradas", categoriaDtos);
     }
@@ -147,6 +146,6 @@ public class CategoriaService {
         }
 
         categoriaRepository.delete(existingCategoria);
-        return ApiResponse.ok("Categoría eliminada", null);
+        return ApiResponse.ok("Categoría eliminada");
     }
 }

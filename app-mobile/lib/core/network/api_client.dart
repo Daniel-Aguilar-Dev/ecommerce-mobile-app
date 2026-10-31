@@ -77,6 +77,8 @@ class ApiClient {
     // La respuesta todavía no se ha validado; se asignará tras decodificarla.
     late final Map<String, dynamic> json;
 
+    if(response.statusCode == 204) return {};
+
     try {
       // Se decodifican los bytes respetando UTF-8 y luego se interpreta JSON.
       final decoded = jsonDecode(utf8.decode(response.bodyBytes));

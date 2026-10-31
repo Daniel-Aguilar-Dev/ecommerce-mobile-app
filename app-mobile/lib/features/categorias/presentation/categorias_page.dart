@@ -1,57 +1,208 @@
+import 'dart:async';
+
 import 'package:ecommerce_app/core/ui/custom_form_field.dart';
 import 'package:ecommerce_app/features/categorias/domain/categoria.dart';
+import 'package:ecommerce_app/features/categorias/domain/categoria_repository.dart';
+import 'package:ecommerce_app/features/categorias/presentation/viewmodel/categoria_view_model.dart';
+import 'package:ecommerce_app/features/categorias/presentation/widgets/categoria_modals.dart';
 import 'package:ecommerce_app/features/categorias/presentation/widgets/categoria_card.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:lucide_icons_flutter/lucide_icons_600.dart';
+import 'package:provider/provider.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 import 'package:ecommerce_app/core/theme/colors.dart';
 
-class CategoriasPage extends StatefulWidget {
+class CategoriasPage extends StatelessWidget {
   const CategoriasPage({super.key});
 
   @override
-  State<CategoriasPage> createState() => _CategoriasPageState();
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (ctx) => CategoriaViewModel(
+        categoriaRepository: ctx.read<CategoriaRepository>(),
+      )..cargar(),
+      child: const _CategoriasView(),
+    );
+  }
 }
 
-class _CategoriasPageState extends State<CategoriasPage>{
-  final _searchController = TextEditingController();
+class _CategoriasView extends StatefulWidget {
+  const _CategoriasView();
+  @override
+  State<_CategoriasView> createState() => _CategoriasViewState();
+}
 
-  void _newCategoriaModal() {}
+class _CategoriasViewState extends State<_CategoriasView> {
+  final _searchController = TextEditingController();
+  Timer? _debounce;
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _onSearchChanged(String value) {
+    _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 400), () {
+      if (!mounted) return;
+      context.read<CategoriaViewModel>().cargar(
+        value.trim(),
+        true
+      );
+    });
+  }
+
+  void _deleteCategoriaModal(Categoria categoria) async {
+    final vm = context.read<CategoriaViewModel>();
+    vm.limpiarMensajes();
+    await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => DeleteCategoriaDialog(categoria: categoria, viewModel: vm),
+    );
+  }
+
+  void _newCategoriaModal() {
+    final vm = context.read<CategoriaViewModel>();
+    vm.limpiarMensajes();
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) =>ListenableBuilder(
+        listenable: vm,
+        builder: (ctx, _) => AddCategoriaDialog(vm: vm),
+      )
+    );
+  }
+
+  void _editCategoriaModal(Categoria categoria) {
+    final vm = context.read<CategoriaViewModel>();
+    vm.limpiarMensajes();
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) =>ListenableBuilder(
+          listenable: vm,
+          builder: (ctx, _) => EditCategoriaDialog(categoria: categoria, vm: vm),
+        )
+    );
+  }
+
+  Widget cardPlaceholder = CategoriaCard(categoria: Categoria(id: 0, nombre: "placeholder", descripcion: "placeholder de producto", tieneProductos: false), onEdit: (Categoria p1) {  }, onDelete: (Categoria p1) {  },);
+
+  late Widget listPlaceholder = ListView(
+    children: [
+      cardPlaceholder,
+      cardPlaceholder,
+      cardPlaceholder,
+      cardPlaceholder,
+      cardPlaceholder,
+      cardPlaceholder,
+      cardPlaceholder,
+      cardPlaceholder
+    ],
+  );
 
   @override
   Widget build(BuildContext context) {
+    final vm = context.watch<CategoriaViewModel>();
+
+    Widget empty = Column(
+      crossAxisAlignment: .center,
+      mainAxisAlignment: .center,
+      spacing: 16,
+      children: [
+        DecoratedBox(
+          decoration: BoxDecoration(
+            color: AppColors.superficie.c50,
+            shape: BoxShape.circle
+          ),
+          child: Padding(
+            padding: .all(24),
+            child: Icon(LucideIcons.fileQuestionMark, color: AppColors.terciario.c300, size: 64),
+          ),
+        ),
+        Center(
+          child:Text("No hay categorías registradas", style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+              fontWeight: FontWeight.bold
+          )),
+        )
+      ],
+    );
+
+    Widget emptySearch = Column(
+      crossAxisAlignment: .center,
+      mainAxisAlignment: .center,
+      spacing: 16,
+      children: [
+        DecoratedBox(
+          decoration: BoxDecoration(
+              color: AppColors.superficie.c50,
+              shape: BoxShape.circle
+          ),
+          child: Padding(
+            padding: .all(24),
+            child: Icon(LucideIcons.fileQuestionMark, color: AppColors.terciario.c300, size: 64),
+          ),
+        ),
+        Center(
+          child:Text("Sin coincidencias", style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+              fontWeight: FontWeight.bold
+          )),
+        )
+      ],
+    );
+
+    Widget list = RefreshIndicator(
+      onRefresh: () => context.read<CategoriaViewModel>().cargar(),
+      child: CustomScrollView(
+        physics: const AlwaysScrollableScrollPhysics(parent: ClampingScrollPhysics()),
+        slivers: [
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: CustomField(
+                onChanged: _onSearchChanged,
+                controller: _searchController,
+                hint: 'Buscar una categoría',
+                icon: LucideIcons.search,
+                keyboardType: TextInputType.emailAddress,
+                textInputAction: TextInputAction.next,
+              ),
+            ),
+          ),
+          vm.categorias.isEmpty ?
+          SliverFillRemaining(
+            hasScrollBody: false,
+            child: Center(child: emptySearch),
+          ) :
+          SliverList.builder(
+            itemCount: vm.categorias.length,
+            itemBuilder: (_, i) {
+              final cat = vm.categorias[i];
+              return CategoriaCard(
+                categoria: cat,
+                onDelete: (categoria) => _deleteCategoriaModal(categoria),
+                onEdit: (categoria) => _editCategoriaModal(categoria),
+              );
+            },
+          ),
+          const SliverToBoxAdapter(child: SizedBox(height: 80)), // espacio para el FAB
+        ],
+      ),
+    );
 
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: Padding(
-        padding: .all(16),
-        child: Column(
-          spacing: 16,
-          children: [
-            CustomField(
-              controller: _searchController,
-              hint: 'Buscar una categoría',
-              icon: LucideIcons.search,
-              keyboardType: TextInputType.emailAddress,
-              textInputAction: TextInputAction.next,
-            ),
-            Expanded(
-              child: ListView(
-                children: [
-                  CategoriaCard(categoria: Categoria(createdAt: DateTime(2026), updatedAt: DateTime(2026), createdBy: 1, updatedBy: 1, id: 1, nombre: "Vinos y licores", descripcion: "Bebidas con alcohol saborizadas", tieneProductos: false)),
-                  CategoriaCard(categoria: Categoria(createdAt: DateTime(2026), updatedAt: DateTime(2026), createdBy: 1, updatedBy: 1, id: 2, nombre: "Vinos y licores", descripcion: "Bebidas con alcohol saborizadas", tieneProductos: false)),
-                  CategoriaCard(categoria: Categoria(createdAt: DateTime(2026), updatedAt: DateTime(2026), createdBy: 1, updatedBy: 1, id: 3, nombre: "Vinos y licores", descripcion: "Bebidas con alcohol saborizadas", tieneProductos: false)),
-                  CategoriaCard(categoria: Categoria(createdAt: DateTime(2026), updatedAt: DateTime(2026), createdBy: 1, updatedBy: 1, id: 4, nombre: "Vinos y licores", descripcion: "Bebidas con alcohol saborizadas", tieneProductos: false)),
-                  CategoriaCard(categoria: Categoria(createdAt: DateTime(2026), updatedAt: DateTime(2026), createdBy: 1, updatedBy: 1, id: 5, nombre: "Vinos y licores", descripcion: "Bebidas con alcohol saborizadas", tieneProductos: false)),
-                  CategoriaCard(categoria: Categoria(createdAt: DateTime(2026), updatedAt: DateTime(2026), createdBy: 1, updatedBy: 1, id: 6, nombre: "Vinos y licores", descripcion: "Bebidas con alcohol saborizadas", tieneProductos: false)),
-                  CategoriaCard(categoria: Categoria(createdAt: DateTime(2026), updatedAt: DateTime(2026), createdBy: 1, updatedBy: 1, id: 7, nombre: "Vinos y licores", descripcion: "Bebidas con alcohol saborizadas", tieneProductos: false)),
-                  CategoriaCard(categoria: Categoria(createdAt: DateTime(2026), updatedAt: DateTime(2026), createdBy: 1, updatedBy: 1, id: 8, nombre: "Vinos y licores", descripcion: "Bebidas con alcohol saborizadas", tieneProductos: false)),
-                  CategoriaCard(categoria: Categoria(createdAt: DateTime(2026), updatedAt: DateTime(2026), createdBy: 1, updatedBy: 1, id: 9, nombre: "Vinos y licores", descripcion: "Bebidas con alcohol saborizadas", tieneProductos: false)),
-                ],
-              )
-            )
-          ],
+      body: Skeletonizer(
+        enabled: vm.isFetching,
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: vm.isFetching ? listPlaceholder : (vm.categorias.isEmpty && _searchController.text == "") ? empty : list,
         ),
       ),
       floatingActionButton: FloatingActionButton(
@@ -63,3 +214,78 @@ class _CategoriasPageState extends State<CategoriasPage>{
     );
   }
 }
+
+/**
+    AlertDialog(
+    backgroundColor: Colors.white,
+    title: Row(
+    mainAxisAlignment: .center,
+    crossAxisAlignment: .center,
+    children: [
+    Expanded(
+    child: Text('Registrar categoría', style: TextStyle(fontWeight: FontWeight.bold)),
+    ),
+    IconButton(onPressed: () => Navigator.pop(context), icon: const Icon(LucideIcons.x), iconSize: 18, padding: .all(2), color: const Color(0xFF767778))
+    ],
+    ),
+    content: Form(
+    key: _formKey,
+    child: Column(
+    mainAxisSize: .min,
+    crossAxisAlignment: .start,
+    mainAxisAlignment: .center,
+    spacing: 8,
+    children: [
+    CustomField(
+    controller: _createNombreController,
+    hint: "Nombre",
+    label: "Nombre",
+    maxLength: 25,
+    keyboardType: TextInputType.name,
+    textInputAction: TextInputAction.next,
+    validator: nombreValidator,
+    ),
+    CustomField(
+    controller: _createDescController,
+    hint: "Descripción",
+    label: "Descripción",
+    minLines: 2,
+    maxLines: 4,
+    maxLength: 50,
+    keyboardType: TextInputType.text,
+    textInputAction: TextInputAction.done,
+    validator: (value) {
+    if (value == null || value.trim().isEmpty) {
+    return 'La descripción es obligatoria';
+    }
+    return null;
+    },
+    ),
+    ],
+    ),
+    ),
+    actions: [
+    ModalCancelButton(onPressed: () {
+    _createNombreController.text = "";
+    _createDescController.text = "";
+    if(vm.isLoading) return;
+    Navigator.pop(context);
+    }),
+    ModalConfirmButton(onPressed: () async {
+    final nombre = _createNombreController.text.trim().replaceAll("  ", " ");
+    final descripcion = _createDescController.text.trim().replaceAll("  ", " ");
+
+    if(!_formKey.currentState!.validate()) return;
+    await vm.registrar(CategoriaRequestDto(nombre: nombre, descripcion: descripcion));
+
+    _createNombreController.text = "";
+    _createDescController.text = "";
+    Navigator.pop(context);
+
+    if(vm.successMessage != null) { AppToast.show(context, variant: ToastType.success, title: "¡Éxito!", message: vm.successMessage);}
+    if(vm.errorMessage != null) { AppToast.show(context, variant: ToastType.error, title: "¡Error!", message: vm.errorMessage);}
+    }, isLoading: vm.isLoading, label: "Guardar",)
+    ],
+    )
+
+ */

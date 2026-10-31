@@ -1,6 +1,10 @@
 import 'dart:async';
 
+import 'package:ecommerce_app/core/network/public_api_client.dart';
 import 'package:ecommerce_app/core/theme/app_theme.dart';
+import 'package:ecommerce_app/features/categorias/data/categoria_data_source.dart';
+import 'package:ecommerce_app/features/categorias/data/repositories/categoria_repository_impl.dart';
+import 'package:ecommerce_app/features/categorias/domain/categoria_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -35,6 +39,13 @@ void main() {
     authRepository: authRepository,
     onSessionExpired: authViewModel.expirarSesion,
   );
+  final publicApiClient = PublicApiClient(apiClient: apiClient);
+  final categoriaRepository = CategoriaRepositoryImpl(
+      datasource: CategoriaDataSource(
+          apiClientAuth: protectedApiClient,
+          apiClientPublic: publicApiClient
+      )
+  );
 
   // La revisión inicial rota el refresh token guardado si todavía es válido.
   unawaited(authViewModel.inicializar());
@@ -43,6 +54,7 @@ void main() {
     MultiProvider(
       providers: [
         Provider<AuthRepository>.value(value: authRepository),
+        Provider<CategoriaRepository>.value(value: categoriaRepository),
         Provider<AuthenticatedApiClient>.value(value: protectedApiClient),
         ChangeNotifierProvider<AuthViewModel>.value(value: authViewModel),
       ],

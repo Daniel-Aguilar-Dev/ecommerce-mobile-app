@@ -2,7 +2,7 @@ import 'package:ecommerce_app/core/layout/layout_externo.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../auth/presentation/auth_view_model.dart';
+import 'package:ecommerce_app/features/auth/presentation/auth_view_model.dart';
 
 class DetallesProducto extends StatefulWidget {
   const DetallesProducto({super.key});
