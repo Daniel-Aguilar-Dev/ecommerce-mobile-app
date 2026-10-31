@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:ecommerce_app/core/layout/status_view.dart';
 import 'package:ecommerce_app/core/ui/custom_form_field.dart';
 import 'package:ecommerce_app/features/categorias/domain/categoria.dart';
 import 'package:ecommerce_app/features/categorias/domain/categoria_repository.dart';
@@ -111,52 +112,6 @@ class _CategoriasViewState extends State<_CategoriasView> {
   Widget build(BuildContext context) {
     final vm = context.watch<CategoriaViewModel>();
 
-    Widget empty = Column(
-      crossAxisAlignment: .center,
-      mainAxisAlignment: .center,
-      spacing: 16,
-      children: [
-        DecoratedBox(
-          decoration: BoxDecoration(
-            color: AppColors.superficie.c50,
-            shape: BoxShape.circle
-          ),
-          child: Padding(
-            padding: .all(24),
-            child: Icon(LucideIcons.fileQuestionMark, color: AppColors.terciario.c300, size: 64),
-          ),
-        ),
-        Center(
-          child:Text("No hay categorías registradas", style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-              fontWeight: FontWeight.bold
-          )),
-        )
-      ],
-    );
-
-    Widget emptySearch = Column(
-      crossAxisAlignment: .center,
-      mainAxisAlignment: .center,
-      spacing: 16,
-      children: [
-        DecoratedBox(
-          decoration: BoxDecoration(
-              color: AppColors.superficie.c50,
-              shape: BoxShape.circle
-          ),
-          child: Padding(
-            padding: .all(24),
-            child: Icon(LucideIcons.fileQuestionMark, color: AppColors.terciario.c300, size: 64),
-          ),
-        ),
-        Center(
-          child:Text("Sin coincidencias", style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-              fontWeight: FontWeight.bold
-          )),
-        )
-      ],
-    );
-
     Widget list = RefreshIndicator(
       onRefresh: () => context.read<CategoriaViewModel>().cargar(),
       child: CustomScrollView(
@@ -178,7 +133,7 @@ class _CategoriasViewState extends State<_CategoriasView> {
           vm.categorias.isEmpty ?
           SliverFillRemaining(
             hasScrollBody: false,
-            child: Center(child: emptySearch),
+            child: Center(child: StatusView.noResults()),
           ) :
           SliverList.builder(
             itemCount: vm.categorias.length,
@@ -202,7 +157,7 @@ class _CategoriasViewState extends State<_CategoriasView> {
         enabled: vm.isFetching,
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child: vm.isFetching ? listPlaceholder : (vm.categorias.isEmpty && _searchController.text == "") ? empty : list,
+          child: vm.isFetching ? listPlaceholder : (vm.categorias.isEmpty && _searchController.text == "") ? StatusView.empty(title: "No hay categorías registradas") : list,
         ),
       ),
       floatingActionButton: FloatingActionButton(
