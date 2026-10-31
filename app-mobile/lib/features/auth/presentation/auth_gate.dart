@@ -23,6 +23,11 @@ class AuthGate extends StatelessWidget {
             return const AppShell();
           case AuthStatus.unauthenticated:
             //return const LoginView();
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (context.mounted) {
+                Navigator.of(context).popUntil((r) => r.isFirst);
+              }
+            });
             return const LoginView();
         }
       },
