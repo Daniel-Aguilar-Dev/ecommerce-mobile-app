@@ -46,7 +46,7 @@ class CategoriaDataSource {
     late final Map<String, dynamic> responseJson;
     if(query != null && query.isNotEmpty){
       responseJson = await _apiClientAuth.getJson(
-          "$_privatePath/?nombre=$query"
+          "$_privatePath?nombre=$query"
       );
     } else {
       responseJson = await _apiClientAuth.getJson(

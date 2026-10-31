@@ -18,6 +18,7 @@ class CustomField extends StatelessWidget {
     this.minLines,
     this.maxLength,
     this.expands = false,
+    this.onChanged
   });
 
   final TextEditingController controller;
@@ -33,6 +34,7 @@ class CustomField extends StatelessWidget {
   final int? minLines;
   final int? maxLength;
   final bool expands;
+  final void Function(String)? onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -42,6 +44,7 @@ class CustomField extends StatelessWidget {
         if(label != null) Text(label ?? "", style: const TextStyle(fontWeight: FontWeight.w600)),
         const SizedBox(height: 6),
         TextFormField(
+          onChanged: onChanged,
           controller: controller,
           keyboardType: keyboardType,
           obscureText: obscureText,
