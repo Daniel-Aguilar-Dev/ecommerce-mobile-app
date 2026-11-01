@@ -34,7 +34,7 @@ class Producto {
   final double precioCompra;
   final String unidadMedia;
   final ProductoEstado estado;
-  final int costoPromedio;
+  final double costoPromedio;
   final Categoria categoria;
   final String imagenPublicId;
   final int imagenVersion;

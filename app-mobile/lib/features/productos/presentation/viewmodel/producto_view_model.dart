@@ -17,6 +17,9 @@ class ProductoViewModel extends ChangeNotifier{
   List<Producto> _productos = [];
   List<String> _marcas = [];
 
+  Producto? _productoEditable;
+  ProductoParams _productoParams = ProductoParams();
+
   bool _isFetching = false;
   bool _isLoading = false;
   bool _isLoadingMarcas = false;
@@ -30,7 +33,8 @@ class ProductoViewModel extends ChangeNotifier{
   String? get successMessage => _successMessage;
   List<Producto> get productos => _productos;
   List<String> get marcas => _marcas;
-
+  Producto? get productoEditable => _productoEditable;
+  ProductoParams get productoParams => _productoParams;
 
   bool _disposed = false;
 
@@ -45,10 +49,10 @@ class ProductoViewModel extends ChangeNotifier{
     if (!_disposed) super.notifyListeners();
   }
 
-  Future<void> cargar([ProductoParams? params, bool silencioso = false]) async {
+  Future<void> cargar([bool silencioso = false]) async {
     if(!silencioso) _comenzarFetch();
     try {
-      _productos = await _repository.listaPersonal(params);
+      _productos = await _repository.listaPersonal(_productoParams);
     } catch (error) {
       _errorMessage = _mensaje(error);
     } finally {
@@ -65,6 +69,26 @@ class ProductoViewModel extends ChangeNotifier{
     }
   }
 
+  void setProducto(Producto prod) {
+    _productoEditable = prod;
+    notifyListeners();
+  }
+
+  void unsetProducto() {
+    _productoEditable = null;
+    notifyListeners();
+  }
+
+  Future<void> setParams(ProductoParams params) async {
+    if (params == _productoParams) return;
+    _productoParams = params;
+    await cargar();
+  }
+
+  void resetParams(String tag) {
+    _productoParams = ProductoParams();
+    notifyListeners();
+  }
 
   Future<Producto?> obtenerUnoPorId(int id) async{
     late final Producto prod;

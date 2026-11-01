@@ -36,4 +36,26 @@ class ProductoParams {
     if (params.isEmpty) return '';
     return '?${Uri(queryParameters: params).query}';
   }
+
+  ProductoParams copyWith({
+    bool? stockBajo,
+    bool? stockCero,
+    bool? soloDescontinuados,
+    bool? soloVigentes,
+    String? query,
+    Orden? orden,
+    String? marca,
+    int? categoria,
+  }) {
+    return ProductoParams(
+      stockBajo: stockBajo ?? this.stockBajo,
+      stockCero: stockCero ?? this.stockCero,
+      soloDescontinuados: soloDescontinuados ?? this.soloDescontinuados,
+      soloVigentes: soloVigentes ?? this.soloVigentes,
+      query: query ?? this.query,
+      orden: orden ?? this.orden,
+      marca: marca ?? this.marca,
+      categoria: categoria ?? this.categoria,
+    );
+  }
 }

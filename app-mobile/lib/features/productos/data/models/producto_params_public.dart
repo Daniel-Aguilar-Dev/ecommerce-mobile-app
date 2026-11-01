@@ -16,4 +16,14 @@ class ProductoParamsPublic {
     if (params.isEmpty) return '';
     return '?${Uri(queryParameters: params).query}';
   }
+
+  ProductoParamsPublic copyWith({
+    String? query,
+    int? categoria,
+  }) {
+    return ProductoParamsPublic(
+      query: query ?? this.query,
+      categoria: categoria ?? this.categoria,
+    );
+  }
 }

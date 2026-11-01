@@ -93,18 +93,16 @@ class _CategoriasViewState extends State<_CategoriasView> {
     );
   }
 
-  Widget cardPlaceholder = CategoriaCard(categoria: Categoria(id: 0, nombre: "placeholder", descripcion: "placeholder de producto", tieneProductos: false), onEdit: (Categoria p1) {  }, onDelete: (Categoria p1) {  },);
-
   late Widget listPlaceholder = ListView(
     children: [
-      cardPlaceholder,
-      cardPlaceholder,
-      cardPlaceholder,
-      cardPlaceholder,
-      cardPlaceholder,
-      cardPlaceholder,
-      cardPlaceholder,
-      cardPlaceholder
+      CategoriaCard.placeholder(),
+      CategoriaCard.placeholder(),
+      CategoriaCard.placeholder(),
+      CategoriaCard.placeholder(),
+      CategoriaCard.placeholder(),
+      CategoriaCard.placeholder(),
+      CategoriaCard.placeholder(),
+      CategoriaCard.placeholder(),
     ],
   );
 

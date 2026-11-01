@@ -34,7 +34,7 @@ class ProductoResponseDto {
   final double precioCompra;
   final String unidadMedia;
   final ProductoEstado estado;
-  final int costoPromedio;
+  final double costoPromedio;
   final Categoria categoria;
   final String imagenPublicId;
   final int imagenVersion;
@@ -57,7 +57,7 @@ class ProductoResponseDto {
       imagenPublicId: json['imagenPublicId'] as String,
       imagenVersion: json['imagenVersion'] as int,
       imagenUrl: json['imagenUrl'] as String,
-      costoPromedio: json['costoPromedio'] as int,
+      costoPromedio: json['costoPromedio'] as double,
       categoria: json['categoria'] as Categoria,
     );
   }

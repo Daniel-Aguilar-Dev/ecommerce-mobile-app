@@ -108,7 +108,7 @@ List<NavItem> listAdmin = [
   NavItem('Inicio', LucideIcons.layoutDashboard, const Text("Dashboard"), "Inicio"),
   NavItem('Usuarios', LucideIcons.userRoundGroup, const Text("Usuarios"), "Gestión de usuarios"),
   NavItem('Pedidos', LucideIcons.clipboardList, const Text("Pediods"), "Gestión de pedidos"),
-  NavItem('Productos', LucideIcons.carton, ProductosManagementPage(), "Gestión de productos"),
+  NavItem('Productos', LucideIcons.carton, const ProductosManagementPage(), "Gestión de productos"),
   NavItem('Categorías', LucideIcons.tags, const CategoriasPage(), "Gestión de categorías"),
   NavItem('Ventas', LucideIcons.fileChartColumn, const Text("Ventas"), "Ventas"),
   NavItem('Entradas', LucideIcons.packagePlus, const Text("Entradas"), "Entradas"),
