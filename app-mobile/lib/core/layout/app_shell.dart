@@ -8,6 +8,7 @@ import 'package:ecommerce_app/core/layout/layout_admin.dart';
 import 'package:ecommerce_app/core/layout/layout_cliente.dart';
 import 'package:ecommerce_app/core/layout/layout_empleado.dart';
 import 'package:ecommerce_app/features/auth/presentation/auth_view_model.dart';
+import 'package:ecommerce_app/core/theme/colors.dart';
 
 //Importar páginas aquí
 import 'package:ecommerce_app/features/auth/presentation/profile_page.dart';
@@ -63,7 +64,7 @@ class _AppShellState extends State<AppShell>{
         DecoratedBox(
           position: DecorationPosition.foreground,
           decoration: const BoxDecoration(
-            border: Border(top: BorderSide(color: Color(0xFFE0E0E0), width: 1)),
+            border: Border(top: BorderSide(color: AppColors.border, width: 1)),
           ),
           child: NavigationBar(
             backgroundColor: Colors.white,

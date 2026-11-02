@@ -125,7 +125,7 @@ class ProductoCard extends StatelessWidget{
                           onPressed: onPressButton,
                           icon: const Icon(LucideIcons.ellipsisVertical),
                           style: IconButton.styleFrom(
-                            side: const BorderSide(color: Color(0xFFE0E0E0), width: 1),
+                            side: const BorderSide(color: AppColors.border, width: 1),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),

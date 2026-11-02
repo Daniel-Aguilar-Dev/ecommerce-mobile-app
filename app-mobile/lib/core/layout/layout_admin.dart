@@ -83,7 +83,7 @@ class _AdminDrawerState extends State<AdminDrawer>{
           DrawerHeader(
             decoration: BoxDecoration(
               color: AppColors.primario.c400,
-              border: Border(bottom: BorderSide(color: Color(0xFFE0E0E0), width: 1)),
+              border: Border(bottom: BorderSide(color: AppColors.border, width: 1)),
             ),
             child: Column(
               children: [

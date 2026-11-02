@@ -18,7 +18,8 @@ class CustomField extends StatelessWidget {
     this.minLines,
     this.maxLength,
     this.expands = false,
-    this.onChanged
+    this.isRequired = false,
+    this.onChanged,
   });
 
   final TextEditingController controller;
@@ -34,6 +35,7 @@ class CustomField extends StatelessWidget {
   final int? minLines;
   final int? maxLength;
   final bool expands;
+  final bool isRequired;
   final void Function(String)? onChanged;
 
   @override
@@ -41,7 +43,23 @@ class CustomField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if(label != null) Text(label ?? "", style: const TextStyle(fontWeight: FontWeight.w600)),
+        if (label != null)
+          Text.rich(
+            TextSpan(
+              text: label,
+              style: const TextStyle(fontWeight: FontWeight.w600),
+              children: [
+                if (isRequired)
+                  TextSpan(
+                    text: ' *',
+                    style: TextStyle(
+                      color: AppColors.error.main,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+              ],
+            ),
+          ),
         const SizedBox(height: 6),
         TextFormField(
           onChanged: onChanged,
@@ -64,11 +82,11 @@ class CustomField extends StatelessWidget {
             ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(7),
-              borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
+              borderSide: const BorderSide(color: AppColors.border),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(7),
-              borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
+              borderSide: const BorderSide(color: AppColors.border),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(7),
