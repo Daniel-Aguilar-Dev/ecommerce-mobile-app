@@ -95,6 +95,11 @@ class _CategoriasViewState extends State<_CategoriasView> {
 
   late Widget listPlaceholder = ListView(
     children: [
+      CustomField(
+        controller: _searchController,
+        hint: 'Buscar una categoría',
+        icon: LucideIcons.search,
+      ),
       CategoriaCard.placeholder(),
       CategoriaCard.placeholder(),
       CategoriaCard.placeholder(),
@@ -149,13 +154,28 @@ class _CategoriasViewState extends State<_CategoriasView> {
       ),
     );
 
+    Widget emptyList = RefreshIndicator(
+      onRefresh: () => context.read<CategoriaViewModel>().cargar(),
+      child: LayoutBuilder(
+        builder: (context, constraints) => ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          children: [
+            SizedBox(
+              height: constraints.maxHeight,
+              child: StatusView.empty(title: "No hay categorías registradas")
+            ),
+          ],
+        ),
+      ),
+    );
+
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Skeletonizer(
         enabled: vm.isFetching,
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child: vm.isFetching ? listPlaceholder : (vm.categorias.isEmpty && _searchController.text == "") ? StatusView.empty(title: "No hay categorías registradas") : list,
+          child: vm.isFetching ? listPlaceholder : (vm.categorias.isEmpty && _searchController.text == "") ? emptyList : list,
         ),
       ),
       floatingActionButton: FloatingActionButton(
