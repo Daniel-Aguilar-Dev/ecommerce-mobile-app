@@ -36,7 +36,7 @@ public class ProductoDto {
     private String sku;
 
     @NotNull(message = "El stock actual del producto no puede estar vacío")
-    @Min(value = 1, message = "El stock actual del producto no puede ser negativo ni cero")
+    @Min(value = 0, message = "El stock actual del producto no puede ser negativo")
     private Integer stockActual;
 
     @NotNull(message = "El stock mínimo del producto no puede estar vacío")
@@ -47,7 +47,7 @@ public class ProductoDto {
     private Integer stockReservado = 0;
 
     @NotNull(message = "El precio de compra del producto no puede estar vacío")
-    @DecimalMin(value = "0", inclusive = true, message = "El precio de compra del producto no puede ser negativo ni cero")
+    @DecimalMin(value = "0.1", inclusive = true, message = "El precio de compra del producto no puede ser negativo ni cero")
     private BigDecimal precioCompra;
 
     @NotNull(message = "El precio de venta del producto no puede estar vacío")

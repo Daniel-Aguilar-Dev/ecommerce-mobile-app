@@ -26,8 +26,8 @@ import 'package:ecommerce_app/core/theme/colors.dart';
 
 import '../domain/producto.dart';
 
-class ProductosManagementPage extends StatelessWidget {
-  const ProductosManagementPage({super.key});
+class ProductosPage extends StatelessWidget {
+  const ProductosPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -35,18 +35,18 @@ class ProductosManagementPage extends StatelessWidget {
       create: (ctx) => ProductoViewModel(
         productoRepository: ctx.read<ProductoRepository>(),
       )..cargar(),
-      child: const _ProductosManagementView(),
+      child: const _ProductosView(),
     );
   }
 }
 
-class _ProductosManagementView extends StatefulWidget {
-  const _ProductosManagementView();
+class _ProductosView extends StatefulWidget {
+  const _ProductosView();
   @override
-  State<_ProductosManagementView> createState() => _ProductosManagementViewState();
+  State<_ProductosView> createState() => _ProductosViewState();
 }
 
-class _ProductosManagementViewState extends State<_ProductosManagementView> {
+class _ProductosViewState extends State<_ProductosView> {
   late final role = context.read<AuthViewModel>().session?.usuario.rol;
   final _searchController = TextEditingController();
   Timer? _debounce;
@@ -178,8 +178,8 @@ class _ProductosManagementViewState extends State<_ProductosManagementView> {
                 controller: _searchController,
                 hint: 'Buscar un producto',
                 icon: LucideIcons.search,
-                keyboardType: TextInputType.emailAddress,
-                textInputAction: TextInputAction.next,
+                keyboardType: TextInputType.name,
+                textInputAction: TextInputAction.done,
               ),
             ),
           ),
