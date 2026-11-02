@@ -24,6 +24,7 @@ class MultiStepForm extends StatefulWidget {
     this.submitButtonTextColor = Colors.white,
     this.stepIndicatorActiveColor = const Color(0xFF2196F3), // Primary blue
     this.stepIndicatorDefaultColor = const Color(0xFF757575), // Medium grey
+    this.isSubmitting = false
   });
 
   /// The list of form steps to display.
@@ -57,6 +58,8 @@ class MultiStepForm extends StatefulWidget {
 
   /// The color of the default step indicator.
   final Color stepIndicatorDefaultColor;
+
+  final bool isSubmitting;
 
   @override
   State<MultiStepForm> createState() => _MultiStepFormState();
@@ -283,6 +286,7 @@ class _MultiStepFormState extends State<MultiStepForm>
                       padding: const EdgeInsets.only(right: 12),
                       child: ElevatedButton(
                         onPressed: () {
+                          if(widget.isSubmitting) return;
                           _animationController.reverse().then((_) {
                             setState(() => _currentStep--);
                             _animationController.forward();
@@ -303,6 +307,7 @@ class _MultiStepFormState extends State<MultiStepForm>
                   flex: 5,
                   child: ElevatedButton(
                     onPressed: () {
+                      if(widget.isSubmitting) return;
                       final extraOk = widget.steps[_currentStep].beforeNextStep?.call() ?? true;
                       if (formKeys[_currentStep].currentState!.validate()) {
                         if(!extraOk) return;
@@ -327,7 +332,15 @@ class _MultiStepFormState extends State<MultiStepForm>
                         borderRadius: BorderRadius.circular(8),
                       )
                     ),
-                    child: Text(_currentStep == widget.steps.length - 1
+                    child: widget.isSubmitting
+                        ? const SizedBox.square(
+                          dimension: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                        :Text(_currentStep == widget.steps.length - 1
                         ? 'Guardar'
                         : 'Siguiente'),
                   ),
