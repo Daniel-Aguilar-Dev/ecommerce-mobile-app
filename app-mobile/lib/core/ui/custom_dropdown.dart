@@ -15,6 +15,7 @@ class CustomDropdown<T> extends StatelessWidget {
     this.icon,
     this.validator,
     this.isRequired = false,
+    this.requiredMessage = "Este campo es obligatorio"
   });
 
   /// Opciones como (valor, texto a mostrar).
@@ -26,6 +27,7 @@ class CustomDropdown<T> extends StatelessWidget {
   final IconData? icon;
   final String? Function(T?)? validator;
   final bool isRequired;
+  final String requiredMessage;
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +72,7 @@ class CustomDropdown<T> extends StatelessWidget {
           ),
           decoration: customInputDecoration(icon: icon),
           validator: (v) {
-            if (isRequired && v == null) return 'Este campo es obligatorio';
+            if (isRequired && v == null) return requiredMessage;
             return validator?.call(v);
           },
         ),

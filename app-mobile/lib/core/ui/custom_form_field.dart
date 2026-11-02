@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../theme/colors.dart';
 
@@ -20,6 +21,8 @@ class CustomField extends StatelessWidget {
     this.expands = false,
     this.isRequired = false,
     this.onChanged,
+    this.inputFormatters,
+    this.focusNode,
   });
 
   final TextEditingController controller;
@@ -37,6 +40,8 @@ class CustomField extends StatelessWidget {
   final bool expands;
   final bool isRequired;
   final void Function(String)? onChanged;
+  final List<TextInputFormatter>? inputFormatters;
+  final FocusNode? focusNode;
 
   @override
   Widget build(BuildContext context) {
@@ -109,6 +114,8 @@ class CustomField extends StatelessWidget {
           minLines: minLines,
           maxLength: maxLength,
           expands: expands,
+          inputFormatters: inputFormatters,
+          focusNode: focusNode,
         ),
       ],
     );
