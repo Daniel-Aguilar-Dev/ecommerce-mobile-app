@@ -117,6 +117,7 @@ public class ProductoDto {
         productoDto.setPrecioVenta(producto.getPrecioVenta());
         productoDto.setUnidadMedida(producto.getUnidadMedida());
         productoDto.setImagenPublicId(producto.getImagenPublicId());
+        productoDto.setImagenVersion(producto.getImagenVersion());
         if (imagenUrl != null) {
             productoDto.setImagenUrl(imagenUrl);
         }

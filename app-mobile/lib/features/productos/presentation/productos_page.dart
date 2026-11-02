@@ -6,16 +6,13 @@ import 'package:ecommerce_app/features/auth/presentation/auth_view_model.dart';
 import 'package:ecommerce_app/features/categorias/domain/categoria.dart';
 import 'package:ecommerce_app/features/categorias/presentation/viewmodel/categoria_view_model.dart';
 import 'package:ecommerce_app/features/categorias/presentation/widgets/categoria_modals.dart';
-import 'package:ecommerce_app/features/categorias/presentation/widgets/categoria_card.dart';
 import 'package:ecommerce_app/features/productos/data/models/producto_params.dart';
-import 'package:ecommerce_app/features/productos/domain/producto_estado.dart';
-import 'package:ecommerce_app/features/productos/domain/producto_public.dart';
 import 'package:ecommerce_app/features/productos/domain/producto_repository.dart';
+import 'package:ecommerce_app/features/productos/domain/producto.dart';
 import 'package:ecommerce_app/features/productos/presentation/editar_producto_page.dart';
 import 'package:ecommerce_app/features/productos/presentation/nuevo_producto_page.dart';
 import 'package:ecommerce_app/features/productos/presentation/viewmodel/producto_view_model.dart';
 import 'package:ecommerce_app/features/productos/presentation/widgets/producto_card.dart';
-import 'package:ecommerce_app/features/productos/presentation/widgets/producto_card_public.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:lucide_icons_flutter/lucide_icons_600.dart';
@@ -23,8 +20,6 @@ import 'package:provider/provider.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 import 'package:ecommerce_app/core/theme/colors.dart';
-
-import '../domain/producto.dart';
 
 class ProductosPage extends StatelessWidget {
   const ProductosPage({super.key});
@@ -111,59 +106,36 @@ class _ProductosViewState extends State<_ProductosView> {
     );
   }
 
-  late Widget listPlaceholder = ListView(
-    children: [
-      ProductoCard.placeholder(),
-      ProductoCard.placeholder(),
-      ProductoCard.placeholder(),
-      ProductoCard.placeholder(),
-      ProductoCard.placeholder(),
-      ProductoCard.placeholder(),
-      ProductoCard.placeholder(),
-      ProductoCard.placeholder(),
-    ],
-  );
-
-  late Producto test = Producto(
-    id: 1,
-    nombre: "Coca cola chubby 500ml",
-    descripcion: "Refresco saborizado delicioso",
-    marca: 'Coca cola',
-    stockActual: 8,
-    stockMinimo: 5,
-    stockReservado: 0,
-    precioVenta: 15.00,
-    precioCompra: 12.00,
-    unidadMedia: 'Caja',
-    estado: ProductoEstado.PROD_ACTIVO,
-    costoPromedio: 20.00,
-    categoria: Categoria(id: 1, nombre: "nombre", descripcion: "descripcion", tieneProductos: false),
-    imagenPublicId: '',
-    imagenVersion: 0,
-    imagenUrl: 'https://images.ctfassets.net/ttw7uwgviuml/5VWXGBceP805NXdwZ7y6kH/3f701eef69baea0f458867a51ee53bf9/82038_WFMex_Packaged_COCA_COLA_CHUBBY_REGULAR_355_ml_Secos.jpg?fm=webp',
-  );
-
-  late ProductoPublic testP = ProductoPublic(
-    id: 1,
-    nombre: "Coca cola chubby 500ml",
-    descripcion: "Refresco saborizado delicioso",
-    marca: 'Coca cola',
-    stock: 8,
-    precio: 15.00,
-    unidadMedia: 'Caja',
-    estado: ProductoEstado.PROD_ACTIVO,
-    categoria: Categoria(id: 1, nombre: "nombre", descripcion: "descripcion", tieneProductos: false),
-    imagen: 'https://images.ctfassets.net/ttw7uwgviuml/5VWXGBceP805NXdwZ7y6kH/3f701eef69baea0f458867a51ee53bf9/82038_WFMex_Packaged_COCA_COLA_CHUBBY_REGULAR_355_ml_Secos.jpg?fm=webp',
-    estadoStock: "Agotado"
-  );
-
-  late Widget card = ProductoCard(producto: test, onCardTouch: () {}, onPressButton: () {});
-
-  late Widget card_public = ProductoCardPublic(producto: testP, onCardTouch: () {}, onPressButton: () {});
-
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<ProductoViewModel>();
+
+    Widget loadingPlaceholder = Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        children: [
+          CustomField(
+            controller: _searchController,
+            hint: 'Buscar un producto',
+            icon: LucideIcons.search,
+          ),
+          const SizedBox(height: 16),
+          Expanded(
+            child: GridView.builder(
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: 6,
+              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                maxCrossAxisExtent: 220,
+                mainAxisSpacing: 8,
+                crossAxisSpacing: 8,
+                mainAxisExtent: 340,
+              ),
+              itemBuilder: (_, _) => ProductoCard.placeholder(),
+            ),
+          ),
+        ],
+      ),
+    );
 
     Widget list = RefreshIndicator(
       onRefresh: () => context.read<ProductoViewModel>().cargar(),
@@ -192,10 +164,10 @@ class _ProductosViewState extends State<_ProductosView> {
             itemCount: vm.productos.length,
             gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
               maxCrossAxisExtent: 220, // ancho máximo por card
-              mainAxisSpacing: 12,
-              crossAxisSpacing: 12,
+              mainAxisSpacing: 8,
+              crossAxisSpacing: 8,
               childAspectRatio: 0.62,
-              //mainAxisExtent: 340, // alto fijo de cada card
+              mainAxisExtent: 340, // alto fijo de cada card
             ),
             itemBuilder: (_, i) {
               final prod = vm.productos[i];
@@ -211,16 +183,32 @@ class _ProductosViewState extends State<_ProductosView> {
       ),
     );
 
+    Widget emptyList = RefreshIndicator(
+      onRefresh: () => context.read<ProductoViewModel>().cargar(),
+      child: LayoutBuilder(
+        builder: (context, constraints) => ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          children: [
+            SizedBox(
+              height: constraints.maxHeight,
+              child: StatusView.empty(title: "No hay productos registrados"),
+            ),
+          ],
+        ),
+      ),
+    );
+
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Skeletonizer(
         enabled: vm.isFetching,
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child: vm.isFetching ? listPlaceholder : (vm.productos.isEmpty && _searchController.text == "") ? StatusView.empty(title: "No hay productos registrados") : list,
+          child:  vm.isFetching ? loadingPlaceholder : (vm.productos.isEmpty && _searchController.text == "") ? emptyList : list,
         ),
       ),
       floatingActionButton: FloatingActionButton(
+        heroTag: null,
         backgroundColor: AppColors.primario.c400,
         onPressed: () => Navigator.push(
           context,

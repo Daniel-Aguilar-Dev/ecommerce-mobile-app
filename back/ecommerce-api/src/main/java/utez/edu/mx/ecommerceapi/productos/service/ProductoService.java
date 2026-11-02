@@ -227,7 +227,8 @@ public class ProductoService {
             throw e;
         }
 
-        return ApiResponse.ok("Producto registrado correctamente", ProductoDto.fromEntity(post, null));
+        String url = urlBuilder.thumbnail(post.getImagenPublicId(), post.getImagenVersion());
+        return ApiResponse.ok("Producto registrado correctamente", ProductoDto.fromEntity(post, url));
     }
 
     @Transactional
@@ -283,7 +284,8 @@ public class ProductoService {
             throw e;
         }
 
-        return ApiResponse.ok("Producto actualizado correctamente", ProductoDto.fromEntity(put, null));
+        String url = urlBuilder.thumbnail(put.getImagenPublicId(), put.getImagenVersion());
+        return ApiResponse.ok("Producto actualizado correctamente", ProductoDto.fromEntity(put, url));
     }
 
     public ApiResponse<Void> patchProduct(Long id) {

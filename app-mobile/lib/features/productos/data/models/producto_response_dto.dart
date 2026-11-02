@@ -1,4 +1,4 @@
-import 'package:ecommerce_app/features/categorias/domain/categoria.dart';
+import 'package:ecommerce_app/features/categorias/data/models/categoria_response_dto.dart';
 import 'package:ecommerce_app/features/productos/domain/producto_estado.dart';
 
 class ProductoResponseDto {
@@ -35,7 +35,7 @@ class ProductoResponseDto {
   final String unidadMedia;
   final ProductoEstado estado;
   final double costoPromedio;
-  final Categoria categoria;
+  final CategoriaResponseDto categoria;
   final String imagenPublicId;
   final int imagenVersion;
   final String imagenUrl;
@@ -53,12 +53,12 @@ class ProductoResponseDto {
       precioCompra: json['precioCompra'] as double,
       precioVenta: json['precioVenta'] as double,
       unidadMedia: json['unidadMedida'] as String,
-      estado: json['estado'] as ProductoEstado,
+      estado: ProductoEstado.fromJson(json['estado'] as String),
       imagenPublicId: json['imagenPublicId'] as String,
       imagenVersion: json['imagenVersion'] as int,
       imagenUrl: json['imagenUrl'] as String,
       costoPromedio: json['costoPromedio'] as double,
-      categoria: json['categoria'] as Categoria,
+      categoria: CategoriaResponseDto.fromJson(json["categoria"] as Map<String, dynamic>)
     );
   }
 }

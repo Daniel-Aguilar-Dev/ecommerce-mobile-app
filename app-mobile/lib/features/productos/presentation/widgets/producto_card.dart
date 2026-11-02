@@ -51,21 +51,23 @@ class ProductoCard extends StatelessWidget{
           child: Column(
             mainAxisSize: .min,
             children: [
-              AspectRatio(
-                aspectRatio: 1,
-                child: CachedNetworkImage(
-                  imageUrl: producto.imagenUrl,
-                  fit: BoxFit.contain,
-                  placeholder: (_, __) => const Center(
-                    child: SizedBox(
-                      width: 24,
-                      height: 24,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    ),
-                  ),
-                  errorWidget: (_, __, ___) => Image.asset(
-                    'assets/images/prod_placeholder.png',
+              Expanded(
+                child: AspectRatio(
+                  aspectRatio: 1,
+                  child: CachedNetworkImage(
+                    imageUrl: producto.imagenUrl,
                     fit: BoxFit.contain,
+                    placeholder: (_, __) => const Center(
+                      child: SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                    ),
+                    errorWidget: (_, __, ___) => Image.asset(
+                      'assets/images/prod_placeholder.png',
+                      fit: BoxFit.contain,
+                    ),
                   ),
                 ),
               ),
@@ -144,7 +146,7 @@ class ProductoCard extends StatelessWidget{
   }
   
   ProductoCard.placeholder({Key? key}) : this(
-    producto: Producto(id: 0, nombre: "Nombre", descripcion: "Descripcion", marca: "Marca", stockActual: 0, stockMinimo: 0, stockReservado: 0, precioVenta: 0, precioCompra: 0, unidadMedia: "unidadMedia", estado: ProductoEstado.PROD_ACTIVO, costoPromedio: 0, categoria: Categoria(id: 0, nombre: "nombre", descripcion: "descripcion", tieneProductos: false), imagenPublicId: "imagenPublicId", imagenVersion: 0, imagenUrl: "imagenUrl"),
+    producto: Producto(id: 0, nombre: "Nombre", descripcion: "Descripcion", marca: "Marca", stockActual: 10, stockMinimo: 0, stockReservado: 0, precioVenta: 0, precioCompra: 0, unidadMedia: "unidadMedia", estado: ProductoEstado.PROD_ACTIVO, costoPromedio: 0, categoria: Categoria(id: 0, nombre: "nombre", descripcion: "descripcion", tieneProductos: false), imagenPublicId: "imagenPublicId", imagenVersion: 0, imagenUrl: "imagenUrl"),
     onCardTouch: (){},
     onPressButton: (){}
   );

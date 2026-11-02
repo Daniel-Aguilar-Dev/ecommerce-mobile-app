@@ -1,4 +1,4 @@
-import 'package:ecommerce_app/features/categorias/domain/categoria.dart';
+import 'package:ecommerce_app/features/categorias/domain/categoria_public.dart';
 import 'package:ecommerce_app/features/productos/domain/producto_estado.dart';
 
 class ProductoPublic {
@@ -26,7 +26,7 @@ class ProductoPublic {
   final double precio;
   final String unidadMedia;
   final ProductoEstado estado;
-  final Categoria categoria;
+  final CategoriaPublic categoria;
   final String imagen;
   final String estadoStock;
 }

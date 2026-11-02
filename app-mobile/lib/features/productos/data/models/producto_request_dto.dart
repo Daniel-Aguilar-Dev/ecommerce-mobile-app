@@ -1,4 +1,3 @@
-import 'package:ecommerce_app/features/categorias/domain/categoria.dart';
 import 'package:ecommerce_app/features/productos/domain/producto_estado.dart';
 
 class ProductoRequestDto {
@@ -13,7 +12,7 @@ class ProductoRequestDto {
     required this.precioVenta,
     required this.precioCompra,
     required this.unidadMedia,
-    required this.estado,
+    this.estado,
     required this.categoria,
   });
 
@@ -27,8 +26,8 @@ class ProductoRequestDto {
   final double precioVenta;
   final double precioCompra;
   final String unidadMedia;
-  final ProductoEstado estado;
-  final Categoria categoria;
+  final ProductoEstado? estado;
+  final Map<String, dynamic> categoria;
 
   Map<String, dynamic> toJson() {
     return {
@@ -41,7 +40,7 @@ class ProductoRequestDto {
       "stockReservado" : stockReservado,
       "precioVenta" : precioVenta,
       "precioCompra" : precioCompra,
-      "unidadMedia" : unidadMedia,
+      "unidadMedida" : unidadMedia,
       "estado" : estado,
       "categoria" : categoria,
     };

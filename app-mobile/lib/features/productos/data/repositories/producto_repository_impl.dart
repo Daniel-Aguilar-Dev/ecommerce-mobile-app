@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:ecommerce_app/features/carrito/domain/carrito.dart';
+import 'package:ecommerce_app/features/categorias/domain/categoria.dart';
+import 'package:ecommerce_app/features/categorias/domain/categoria_public.dart';
 import 'package:ecommerce_app/features/productos/data/models/producto_params.dart';
 import 'package:ecommerce_app/features/productos/data/models/producto_params_public.dart';
 import 'package:ecommerce_app/features/productos/data/models/producto_request_dto.dart';
@@ -27,25 +29,7 @@ class ProductoRepositoryImpl implements ProductoRepository {
   @override
   Future<Producto> crear(ProductoRequestDto dto, File file) async{
     final response = await _productoDataSource.crear(dto, file);
-    return Producto(
-      id: response.id,
-      nombre: response.nombre,
-      descripcion: response.descripcion, 
-      marca: response.marca,
-      sku: response.sku,
-      stockActual: response.stockActual,
-      stockMinimo: response.stockMinimo,
-      stockReservado: response.stockReservado,
-      precioVenta: response.precioVenta,
-      precioCompra: response.precioCompra,
-      unidadMedia: response.unidadMedia,
-      estado: response.estado,
-      costoPromedio: response.costoPromedio,
-      categoria:response.categoria,
-      imagenPublicId: response.imagenPublicId,
-      imagenVersion: response.imagenVersion,
-      imagenUrl: response.imagenUrl
-    );
+    return _mapearProducto(response);
   }
 
   @override
@@ -145,7 +129,7 @@ class ProductoRepositoryImpl implements ProductoRepository {
         unidadMedia: response.unidadMedia,
         estado: response.estado,
         costoPromedio: response.costoPromedio,
-        categoria:response.categoria,
+        categoria:Categoria(id: response.categoria.id, nombre: response.categoria.nombre, descripcion: response.categoria.descripcion, tieneProductos: response.categoria.tieneProductos),
         imagenPublicId: response.imagenPublicId,
         imagenVersion: response.imagenVersion,
         imagenUrl: response.imagenUrl
@@ -163,7 +147,7 @@ class ProductoRepositoryImpl implements ProductoRepository {
         precio: response.precio,
         unidadMedia: response.unidadMedia,
         estado: response.estado,
-        categoria:response.categoria,
+        categoria: CategoriaPublic(id: response.categoria.id, nombre: response.categoria.nombre, descripcion: response.categoria.descripcion),
         imagen: response.imagen,
         estadoStock: response.estadoStock
     );

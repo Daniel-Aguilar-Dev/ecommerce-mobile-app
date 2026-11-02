@@ -6,7 +6,7 @@ import 'package:ecommerce_app/features/productos/data/models/producto_request_dt
 import 'package:ecommerce_app/features/productos/domain/producto.dart';
 import 'package:ecommerce_app/features/productos/domain/producto_estado.dart';
 import 'package:ecommerce_app/features/productos/domain/producto_repository.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 class ProductoViewModel extends ChangeNotifier{
   ProductoViewModel({required ProductoRepository productoRepository})

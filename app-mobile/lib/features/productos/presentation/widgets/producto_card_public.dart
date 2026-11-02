@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:ecommerce_app/core/theme/colors.dart';
-import 'package:ecommerce_app/features/categorias/domain/categoria.dart';
+import 'package:ecommerce_app/features/categorias/domain/categoria_public.dart';
 import 'package:ecommerce_app/features/productos/domain/producto_estado.dart';
 import 'package:ecommerce_app/features/productos/domain/producto_public.dart';
 import 'package:flutter/material.dart';
@@ -47,21 +47,23 @@ class ProductoCardPublic extends StatelessWidget{
           child: Column(
             mainAxisSize: .min,
             children: [
-              AspectRatio(
-                aspectRatio: 1,
-                child: CachedNetworkImage(
-                  imageUrl: producto.imagen,
-                  fit: BoxFit.contain,
-                  placeholder: (_, __) => const Center(
-                    child: SizedBox(
-                      width: 24,
-                      height: 24,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    ),
-                  ),
-                  errorWidget: (_, __, ___) => Image.asset(
-                    'assets/images/prod_placeholder.png',
+              Expanded(
+                child: AspectRatio(
+                  aspectRatio: 1,
+                  child: CachedNetworkImage(
+                    imageUrl: producto.imagen,
                     fit: BoxFit.contain,
+                    placeholder: (_, __) => const Center(
+                      child: SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                    ),
+                    errorWidget: (_, __, ___) => Image.asset(
+                      'assets/images/prod_placeholder.png',
+                      fit: BoxFit.contain,
+                    ),
                   ),
                 ),
               ),
@@ -141,7 +143,7 @@ class ProductoCardPublic extends StatelessWidget{
   }
 
   ProductoCardPublic.placeholder({Key? key}) : this(
-      producto: ProductoPublic(id: 0, nombre: "Nombre", descripcion: "Descripcion", marca: "Marca", stock: 0, precio: 0, unidadMedia: "unidadMedia", estado: ProductoEstado.PROD_ACTIVO, categoria: Categoria(id: 0, nombre: "nombre", descripcion: "descripcion", tieneProductos: false), imagen: "imagenUrl", estadoStock: ""),
+      producto: ProductoPublic(id: 0, nombre: "Nombre", descripcion: "Descripcion", marca: "Marca", stock: 0, precio: 0, unidadMedia: "unidadMedia", estado: ProductoEstado.PROD_ACTIVO, categoria: CategoriaPublic(id: 0, nombre: "nombre", descripcion: "descripcion"), imagen: "imagenUrl", estadoStock: ""),
       onCardTouch: (){},
       onPressButton: (){}
   );
