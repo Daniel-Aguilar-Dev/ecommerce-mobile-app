@@ -122,7 +122,7 @@ class ProductoCardPublic extends StatelessWidget{
                           icon: const Icon(LucideIcons.shoppingCartPlus, size: 20,),
                           color: Colors.white,
                           style: IconButton.styleFrom(
-                            backgroundColor: AppColors.secundario.c500,
+                            backgroundColor: AppColors.primario.c400,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),

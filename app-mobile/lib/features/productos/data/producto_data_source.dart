@@ -21,7 +21,7 @@ class ProductoDataSource {
   final PublicApiClient _apiClientPublic;
   final AuthenticatedApiClient _apiClientAuth;
 
-  static final _publicPath = "/api/v1/Productos/public";
+  static final _publicPath = "/api/v1/productos/public";
   static final _privatePath = "/api/v1/Productos";
 
   Future<List<ProductoResponsePublicDto>> todosPublic([ProductoParamsPublic? params]) async {
