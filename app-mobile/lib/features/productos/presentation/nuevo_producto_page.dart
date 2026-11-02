@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:ecommerce_app/features/auth/presentation/auth_view_model.dart';
 import 'package:ecommerce_app/features/categorias/domain/categoria.dart';
 import 'package:ecommerce_app/features/productos/data/models/producto_request_dto.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:ecommerce_app/core/constants.dart';
 import 'package:ecommerce_app/core/validation/letras_numeros_validator.dart';
 import 'package:ecommerce_app/core/validation/numero_positivo_validator.dart';
+import 'package:ecommerce_app/core/validation/codigo_barras_validator.dart';
 import 'package:ecommerce_app/core/validation/precio_validator.dart';
 import 'package:ecommerce_app/core/theme/colors.dart';
 import 'package:ecommerce_app/core/ui/app_toast.dart';
@@ -20,6 +20,7 @@ import 'package:ecommerce_app/core/ui/visor_imagen.dart';
 import 'package:ecommerce_app/core/ui/custom_autocomplete.dart';
 import 'package:ecommerce_app/core/layout/multistep_form.dart';
 import 'package:ecommerce_app/core/layout/layout_externo.dart';
+import 'package:ecommerce_app/core/utils/scanner_codigo_barras.dart';
 
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
@@ -32,6 +33,7 @@ import 'package:ecommerce_app/features/categorias/domain/categoria_repository.da
 import 'package:ecommerce_app/features/productos/domain/producto_repository.dart';
 import 'package:ecommerce_app/features/productos/presentation/viewmodel/producto_view_model.dart';
 import 'package:ecommerce_app/features/productos/data/unidades_medida.dart';
+
 
 const int kMaxImageBytes = 2 * 1024 * 1024;
 
@@ -61,6 +63,7 @@ class _NuevoProductoPageState extends State<_NuevoProductoPage>{
   late final _categorias = context.read<CategoriaRepository>();
 
   final _formKey = GlobalKey<FormState>();
+  final _skuFieldKey = GlobalKey<FormFieldState<String>>();
 
   //Controllers step 1
   final _nombreController = TextEditingController();
@@ -84,7 +87,8 @@ class _NuevoProductoPageState extends State<_NuevoProductoPage>{
   ];
 
   final List<TextInputFormatter> _skuFormatter = [
-    FilteringTextInputFormatter.allow(RegExp(r'^(\d{8}|\d{12}|\d{13})')),
+    FilteringTextInputFormatter.digitsOnly,
+    LengthLimitingTextInputFormatter(13),
   ];
 
   //Valores que no se pueden obtener de un input
@@ -293,7 +297,6 @@ class _NuevoProductoPageState extends State<_NuevoProductoPage>{
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<ProductoViewModel>();
-    final role = context.read<AuthViewModel>().session?.usuario.rol;
 
     final form = MultiStepForm(
       // Required callback
@@ -315,9 +318,10 @@ class _NuevoProductoPageState extends State<_NuevoProductoPage>{
 
           await vm.registrar(request: request, file: _foto!);
 
-          Navigator.pop(context);
-
-          if(vm.successMessage != null) { AppToast.show(context, variant: ToastType.success, title: "¡Éxito!", message: vm.successMessage);}
+          if(vm.successMessage != null) {
+            Navigator.pop(context, true);
+            AppToast.show(context, variant: ToastType.success, title: "¡Éxito!", message: vm.successMessage);
+          }
           if(vm.errorMessage != null) { AppToast.show(context, variant: ToastType.error, title: "¡Error!", message: vm.errorMessage);}
         }
       },
@@ -451,7 +455,7 @@ class _NuevoProductoPageState extends State<_NuevoProductoPage>{
               label: "Stock mínimo",
               isRequired: true,
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              inputFormatters: _intFormatter,
               validator: (value) => numeroPositivoValidator(value, 'El stock mínimo es obligatorio', 999999, false),
               textInputAction: .next,
             ),
@@ -474,20 +478,30 @@ class _NuevoProductoPageState extends State<_NuevoProductoPage>{
               children: [
                 Expanded(
                   child: CustomField(
+                    key: _skuFieldKey,
                     controller: _skuController,
                     hint: 'Código de barras',
-                    label: "Código de barras del producto",
-                    isRequired: false,
-                    maxLength: 25,
+                    label: 'Código de barras del producto',
+                    isRequired: true,
+                    maxLength: 13,
                     inputFormatters: _skuFormatter,
-                    keyboardType: TextInputType.name,
+                    keyboardType: TextInputType.number,
                     textInputAction: TextInputAction.done,
+                    validator: codigoBarrasValidator,
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(top: 28), // baja el botón a la altura del input
                   child: IconButton(
-                    onPressed: () {},
+                    onPressed: () async{
+                      String? codigo = await escanearCodigo(context);
+                      if(codigo != null){
+                        _skuController.text = codigo;
+                        _formKey.currentState?.validate();
+                      } else {
+                        AppToast.show(context, variant: ToastType.info, title: "No se pudo escanear el código", message: "Intentalo nuevamente o ingresalo manualmente");
+                      }
+                    },
                     icon: const Icon(LucideIcons.scanBarcode, size: 20),
                     color: Colors.white,
                     style: IconButton.styleFrom(
@@ -653,7 +667,6 @@ class _NuevoProductoPageState extends State<_NuevoProductoPage>{
                 ],
               ),
             ),
-            Text("$role")
           ],
         ),
       ],

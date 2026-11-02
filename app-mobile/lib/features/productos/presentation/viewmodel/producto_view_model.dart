@@ -17,7 +17,6 @@ class ProductoViewModel extends ChangeNotifier{
   List<Producto> _productos = [];
   List<String> _marcas = [];
 
-  Producto? _productoEditable;
   ProductoParams _productoParams = ProductoParams();
 
   bool _isFetching = false;
@@ -33,7 +32,6 @@ class ProductoViewModel extends ChangeNotifier{
   String? get successMessage => _successMessage;
   List<Producto> get productos => _productos;
   List<String> get marcas => _marcas;
-  Producto? get productoEditable => _productoEditable;
   ProductoParams get productoParams => _productoParams;
 
   bool _disposed = false;
@@ -67,16 +65,6 @@ class ProductoViewModel extends ChangeNotifier{
     } finally {
       _terminarMarcas();
     }
-  }
-
-  void setProducto(Producto prod) {
-    _productoEditable = prod;
-    notifyListeners();
-  }
-
-  void unsetProducto() {
-    _productoEditable = null;
-    notifyListeners();
   }
 
   Future<void> setParams(ProductoParams params) async {
@@ -142,6 +130,7 @@ class ProductoViewModel extends ChangeNotifier{
       prod = await _repository.crear(request,file);
       _successMessage = 'Producto registrado correctamente';
       cargar();
+      cargarMarcas();
       return prod;
     } catch (error){
       _errorMessage = _mensaje(error);
@@ -151,13 +140,14 @@ class ProductoViewModel extends ChangeNotifier{
     }
   }
 
-  Future<Producto?> actualizar(ProductoRequestDto request, File file, int id) async{
+  Future<Producto?> actualizar(ProductoRequestDto request, File? file, int id) async{
     late final Producto prod;
     _comenzarOperacion();
     try{
-      prod = await _repository.modificar(request, file, id);
+      prod = await _repository.modificar(request, file ?? null, id);
       _successMessage = 'Producto actualizado correctamente';
       cargar();
+      cargarMarcas();
       return prod;
     } catch (error){
       _errorMessage = _mensaje(error);
@@ -173,6 +163,7 @@ class ProductoViewModel extends ChangeNotifier{
       await _repository.eliminar(id);
       _successMessage = 'Producto eliinado correctamente';
       cargar();
+      cargarMarcas();
       return true;
     } catch (error){
       _errorMessage = _mensaje(error);
@@ -189,6 +180,7 @@ class ProductoViewModel extends ChangeNotifier{
       Producto prod = await _repository.unoPorId(id);
       _successMessage = 'Producto ${prod.estado == ProductoEstado.PROD_ACTIVO ? "restablecido" : "descontinuado" } correctamente';
       cargar();
+      cargarMarcas();
       return true;
     } catch (error){
       _errorMessage = _mensaje(error);

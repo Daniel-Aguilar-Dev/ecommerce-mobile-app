@@ -29,7 +29,7 @@ abstract class ProductoRepository {
 
   Future<Producto> crear(ProductoRequestDto dto, File file);
 
-  Future<Producto> modificar(ProductoRequestDto dto, File file, int id);
+  Future<Producto> modificar(ProductoRequestDto dto, File? file, int id);
 
   Future<void> cambiarEstado(int id);
 

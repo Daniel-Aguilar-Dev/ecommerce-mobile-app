@@ -63,7 +63,7 @@ class ProductoRepositoryImpl implements ProductoRepository {
   }
 
   @override
-  Future<Producto> modificar(ProductoRequestDto dto, File file, int id) async{
+  Future<Producto> modificar(ProductoRequestDto dto, File? file, int id) async{
     final response = await _productoDataSource.modificar(dto, file, id);
     return _mapearProducto(response);
   }

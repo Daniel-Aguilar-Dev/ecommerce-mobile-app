@@ -7,3 +7,11 @@ class ImageTooLargeException implements Exception {
   @override
   String toString() => message;
 }
+
+class BadScanningException implements Exception {
+  const BadScanningException(this.message);
+  final String message;
+
+  @override
+  String toString() => message;
+}

@@ -1,16 +1,28 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 class VisorImagen extends StatelessWidget {
-  const VisorImagen({super.key, required this.foto, required this.tag});
+  const VisorImagen({super.key, this.foto, this.url, required this.tag})
+      : assert(foto != null || url != null);
 
-  final File foto;
+  final File? foto;
   final String tag;
+  final String? url;
 
   @override
   Widget build(BuildContext context) {
+    final imagen = foto != null
+        ? Image.file(foto!, fit: BoxFit.fill)
+        : CachedNetworkImage(
+      imageUrl: url!,
+      fit: BoxFit.fill,
+      errorWidget: (_, __, ___) =>
+          Image.asset('assets/images/prod_placeholder.png', fit: BoxFit.fill),
+    );
+
     return Scaffold(
       backgroundColor: Colors.transparent,
       extendBodyBehindAppBar: true,
@@ -36,7 +48,7 @@ class VisorImagen extends StatelessWidget {
                 maxScale: 4,
                 child:AspectRatio(
                   aspectRatio: 1,
-                  child: Image.file(foto, fit: BoxFit.fill),
+                  child: imagen
                 )
               ),
             ),

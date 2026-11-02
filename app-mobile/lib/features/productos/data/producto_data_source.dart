@@ -132,12 +132,12 @@ class ProductoDataSource {
       );
     }
 
-    return data as ProductoResponsePublicDto;
+    return ProductoResponsePublicDto.fromJson(data);
   }
 
   Future<ProductoResponseDto> unoPorId(int id) async{
     final responseJson = await _apiClientAuth.getJson(
-        "$_privatePath/$id"
+        "$_privatePath/id/$id"
     );
 
     if (responseJson['success'] != true) {
@@ -156,7 +156,7 @@ class ProductoDataSource {
       );
     }
 
-    return data as ProductoResponseDto;
+    return ProductoResponseDto.fromJson(data);
   }
 
   Future<ProductoResponseDto> unoPorNombre(String nombre) async{
@@ -180,7 +180,7 @@ class ProductoDataSource {
       );
     }
 
-    return data as ProductoResponseDto;
+    return ProductoResponseDto.fromJson(data);
   }
 
   Future<ProductoResponseDto> unoPorSKU(String sku) async{
@@ -204,7 +204,7 @@ class ProductoDataSource {
       );
     }
 
-    return data as ProductoResponseDto;
+    return ProductoResponseDto.fromJson(data);
   }
 
   Future<int> validarStockProducto(int id) async{
@@ -287,7 +287,7 @@ class ProductoDataSource {
     return ProductoResponseDto.fromJson(data);
   }
 
-  Future<ProductoResponseDto> modificar(ProductoRequestDto request, File file, int id) async{
+  Future<ProductoResponseDto> modificar(ProductoRequestDto request, File? file, int id) async{
     final requestBody = request.toJson();
 
     final responseJson = await _apiClientAuth.requestMultipart(
