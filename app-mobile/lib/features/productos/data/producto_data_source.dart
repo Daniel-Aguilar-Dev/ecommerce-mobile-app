@@ -22,7 +22,7 @@ class ProductoDataSource {
   final AuthenticatedApiClient _apiClientAuth;
 
   static final _publicPath = "/api/v1/productos/public";
-  static final _privatePath = "/api/v1/Productos";
+  static final _privatePath = "/api/v1/productos";
 
   Future<List<ProductoResponsePublicDto>> todosPublic([ProductoParamsPublic? params]) async {
     late final Map<String, dynamic> responseJson;
