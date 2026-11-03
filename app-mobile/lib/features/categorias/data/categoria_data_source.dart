@@ -176,10 +176,12 @@ class CategoriaDataSource {
     return CategoriaResponseDto.fromJson(data);
   }
 
-  Future<void> eliminar(int id) async{
-    await _apiClientAuth.requestJson(
+  Future<String> eliminar(int id) async{
+    final responseJson = await _apiClientAuth.requestJson(
       "DELETE",
       "$_privatePath/$id",
     );
+
+    return responseJson["message"];
   }
 }

@@ -1,5 +1,3 @@
-import 'package:ecommerce_app/features/categorias/presentation/categorias_page.dart';
-import 'package:ecommerce_app/features/productos/presentation/productos_management_page.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
@@ -8,10 +6,13 @@ import 'package:ecommerce_app/core/layout/layout_admin.dart';
 import 'package:ecommerce_app/core/layout/layout_cliente.dart';
 import 'package:ecommerce_app/core/layout/layout_empleado.dart';
 import 'package:ecommerce_app/features/auth/presentation/auth_view_model.dart';
+import 'package:ecommerce_app/core/theme/colors.dart';
 
 //Importar páginas aquí
 import 'package:ecommerce_app/features/auth/presentation/profile_page.dart';
 import 'package:ecommerce_app/features/carrito/presentation/main_menu.dart';
+import 'package:ecommerce_app/features/categorias/presentation/categorias_page.dart';
+import 'package:ecommerce_app/features/productos/presentation/productos_page.dart';
 
 class AppShell extends StatefulWidget {
   const AppShell({super.key});
@@ -63,7 +64,7 @@ class _AppShellState extends State<AppShell>{
         DecoratedBox(
           position: DecorationPosition.foreground,
           decoration: const BoxDecoration(
-            border: Border(top: BorderSide(color: Color(0xFFE0E0E0), width: 1)),
+            border: Border(top: BorderSide(color: AppColors.border, width: 1)),
           ),
           child: NavigationBar(
             backgroundColor: Colors.white,
@@ -100,7 +101,7 @@ List<NavItem> listEmpleado = [
   NavItem('Inicio', LucideIcons.home, const Text("Inicio"), "Inicio"),
   NavItem('Pedidos', LucideIcons.clipboardList, const Text("Inicio"), "Pedidos"),
   NavItem('Escanear', LucideIcons.scanBox, const Text("Inicio"), "Escanear producto"),
-  NavItem('Inventario', LucideIcons.packageOpen, const ProductosManagementPage(), "Inventario"),
+  NavItem('Inventario', LucideIcons.packageOpen, const ProductosPage(), "Inventario"),
   NavItem('Ventas', LucideIcons.chartColumn, const Text("Inicio"), "Ventas"),
 ];
 
@@ -108,7 +109,7 @@ List<NavItem> listAdmin = [
   NavItem('Inicio', LucideIcons.layoutDashboard, const Text("Dashboard"), "Inicio"),
   NavItem('Usuarios', LucideIcons.userRoundGroup, const Text("Usuarios"), "Gestión de usuarios"),
   NavItem('Pedidos', LucideIcons.clipboardList, const Text("Pediods"), "Gestión de pedidos"),
-  NavItem('Productos', LucideIcons.carton, ProductosManagementPage(), "Gestión de productos"),
+  NavItem('Productos', LucideIcons.carton, const ProductosPage(), "Gestión de productos"),
   NavItem('Categorías', LucideIcons.tags, const CategoriasPage(), "Gestión de categorías"),
   NavItem('Ventas', LucideIcons.fileChartColumn, const Text("Ventas"), "Ventas"),
   NavItem('Entradas', LucideIcons.packagePlus, const Text("Entradas"), "Entradas"),

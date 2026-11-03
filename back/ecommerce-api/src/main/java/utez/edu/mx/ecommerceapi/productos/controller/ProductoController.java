@@ -68,7 +68,6 @@ public class ProductoController {
         return ResponseEntity.ok(response);
     }
 
-
     @Operation(summary = "Obtiene un producto por su ID para el uso del personal")
     @GetMapping("/id/{id}")
     public ResponseEntity<ApiResponse<ProductoDto>> getProductoById(@PathVariable Long id) {

@@ -5,9 +5,12 @@ import 'package:ecommerce_app/core/theme/app_theme.dart';
 import 'package:ecommerce_app/features/categorias/data/categoria_data_source.dart';
 import 'package:ecommerce_app/features/categorias/data/repositories/categoria_repository_impl.dart';
 import 'package:ecommerce_app/features/categorias/domain/categoria_repository.dart';
+import 'package:ecommerce_app/features/productos/data/producto_data_source.dart';
+import 'package:ecommerce_app/features/productos/data/repositories/producto_repository_impl.dart';
+import 'package:ecommerce_app/features/productos/domain/producto_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
+import 'package:intl/date_symbol_data_local.dart';
 import 'core/network/api_client.dart';
 import 'core/network/authenticated_api_client.dart';
 import 'features/auth/data/auth_remote_data_source.dart';
@@ -17,9 +20,10 @@ import 'features/auth/domain/auth_repository.dart';
 import 'features/auth/presentation/auth_gate.dart';
 import 'features/auth/presentation/auth_view_model.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  await initializeDateFormatting('es_MX', null);
   // En el emulador Android, 10.0.2.2 apunta al host donde corre Spring Boot.
   const baseUrl = String.fromEnvironment(
     'API_BASE_URL',
@@ -46,6 +50,12 @@ void main() {
           apiClientPublic: publicApiClient
       )
   );
+  final productoRepository = ProductoRepositoryImpl(
+      datasource: ProductoDataSource(
+          apiClientAuth: protectedApiClient,
+          apiClientPublic: publicApiClient
+      )
+  );
 
   // La revisión inicial rota el refresh token guardado si todavía es válido.
   unawaited(authViewModel.inicializar());
@@ -55,6 +65,7 @@ void main() {
       providers: [
         Provider<AuthRepository>.value(value: authRepository),
         Provider<CategoriaRepository>.value(value: categoriaRepository),
+        Provider<ProductoRepository>.value(value: productoRepository),
         Provider<AuthenticatedApiClient>.value(value: protectedApiClient),
         ChangeNotifierProvider<AuthViewModel>.value(value: authViewModel),
       ],

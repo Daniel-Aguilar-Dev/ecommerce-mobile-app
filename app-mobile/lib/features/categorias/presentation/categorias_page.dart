@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:ecommerce_app/core/layout/status_view.dart';
 import 'package:ecommerce_app/core/ui/custom_form_field.dart';
 import 'package:ecommerce_app/features/categorias/domain/categoria.dart';
 import 'package:ecommerce_app/features/categorias/domain/categoria_repository.dart';
@@ -92,70 +93,27 @@ class _CategoriasViewState extends State<_CategoriasView> {
     );
   }
 
-  Widget cardPlaceholder = CategoriaCard(categoria: Categoria(id: 0, nombre: "placeholder", descripcion: "placeholder de producto", tieneProductos: false), onEdit: (Categoria p1) {  }, onDelete: (Categoria p1) {  },);
-
   late Widget listPlaceholder = ListView(
     children: [
-      cardPlaceholder,
-      cardPlaceholder,
-      cardPlaceholder,
-      cardPlaceholder,
-      cardPlaceholder,
-      cardPlaceholder,
-      cardPlaceholder,
-      cardPlaceholder
+      CustomField(
+        controller: _searchController,
+        hint: 'Buscar una categoría',
+        icon: LucideIcons.search,
+      ),
+      CategoriaCard.placeholder(),
+      CategoriaCard.placeholder(),
+      CategoriaCard.placeholder(),
+      CategoriaCard.placeholder(),
+      CategoriaCard.placeholder(),
+      CategoriaCard.placeholder(),
+      CategoriaCard.placeholder(),
+      CategoriaCard.placeholder(),
     ],
   );
 
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<CategoriaViewModel>();
-
-    Widget empty = Column(
-      crossAxisAlignment: .center,
-      mainAxisAlignment: .center,
-      spacing: 16,
-      children: [
-        DecoratedBox(
-          decoration: BoxDecoration(
-            color: AppColors.superficie.c50,
-            shape: BoxShape.circle
-          ),
-          child: Padding(
-            padding: .all(24),
-            child: Icon(LucideIcons.fileQuestionMark, color: AppColors.terciario.c300, size: 64),
-          ),
-        ),
-        Center(
-          child:Text("No hay categorías registradas", style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-              fontWeight: FontWeight.bold
-          )),
-        )
-      ],
-    );
-
-    Widget emptySearch = Column(
-      crossAxisAlignment: .center,
-      mainAxisAlignment: .center,
-      spacing: 16,
-      children: [
-        DecoratedBox(
-          decoration: BoxDecoration(
-              color: AppColors.superficie.c50,
-              shape: BoxShape.circle
-          ),
-          child: Padding(
-            padding: .all(24),
-            child: Icon(LucideIcons.fileQuestionMark, color: AppColors.terciario.c300, size: 64),
-          ),
-        ),
-        Center(
-          child:Text("Sin coincidencias", style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-              fontWeight: FontWeight.bold
-          )),
-        )
-      ],
-    );
 
     Widget list = RefreshIndicator(
       onRefresh: () => context.read<CategoriaViewModel>().cargar(),
@@ -170,15 +128,15 @@ class _CategoriasViewState extends State<_CategoriasView> {
                 controller: _searchController,
                 hint: 'Buscar una categoría',
                 icon: LucideIcons.search,
-                keyboardType: TextInputType.emailAddress,
-                textInputAction: TextInputAction.next,
+                keyboardType: TextInputType.name,
+                textInputAction: TextInputAction.done,
               ),
             ),
           ),
           vm.categorias.isEmpty ?
           SliverFillRemaining(
             hasScrollBody: false,
-            child: Center(child: emptySearch),
+            child: Center(child: StatusView.noResults()),
           ) :
           SliverList.builder(
             itemCount: vm.categorias.length,
@@ -196,13 +154,28 @@ class _CategoriasViewState extends State<_CategoriasView> {
       ),
     );
 
+    Widget emptyList = RefreshIndicator(
+      onRefresh: () => context.read<CategoriaViewModel>().cargar(),
+      child: LayoutBuilder(
+        builder: (context, constraints) => ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          children: [
+            SizedBox(
+              height: constraints.maxHeight,
+              child: StatusView.empty(title: "No hay categorías registradas")
+            ),
+          ],
+        ),
+      ),
+    );
+
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Skeletonizer(
         enabled: vm.isFetching,
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child: vm.isFetching ? listPlaceholder : (vm.categorias.isEmpty && _searchController.text == "") ? empty : list,
+          child: vm.isFetching ? listPlaceholder : (vm.categorias.isEmpty && _searchController.text == "") ? emptyList : list,
         ),
       ),
       floatingActionButton: FloatingActionButton(

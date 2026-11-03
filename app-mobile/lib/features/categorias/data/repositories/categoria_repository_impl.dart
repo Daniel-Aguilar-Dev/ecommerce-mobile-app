@@ -25,12 +25,12 @@ class CategoriaRepositoryImpl implements CategoriaRepository {
   }
 
   @override
-  Future<void> eliminar(int id) async {
+  Future<String> eliminar(int id) async {
     return _categoriaDataSource.eliminar(id);
   }
 
   @override
-  Future<List<Categoria>> listaPersonal(String? query) async{
+  Future<List<Categoria>> listaPersonal([String? query]) async{
     final response = await _categoriaDataSource.todos(query);
     late final List<Categoria> list = [];
     for (final c in response){

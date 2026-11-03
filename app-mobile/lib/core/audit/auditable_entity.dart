@@ -6,8 +6,8 @@ class AuditableEntity {
     this.updatedBy
   });
 
-  final DateTime? createdAt;
-  final DateTime? updatedAt;
+  final String? createdAt;
+  final String? updatedAt;
   final int? createdBy;
   final int? updatedBy;
 }

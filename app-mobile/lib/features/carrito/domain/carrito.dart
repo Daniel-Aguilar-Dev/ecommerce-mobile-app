@@ -1,11 +1,20 @@
-import 'package:ecommerce_app/features/productos/domain/producto.dart';
+import 'package:ecommerce_app/features/productos/domain/producto_public.dart';
 
 class Carrito {
   const Carrito({
-    required this.items
+    required this.items,
+    required this.cantidad
   });
 
   final List<CarritoItem> items;
+  final int cantidad;
+
+  Map<String, dynamic> toJson() {
+    return {
+      'items': items,
+      'cantidad': cantidad,
+    };
+  }
 }
 
 class CarritoItem{
@@ -14,6 +23,6 @@ class CarritoItem{
     required this.cantidad
   });
 
-  final Producto producto;
+  final ProductoPublic producto;
   final int cantidad;
 }

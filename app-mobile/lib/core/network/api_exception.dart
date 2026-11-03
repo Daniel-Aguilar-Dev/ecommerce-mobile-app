@@ -27,3 +27,30 @@ class ApiException implements Exception {
   @override
   String toString() => message;
 }
+final class ErrorAutenticacion extends ApiException{
+  const ErrorAutenticacion({ required super.statusCode, required super.message });
+}
+
+final class SinConexion extends ApiException{
+  const SinConexion({required super.message});
+}
+
+final class TiempoAgotado extends ApiException{
+  const TiempoAgotado({required super.message});
+}
+
+final class ErrorSerivdor extends ApiException{
+  const ErrorSerivdor({ required super.statusCode, required super.message });
+}
+
+final class PeticionRechazada extends ApiException{
+  const PeticionRechazada({ required super.statusCode, required super.message });
+}
+
+final class RespuestaInvalida extends ApiException{
+  const RespuestaInvalida({required super.message});
+}
+
+final class DtoInvalido extends ApiException{
+  const DtoInvalido({required super.message, required super.fieldErrors});
+}

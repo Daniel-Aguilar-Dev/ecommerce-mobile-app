@@ -52,4 +52,6 @@ class CategoriaCard extends StatelessWidget {
       ),
     );
   }
+
+  CategoriaCard.placeholder({Key? key}) : this(key: key,categoria: Categoria(id: 0, nombre: "placeholder", descripcion: "placeholder de producto", tieneProductos: false), onEdit: (Categoria c) {  }, onDelete: (Categoria c) {  });
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:ecommerce_app/core/theme/colors.dart';
 import 'notificaciones_page.dart';
 
 class AppBarCliente extends StatefulWidget implements PreferredSizeWidget {
@@ -38,7 +39,7 @@ class _AppBarClienteState extends State<AppBarCliente>{
             icon: const Icon(LucideIcons.bell),
             padding: .all(4),
             style: IconButton.styleFrom(
-              side: const BorderSide(color: Color(0xFFE0E0E0), width: 1),
+              side: BorderSide(color: AppColors.border, width: 1),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
