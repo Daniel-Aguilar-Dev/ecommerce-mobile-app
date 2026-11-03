@@ -25,7 +25,7 @@ class CategoriaRepositoryImpl implements CategoriaRepository {
   }
 
   @override
-  Future<void> eliminar(int id) async {
+  Future<String> eliminar(int id) async {
     return _categoriaDataSource.eliminar(id);
   }
 

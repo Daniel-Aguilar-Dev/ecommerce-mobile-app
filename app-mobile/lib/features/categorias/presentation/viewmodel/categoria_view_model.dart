@@ -97,8 +97,8 @@ class CategoriaViewModel extends ChangeNotifier{
   Future<bool> borrar(int id) async{
     _comenzarOperacion();
     try{
-      await _repository.eliminar(id);
-      _successMessage = 'Categoría actualizada correctamente';
+      final msj = await _repository.eliminar(id);
+      _successMessage = msj;
       cargar();
       return true;
     } catch (error){

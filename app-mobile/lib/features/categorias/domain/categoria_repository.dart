@@ -21,5 +21,5 @@ abstract class CategoriaRepository {
     required String descripcion
   });
 
-  Future<void> eliminar(int id);
+  Future<String> eliminar(int id);
 }
