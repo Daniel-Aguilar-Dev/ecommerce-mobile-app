@@ -4,6 +4,7 @@ import 'package:ecommerce_app/core/layout/status_view.dart';
 import 'package:ecommerce_app/core/theme/colors.dart';
 import 'package:ecommerce_app/core/ui/seccion_titulo.dart';
 import 'package:ecommerce_app/core/utils/formatear_fechas.dart';
+import 'package:ecommerce_app/core/ui/visor_imagen.dart';
 import 'package:ecommerce_app/features/productos/domain/producto_estado.dart';
 import 'package:ecommerce_app/features/productos/domain/producto.dart';
 import 'package:ecommerce_app/features/productos/presentation/viewmodel/producto_view_model.dart';
@@ -85,7 +86,20 @@ class _DetallesViewState extends State<_DetallesView>{
             return StatusView.error(message: "Producto no encontrado");
           }
 
-          debugPrint("[PRODUCTO] ${prod.createdAt}");
+          void mostrarImagenCompleta(String tag) {
+            Navigator.of(context).push(
+              PageRouteBuilder(
+                opaque: false,
+                barrierColor: Colors.black87,
+                transitionDuration: const Duration(milliseconds: 250),
+                reverseTransitionDuration: const Duration(milliseconds: 200),
+                pageBuilder: (_, _, _) =>
+                    VisorImagen(url: prod.imagenUrl, tag: tag),
+                transitionsBuilder: (_, animation, _, child) =>
+                    FadeTransition(opacity: animation, child: child),
+              ),
+            );
+          }
 
           return SafeArea(
             child: SingleChildScrollView(
@@ -95,23 +109,29 @@ class _DetallesViewState extends State<_DetallesView>{
                     padding: .all(16),
                     child: SeccionTitulo(title: "Datos generales"),
                   ),
-                  SizedBox(
-                    height: 250,
-                    child: AspectRatio(aspectRatio: 1, child: CachedNetworkImage(
-                      imageUrl: prod.imagenUrl,
-                      fit: BoxFit.fill,
-                      placeholder: (_, __) => const Center(
-                        child: SizedBox(
-                          width: 24,
-                          height: 24,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        ),
+                  GestureDetector(
+                    onTap: () => mostrarImagenCompleta('foto-producto-detalle'),
+                    child: Hero(
+                      tag: 'foto-producto-detalle',
+                      child: SizedBox(
+                        height: 250,
+                        child: AspectRatio(aspectRatio: 1, child: CachedNetworkImage(
+                          imageUrl: prod.imagenUrl,
+                          fit: BoxFit.fill,
+                          placeholder: (_, __) => const Center(
+                            child: SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            ),
+                          ),
+                          errorWidget: (_, __, ___) => Image.asset(
+                            'assets/images/prod_placeholder.png',
+                            fit: BoxFit.fill,
+                          ),
+                        ),),
                       ),
-                      errorWidget: (_, __, ___) => Image.asset(
-                        'assets/images/prod_placeholder.png',
-                        fit: BoxFit.fill,
-                      ),
-                    ),),
+                    ),
                   ),
                   Padding(
                     padding: .all(16),
