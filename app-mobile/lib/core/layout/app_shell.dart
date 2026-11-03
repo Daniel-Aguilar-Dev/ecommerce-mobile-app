@@ -13,6 +13,7 @@ import 'package:ecommerce_app/features/auth/presentation/profile_page.dart';
 import 'package:ecommerce_app/features/carrito/presentation/main_menu.dart';
 import 'package:ecommerce_app/features/categorias/presentation/categorias_page.dart';
 import 'package:ecommerce_app/features/productos/presentation/productos_page.dart';
+import 'package:ecommerce_app/features/productos/presentation/escanear_producto_page_one.dart';
 
 class AppShell extends StatefulWidget {
   const AppShell({super.key});
@@ -100,7 +101,7 @@ List<NavItem> listCliente = [
 List<NavItem> listEmpleado = [
   NavItem('Inicio', LucideIcons.home, const Text("Inicio"), "Inicio"),
   NavItem('Pedidos', LucideIcons.clipboardList, const Text("Inicio"), "Pedidos"),
-  NavItem('Escanear', LucideIcons.scanBox, const Text("Inicio"), "Escanear producto"),
+  NavItem('Escanear', LucideIcons.scanBox, EscanearProductoPageOne(), "Escanear producto"),
   NavItem('Inventario', LucideIcons.packageOpen, const ProductosPage(), "Inventario"),
   NavItem('Ventas', LucideIcons.chartColumn, const Text("Inicio"), "Ventas"),
 ];

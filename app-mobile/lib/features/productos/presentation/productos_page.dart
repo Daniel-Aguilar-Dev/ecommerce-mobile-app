@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:ecommerce_app/core/layout/status_view.dart';
 import 'package:ecommerce_app/core/ui/custom_form_field.dart';
-import 'package:ecommerce_app/features/auth/domain/role_enum.dart';
 import 'package:ecommerce_app/features/auth/presentation/auth_view_model.dart';
 import 'package:ecommerce_app/core/ui/bottom_sheet_container.dart';
 import 'package:ecommerce_app/core/ui/pressable_item.dart';
@@ -104,7 +103,6 @@ class _ProductosViewState extends State<_ProductosView> {
     vm.limpiarMensajes();
     final params = await showDialog<ProductoParams?>(
       context: context,
-      barrierDismissible: false,
       builder: (context) => ProductoFiltersDialog(
         vm: vm,
         categoria: _categoria,
@@ -162,7 +160,6 @@ class _ProductosViewState extends State<_ProductosView> {
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<ProductoViewModel>();
-    final role = context.read<AuthViewModel>().session?.usuario.rol;
     final categorias = context.read<CategoriaRepository>();
 
     Widget pictureOptions(Producto prod) {
@@ -172,31 +169,27 @@ class _ProductosViewState extends State<_ProductosView> {
           const SizedBox(height: 4),
           Text("En stock: ${prod.stockActual}", style: Theme.of(context).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.w600, color: prod.stockActual <= prod.stockMinimo ? AppColors.error.main : AppColors.info.main)),
           const SizedBox(height: 8),
-          if (role == RoleEnum.ADMINISTRADOR.name)
-            PressableItem(
-                icon: LucideIcons.edit,
-                text: "Modificar",
-                onPress: () => _editProductoPage(prod, vm),
-                contentPadding: .symmetric(horizontal: 0, vertical: 0)
-            ),
-
-          if (role == RoleEnum.ADMINISTRADOR.name)
-            PressableItem(
-                icon: LucideIcons.vault,
-                text: prod.estado.name == ProductoEstado.PROD_ACTIVO.name
-                    ? 'Descontinuar'
-                    : 'Reanudar',
-                onPress: () => _changeStatusProductoModal(prod, vm),
-                contentPadding: .symmetric(horizontal: 0, vertical: 0)
-            ),
-
-          if (role == RoleEnum.ADMINISTRADOR.name)
-            PressableItem(
-                icon: LucideIcons.trash,
-                text: "Eliminar",
-                onPress: () => _deleteProductoModal(prod, vm),
-                contentPadding: .symmetric(horizontal: 0, vertical: 0)
-            ),
+          PressableItem(
+              icon: LucideIcons.edit,
+              text: "Modificar",
+              onPress: () => _editProductoPage(prod, vm),
+              contentPadding: .symmetric(horizontal: 0, vertical: 0)
+          ),
+          PressableItem(
+              icon: LucideIcons.vault,
+              text: prod.estado.name == ProductoEstado.PROD_ACTIVO.name
+                  ? 'Descontinuar'
+                  : 'Reanudar',
+              onPress: () => _changeStatusProductoModal(prod, vm),
+              contentPadding: .symmetric(horizontal: 0, vertical: 0)
+          ),
+          PressableItem(
+              icon: LucideIcons.trash,
+              text: "Eliminar",
+              onPress: () => _deleteProductoModal(prod, vm),
+              contentPadding: .symmetric(horizontal: 0, vertical: 0)
+          ),
+          //TODO Implementar estas funciones para reabastecer, merma y movimientos
           PressableItem(
               icon: LucideIcons.packagePlus,
               text: "Reabastecer",
@@ -389,7 +382,7 @@ class _ProductosViewState extends State<_ProductosView> {
           child:  vm.isFetching ? loadingPlaceholder : (vm.productos.isEmpty && _searchController.text == "" && vm.productoParams.isEmpty) ? emptyList : list,
         ),
       ),
-      floatingActionButton: role == RoleEnum.ADMINISTRADOR.name ? FloatingActionButton(
+      floatingActionButton: FloatingActionButton(
         heroTag: null,
         backgroundColor: AppColors.primario.c400,
         onPressed: () async {
@@ -403,7 +396,7 @@ class _ProductosViewState extends State<_ProductosView> {
         },
         elevation: 1,
         child: Icon(LucideIcons600.plus, color: Colors.white),
-      ) : null,
+      ),
     );
   }
 }
