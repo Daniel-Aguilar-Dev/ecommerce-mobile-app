@@ -37,6 +37,18 @@ class ProductoParams {
     return '?${Uri(queryParameters: params).query}';
   }
 
+  bool get isEmpty =>
+      stockBajo == null &&
+          stockCero == null &&
+          soloDescontinuados == null &&
+          soloVigentes == null &&
+          (query == null || query!.isEmpty) &&
+          orden == null &&
+          (marca == null || marca!.isEmpty) &&
+          categoria == null;
+
+  bool get isNotEmpty => !isEmpty;
+
   ProductoParams copyWith({
     bool? stockBajo,
     bool? stockCero,

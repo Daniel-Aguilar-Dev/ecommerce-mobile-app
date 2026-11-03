@@ -1,8 +1,13 @@
+import 'package:ecommerce_app/core/audit/auditable_entity.dart';
 import 'package:ecommerce_app/features/categorias/domain/categoria.dart';
 import 'package:ecommerce_app/features/productos/domain/producto_estado.dart';
 
-class Producto {
+class Producto extends AuditableEntity{
   const Producto({
+    super.createdAt,
+    super.updatedAt,
+    super.createdBy,
+    super.updatedBy,
     required this.id,
     required this.nombre,
     required this.descripcion,

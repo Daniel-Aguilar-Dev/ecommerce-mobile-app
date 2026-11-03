@@ -131,8 +131,7 @@ class _EditarProductoPageState extends State<_EditarProductoPage>{
       _unidadController.text = _editable?.unidadMedia ?? "";
       _skuController.text = _editable?.sku ?? "";
 
-    } catch (error, stack){
-      debugPrint("$error, $stack");
+    } catch (error){
       AppToast.show(context, variant: ToastType.error, title: "¡Error al recuperar el producto!", message: "$error");
       Navigator.pop(context);
     }

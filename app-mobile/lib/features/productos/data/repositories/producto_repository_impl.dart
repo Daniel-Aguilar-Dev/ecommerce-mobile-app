@@ -22,7 +22,7 @@ class ProductoRepositoryImpl implements ProductoRepository {
   final ProductoDataSource _productoDataSource;
 
   @override
-  Future<void> cambiarEstado(int id) async{
+  Future<String> cambiarEstado(int id) async{
     return _productoDataSource.cambiarEstado(id);
   }
 
@@ -33,7 +33,7 @@ class ProductoRepositoryImpl implements ProductoRepository {
   }
 
   @override
-  Future<void> eliminar(int id) async{
+  Future<String> eliminar(int id) async{
     return _productoDataSource.eliminar(id);
   }
 
@@ -116,23 +116,27 @@ class ProductoRepositoryImpl implements ProductoRepository {
 
   Producto _mapearProducto(ProductoResponseDto response){
     return Producto(
-        id: response.id,
-        nombre: response.nombre,
-        descripcion: response.descripcion,
-        marca: response.marca,
-        sku: response.sku,
-        stockActual: response.stockActual,
-        stockMinimo: response.stockMinimo,
-        stockReservado: response.stockReservado,
-        precioVenta: response.precioVenta,
-        precioCompra: response.precioCompra,
-        unidadMedia: response.unidadMedia,
-        estado: response.estado,
-        costoPromedio: response.costoPromedio,
-        categoria:Categoria(id: response.categoria.id, nombre: response.categoria.nombre, descripcion: response.categoria.descripcion, tieneProductos: response.categoria.tieneProductos),
-        imagenPublicId: response.imagenPublicId,
-        imagenVersion: response.imagenVersion,
-        imagenUrl: response.imagenUrl
+      id: response.id,
+      nombre: response.nombre,
+      descripcion: response.descripcion,
+      marca: response.marca,
+      sku: response.sku,
+      stockActual: response.stockActual,
+      stockMinimo: response.stockMinimo,
+      stockReservado: response.stockReservado,
+      precioVenta: response.precioVenta,
+      precioCompra: response.precioCompra,
+      unidadMedia: response.unidadMedia,
+      estado: response.estado,
+      costoPromedio: response.costoPromedio,
+      categoria:Categoria(id: response.categoria.id, nombre: response.categoria.nombre, descripcion: response.categoria.descripcion, tieneProductos: response.categoria.tieneProductos),
+      imagenPublicId: response.imagenPublicId,
+      imagenVersion: response.imagenVersion,
+      imagenUrl: response.imagenUrl,
+      createdAt: response.createdAt,
+      updatedAt: response.updatedAt,
+      createdBy: response.createdBy,
+      updatedBy: response.updatedBy
     );
   }
 

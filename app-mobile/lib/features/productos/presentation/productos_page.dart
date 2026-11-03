@@ -7,13 +7,17 @@ import 'package:ecommerce_app/features/auth/presentation/auth_view_model.dart';
 import 'package:ecommerce_app/core/ui/bottom_sheet_container.dart';
 import 'package:ecommerce_app/core/ui/pressable_item.dart';
 import 'package:ecommerce_app/core/theme/colors.dart';
+import 'package:ecommerce_app/features/categorias/domain/categoria.dart';
+import 'package:ecommerce_app/features/categorias/domain/categoria_repository.dart';
 import 'package:ecommerce_app/features/productos/data/models/producto_params.dart';
 import 'package:ecommerce_app/features/productos/domain/producto_estado.dart';
 import 'package:ecommerce_app/features/productos/domain/producto_repository.dart';
 import 'package:ecommerce_app/features/productos/domain/producto.dart';
+import 'package:ecommerce_app/features/productos/presentation/detalles_producto_gestion.dart';
 import 'package:ecommerce_app/features/productos/presentation/editar_producto_page.dart';
 import 'package:ecommerce_app/features/productos/presentation/nuevo_producto_page.dart';
 import 'package:ecommerce_app/features/productos/presentation/viewmodel/producto_view_model.dart';
+import 'package:ecommerce_app/features/productos/presentation/widgets/categorias_tabs.dart';
 import 'package:ecommerce_app/features/productos/presentation/widgets/producto_card.dart';
 import 'package:ecommerce_app/features/productos/presentation/widgets/producto_dialogs.dart';
 import 'package:flutter/material.dart';
@@ -77,11 +81,23 @@ class _ProductosViewState extends State<_ProductosView> {
 
   void _onSearchChanged(String value) {
     _debounce?.cancel();
-    _debounce = Timer(const Duration(milliseconds: 400), () {
+    _debounce = Timer(const Duration(milliseconds: 500), () {
       if (!mounted) return;
       final params = _categoria == 0 ? ProductoParams().copyWith(query: value.trim()) : ProductoParams().copyWith(query: value.trim(), categoria: _categoria);
       context.read<ProductoViewModel>().setParams(params);
     });
+  }
+
+  void _onCategoria(int id) {
+    if (id == _categoria) return;
+    setState(() => _categoria = id);
+
+    context.read<ProductoViewModel>().setParams(
+      ProductoParams().copyWith(
+        query: _searchController.text.trim(),
+        categoria: id == 0 ? null : id,
+      ),
+    );
   }
 
   void _filtrosModal(ProductoViewModel vm) async{
@@ -90,6 +106,7 @@ class _ProductosViewState extends State<_ProductosView> {
       context: context,
       barrierDismissible: false,
       builder: (context) => ProductoFiltersDialog(
+        vm: vm,
         categoria: _categoria,
         order: _order,
         visibility: _visibility,
@@ -101,7 +118,7 @@ class _ProductosViewState extends State<_ProductosView> {
       )
     );
     if(params == null){
-      vm.setParams(ProductoParams());
+      return;
     } else {
       vm.setParams(params);
     }
@@ -120,32 +137,33 @@ class _ProductosViewState extends State<_ProductosView> {
     }
   }
 
-  void _deleteProductoModal(Producto prod, ProductoViewModel vm) async {
+  void _deleteProductoModal(Producto prod, ProductoViewModel vm) {
     Navigator.pop(context);
     vm.limpiarMensajes();
-    final result = await showDialog<bool?>(
+    showDialog<bool?>(
       context: context,
       barrierDismissible: false,
       builder: (_) => DeleteProductoDialog(producto: prod, viewModel: vm),
     );
-    debugPrint("[DELETE] dió el bool: $result");
   }
 
-  void _changeStatusProductoModal(Producto prod, ProductoViewModel vm) async {
+  void _changeStatusProductoModal(Producto prod, ProductoViewModel vm) {
     Navigator.pop(context);
     vm.limpiarMensajes();
-    final result = await showDialog<bool?>(
+    showDialog<bool?>(
       context: context,
       barrierDismissible: false,
       builder: (_) => StatusProductoDialog(producto: prod, viewModel: vm),
     );
-    debugPrint("[DELETE] dió el bool: $result");
   }
+
+  Categoria placeholder = Categoria(id: 0, nombre: "nombre", descripcion: "descripcion", tieneProductos: false);
 
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<ProductoViewModel>();
     final role = context.read<AuthViewModel>().session?.usuario.rol;
+    final categorias = context.read<CategoriaRepository>();
 
     Widget pictureOptions(Producto prod) {
       return BottomSheetContainer(
@@ -233,6 +251,12 @@ class _ProductosViewState extends State<_ProductosView> {
             ]
           ),
           const SizedBox(height: 16),
+          CategoriaTabs(
+            categorias: [placeholder, placeholder, placeholder, placeholder, placeholder, placeholder],
+            seleccionada: 0,
+            onSelect: _onCategoria,
+          ),
+          const SizedBox(height: 16),
           Expanded(
             child: GridView.builder(
               physics: const NeverScrollableScrollPhysics(),
@@ -290,6 +314,20 @@ class _ProductosViewState extends State<_ProductosView> {
               )
             ),
           ),
+          SliverToBoxAdapter(
+            child: FutureBuilder(future: categorias.listaPersonal(), builder: (context, snapshot) {
+              if(snapshot.connectionState != ConnectionState.done) {
+                return Center(
+                  child: SizedBox(width: 50, height: 50, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.primario.c400)),
+                );
+              }
+              return CategoriaTabs(
+                categorias: snapshot.data ?? [],
+                seleccionada: _categoria,
+                onSelect: _onCategoria,
+              );
+            }),
+          ),
           vm.productos.isEmpty ?
           SliverFillRemaining(
             hasScrollBody: false,
@@ -313,7 +351,12 @@ class _ProductosViewState extends State<_ProductosView> {
                   backgroundColor: Colors.transparent,
                   builder: (_) => pictureOptions(prod),
                 ),
-                onCardTouch: () {},
+                onCardTouch: () => Navigator.push<bool>(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => DetallesProductoGestion(productoId: prod.id)
+                  ),
+                )
               );
             },
           ),
@@ -343,10 +386,10 @@ class _ProductosViewState extends State<_ProductosView> {
         enabled: vm.isFetching,
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child:  vm.isFetching ? loadingPlaceholder : (vm.productos.isEmpty && _searchController.text == "") ? emptyList : list,
+          child:  vm.isFetching ? loadingPlaceholder : (vm.productos.isEmpty && _searchController.text == "" && vm.productoParams.isEmpty) ? emptyList : list,
         ),
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: role == RoleEnum.ADMINISTRADOR.name ? FloatingActionButton(
         heroTag: null,
         backgroundColor: AppColors.primario.c400,
         onPressed: () async {
@@ -360,7 +403,7 @@ class _ProductosViewState extends State<_ProductosView> {
         },
         elevation: 1,
         child: Icon(LucideIcons600.plus, color: Colors.white),
-      ),
+      ) : null,
     );
   }
 }

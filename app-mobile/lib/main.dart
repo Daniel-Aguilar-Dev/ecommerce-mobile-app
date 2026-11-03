@@ -10,7 +10,7 @@ import 'package:ecommerce_app/features/productos/data/repositories/producto_repo
 import 'package:ecommerce_app/features/productos/domain/producto_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
+import 'package:intl/date_symbol_data_local.dart';
 import 'core/network/api_client.dart';
 import 'core/network/authenticated_api_client.dart';
 import 'features/auth/data/auth_remote_data_source.dart';
@@ -20,9 +20,10 @@ import 'features/auth/domain/auth_repository.dart';
 import 'features/auth/presentation/auth_gate.dart';
 import 'features/auth/presentation/auth_view_model.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  await initializeDateFormatting('es_MX', null);
   // En el emulador Android, 10.0.2.2 apunta al host donde corre Spring Boot.
   const baseUrl = String.fromEnvironment(
     'API_BASE_URL',

@@ -31,7 +31,7 @@ abstract class ProductoRepository {
 
   Future<Producto> modificar(ProductoRequestDto dto, File? file, int id);
 
-  Future<void> cambiarEstado(int id);
+  Future<String> cambiarEstado(int id);
 
-  Future<void> eliminar(int id);
+  Future<String> eliminar(int id);
 }

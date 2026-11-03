@@ -10,7 +10,6 @@ import 'package:ecommerce_app/features/productos/data/models/producto_response_p
 import 'package:ecommerce_app/features/productos/data/models/producto_response_dto.dart';
 import 'package:ecommerce_app/features/productos/data/models/producto_request_dto.dart';
 import 'package:ecommerce_app/features/productos/data/models/stock_linea_response_dto.dart';
-import 'package:flutter/material.dart';
 
 class ProductoDataSource {
   ProductoDataSource({
@@ -316,21 +315,39 @@ class ProductoDataSource {
     return ProductoResponseDto.fromJson(data);
   }
 
-  Future<void> cambiarEstado(int id) async{
-    final res = await _apiClientAuth.requestJson(
+  Future<String> cambiarEstado(int id) async{
+    final responseJson = await _apiClientAuth.requestJson(
       "PATCH",
       "$_privatePath/$id",
     );
-    //TODO quitar este print cuando vea que devuelve
-    debugPrint("[DELETE]: Devuelve: ${res.toString()}");
+
+    if (responseJson['success'] != true) {
+      final message = responseJson['message'];
+      throw ApiException(
+        message: message is String
+            ? message
+            : 'No fue posible modificar el producto',
+      );
+    }
+
+    return responseJson["message"];
   }
 
-  Future<void> eliminar(int id) async{
-    final res = await _apiClientAuth.requestJson(
+  Future<String> eliminar(int id) async{
+    final responseJson = await _apiClientAuth.requestJson(
       "DELETE",
       "$_privatePath/$id",
     );
-    //TODO quitar este print cuando vea que devuelve
-    debugPrint("[DELETE]: Devuelve: ${res.toString()}");
+
+    if (responseJson['success'] != true) {
+      final message = responseJson['message'];
+      throw ApiException(
+        message: message is String
+            ? message
+            : 'No fue posible eliminar el producto',
+      );
+    }
+
+    return responseJson["message"];
   }
 }

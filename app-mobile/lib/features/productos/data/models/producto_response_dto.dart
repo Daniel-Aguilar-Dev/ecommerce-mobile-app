@@ -1,8 +1,13 @@
+import 'package:ecommerce_app/core/audit/auditable_entity.dart';
 import 'package:ecommerce_app/features/categorias/data/models/categoria_response_dto.dart';
 import 'package:ecommerce_app/features/productos/domain/producto_estado.dart';
 
-class ProductoResponseDto {
+class ProductoResponseDto extends AuditableEntity {
   const ProductoResponseDto({
+    super.createdAt,
+    super.createdBy,
+    super.updatedAt,
+    super.updatedBy,
     required this.id,
     required this.nombre,
     required this.descripcion,
@@ -58,7 +63,11 @@ class ProductoResponseDto {
       imagenVersion: json['imagenVersion'] as int,
       imagenUrl: json['imagenUrl'] as String,
       costoPromedio: json['costoPromedio'] as double,
-      categoria: CategoriaResponseDto.fromJson(json["categoria"] as Map<String, dynamic>)
+      categoria: CategoriaResponseDto.fromJson(json["categoria"] as Map<String, dynamic>),
+      createdAt: json['createdAt'] as String?,
+      updatedAt: json['updatedAt'] as String?,
+      createdBy: json['createdBy'] as int?,
+      updatedBy: json['updatedBy'] as int?,
     );
   }
 }

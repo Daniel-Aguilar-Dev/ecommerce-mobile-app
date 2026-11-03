@@ -300,7 +300,7 @@ public class ProductoService {
         String mensaje = existente.getEstado() == ProductoEstadoEnum.PROD_ACTIVO ?
                 "¡Producto disponible nuevamente!"
                 :
-                "¡Producto descontinuado";
+                "¡Producto descontinuado!";
 
         productoRepository.save(existente);
         return ApiResponse.ok(mensaje);

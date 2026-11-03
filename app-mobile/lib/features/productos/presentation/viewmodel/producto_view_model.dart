@@ -4,7 +4,6 @@ import 'package:ecommerce_app/core/network/api_exception.dart';
 import 'package:ecommerce_app/features/productos/data/models/producto_params.dart';
 import 'package:ecommerce_app/features/productos/data/models/producto_request_dto.dart';
 import 'package:ecommerce_app/features/productos/domain/producto.dart';
-import 'package:ecommerce_app/features/productos/domain/producto_estado.dart';
 import 'package:ecommerce_app/features/productos/domain/producto_repository.dart';
 import 'package:flutter/material.dart';
 
@@ -160,8 +159,8 @@ class ProductoViewModel extends ChangeNotifier{
   Future<bool> borrar(int id) async{
     _comenzarOperacion();
     try{
-      await _repository.eliminar(id);
-      _successMessage = 'Producto eliinado correctamente';
+      final msj = await _repository.eliminar(id);
+      _successMessage = msj;
       cargar();
       cargarMarcas();
       return true;
@@ -176,9 +175,8 @@ class ProductoViewModel extends ChangeNotifier{
   Future<bool> cambiarEstado(int id) async{
     _comenzarOperacion();
     try{
-      await _repository.cambiarEstado(id);
-      Producto prod = await _repository.unoPorId(id);
-      _successMessage = 'Producto ${prod.estado == ProductoEstado.PROD_ACTIVO ? "restablecido" : "descontinuado" } correctamente';
+    final msj = await _repository.cambiarEstado(id);
+      _successMessage = msj;
       cargar();
       cargarMarcas();
       return true;
