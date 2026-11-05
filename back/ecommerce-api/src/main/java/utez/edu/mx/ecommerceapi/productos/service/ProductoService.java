@@ -128,6 +128,7 @@ public class ProductoService {
 
         List<ProductoPublicDto> dtos = productos.stream()
                 .filter(p -> p.getEstado() != ProductoEstadoEnum.PROD_ELIMINADO)
+                .filter(p -> p.getEstado() != ProductoEstadoEnum.PROD_DESCONTINUADO)
                 .map(p -> {
                     String url = urlBuilder.thumbnail(p.getImagenPublicId(), p.getImagenVersion());
                     return ProductoPublicDto.fromEntity(p, url);

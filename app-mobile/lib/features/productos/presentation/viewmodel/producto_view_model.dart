@@ -24,6 +24,8 @@ class ProductoViewModel extends ChangeNotifier{
   String? _errorMessage;
   String? _successMessage;
 
+  ApiException? errorObj;
+
   bool get isLoading => _isLoading;
   bool get isFetching => _isFetching;
   bool get isLoadingMarcas => _isLoadingMarcas;
@@ -225,7 +227,10 @@ class ProductoViewModel extends ChangeNotifier{
   }
 
   String _mensaje(Object error) {
-    if (error is ApiException) return error.message;
+    if (error is ApiException){
+      errorObj = error;
+      return error.message;
+    }
     if (error is String) return error;
     return 'Ocurrió un error inesperado. Intenta de nuevo.';
   }

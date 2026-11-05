@@ -373,6 +373,8 @@ class _ProductosViewState extends State<_ProductosView> {
       ),
     );
 
+    if(vm.errorObj != null) return StatusView.byApiException(exception: vm.errorObj!);
+
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Skeletonizer(
