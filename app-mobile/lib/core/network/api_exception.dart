@@ -2,7 +2,7 @@
 ///
 /// Agrupa en un solo tipo el mensaje, el estado HTTP y los errores por campo,
 /// para que las capas superiores no dependan de detalles de `package:http`.
-class ApiException implements Exception {
+sealed class ApiException implements Exception {
   /// Mensaje entendible para registrar o mostrar en la interfaz.
   final String message;
 
@@ -39,8 +39,8 @@ final class TiempoAgotado extends ApiException{
   const TiempoAgotado({required super.message});
 }
 
-final class ErrorSerivdor extends ApiException{
-  const ErrorSerivdor({ required super.statusCode, required super.message });
+final class ErrorServidor extends ApiException{
+  const ErrorServidor({ required super.statusCode, required super.message });
 }
 
 final class PeticionRechazada extends ApiException{
@@ -52,5 +52,5 @@ final class RespuestaInvalida extends ApiException{
 }
 
 final class DtoInvalido extends ApiException{
-  const DtoInvalido({required super.message, required super.fieldErrors});
+  const DtoInvalido({required super.message, required super.fieldErrors, required super.code, required super.statusCode});
 }

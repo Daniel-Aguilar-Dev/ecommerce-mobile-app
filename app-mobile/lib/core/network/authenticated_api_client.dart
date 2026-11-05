@@ -154,7 +154,7 @@ class AuthenticatedApiClient {
       await _renovarUnaVezCompartida();
       final tokenNuevo = await _tokenStorage.leerAccessToken();
       if (tokenNuevo == null || tokenNuevo.isEmpty) {
-        throw const ApiException(
+        throw const ErrorAutenticacion(
           message: 'La API no devolvió un access token renovado',
           statusCode: 401,
         );
@@ -168,7 +168,7 @@ class AuthenticatedApiClient {
         // abandonar la ruta autenticada y pedir credenciales nuevamente.
       }
       _onSessionExpired();
-      throw const ApiException(
+      throw const ErrorAutenticacion(
         message: 'La sesión expiró. Inicia sesión nuevamente',
         statusCode: 401,
       );

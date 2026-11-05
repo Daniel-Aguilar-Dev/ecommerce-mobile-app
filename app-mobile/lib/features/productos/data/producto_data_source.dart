@@ -38,7 +38,7 @@ class ProductoDataSource {
 
     if (responseJson['success'] != true) {
       final message = responseJson['message'];
-      throw ApiException(
+      throw RespuestaInvalida(
         message: message is String
             ? message
             : 'No fue posible obtener los productos',
@@ -47,7 +47,7 @@ class ProductoDataSource {
 
     final data = responseJson['data'];
     if (data is! List) {
-      throw const ApiException(
+      throw const RespuestaInvalida(
         message: 'La respuesta tiene un formato inválido',
       );
     }
@@ -69,7 +69,7 @@ class ProductoDataSource {
 
     if (responseJson['success'] != true) {
       final message = responseJson['message'];
-      throw ApiException(
+      throw RespuestaInvalida(
         message: message is String
             ? message
             : 'No fue posible obtener los productos',
@@ -78,7 +78,7 @@ class ProductoDataSource {
 
     final data = responseJson['data'];
     if (data is! List) {
-      throw const ApiException(
+      throw const RespuestaInvalida(
         message: 'La respuesta tiene un formato inválido',
       );
     }
@@ -93,7 +93,7 @@ class ProductoDataSource {
 
     if (responseJson['success'] != true) {
       final message = responseJson['message'];
-      throw ApiException(
+      throw RespuestaInvalida(
         message: message is String
             ? message
             : 'No fue posible obtener los productos',
@@ -102,7 +102,7 @@ class ProductoDataSource {
 
     final data = responseJson['data'];
     if (data is! List) {
-      throw const ApiException(
+      throw const RespuestaInvalida(
         message: 'La respuesta tiene un formato inválido',
       );
     }
@@ -117,7 +117,7 @@ class ProductoDataSource {
 
     if (responseJson['success'] != true) {
       final message = responseJson['message'];
-      throw ApiException(
+      throw RespuestaInvalida(
         message: message is String
             ? message
             : 'No fue posible obtener el producto',
@@ -126,7 +126,7 @@ class ProductoDataSource {
 
     final data = responseJson['data'];
     if (data is! Map<String, dynamic>) {
-      throw const ApiException(
+      throw const RespuestaInvalida(
         message: 'La respuesta tiene un formato inválido',
       );
     }
@@ -141,7 +141,7 @@ class ProductoDataSource {
 
     if (responseJson['success'] != true) {
       final message = responseJson['message'];
-      throw ApiException(
+      throw RespuestaInvalida(
         message: message is String
             ? message
             : 'No fue posible obtener el producto',
@@ -150,7 +150,7 @@ class ProductoDataSource {
 
     final data = responseJson['data'];
     if (data is! Map<String, dynamic>) {
-      throw const ApiException(
+      throw const RespuestaInvalida(
         message: 'La respuesta tiene un formato inválido',
       );
     }
@@ -165,7 +165,7 @@ class ProductoDataSource {
 
     if (responseJson['success'] != true) {
       final message = responseJson['message'];
-      throw ApiException(
+      throw RespuestaInvalida(
         message: message is String
             ? message
             : 'No fue posible obtener el producto',
@@ -174,7 +174,7 @@ class ProductoDataSource {
 
     final data = responseJson['data'];
     if (data is! Map<String, dynamic>) {
-      throw const ApiException(
+      throw const RespuestaInvalida(
         message: 'La respuesta tiene un formato inválido',
       );
     }
@@ -189,7 +189,7 @@ class ProductoDataSource {
 
     if (responseJson['success'] != true) {
       final message = responseJson['message'];
-      throw ApiException(
+      throw RespuestaInvalida(
         message: message is String
             ? message
             : 'No fue posible obtener el producto',
@@ -198,7 +198,7 @@ class ProductoDataSource {
 
     final data = responseJson['data'];
     if (data is! Map<String, dynamic>) {
-      throw const ApiException(
+      throw const RespuestaInvalida(
         message: 'La respuesta tiene un formato inválido',
       );
     }
@@ -214,7 +214,7 @@ class ProductoDataSource {
 
     if (responseJson['success'] != true) {
       final message = responseJson['message'];
-      throw ApiException(
+      throw RespuestaInvalida(
         message: message is String
             ? message
             : 'No fue posible obtener el stock del producto',
@@ -223,7 +223,7 @@ class ProductoDataSource {
 
     final data = responseJson['data'];
     if (data is! int) {
-      throw const ApiException(
+      throw const RespuestaInvalida(
         message: 'La respuesta tiene un formato inválido',
       );
     }
@@ -240,7 +240,7 @@ class ProductoDataSource {
 
     if (responseJson['success'] != true) {
       final message = responseJson['message'];
-      throw ApiException(
+      throw RespuestaInvalida(
         message: message is String
             ? message
             : 'No fue posible validar el carrito',
@@ -249,7 +249,7 @@ class ProductoDataSource {
 
     final data = responseJson['data'];
     if (data is! List) {
-      throw const ApiException(
+      throw const RespuestaInvalida(
         message: 'La respuesta tiene un formato inválido',
       );
     }
@@ -269,7 +269,7 @@ class ProductoDataSource {
 
     if (responseJson['success'] != true) {
       final message = responseJson['message'];
-      throw ApiException(
+      throw RespuestaInvalida(
         message: message is String
             ? message
             : 'No fue posible registrar el producto',
@@ -278,7 +278,7 @@ class ProductoDataSource {
 
     final data = responseJson['data'];
     if (data is! Map<String, dynamic>) {
-      throw const ApiException(
+      throw const RespuestaInvalida(
         message: 'La respuesta tiene un formato inválido',
       );
     }
@@ -298,7 +298,7 @@ class ProductoDataSource {
 
     if (responseJson['success'] != true) {
       final message = responseJson['message'];
-      throw ApiException(
+      throw RespuestaInvalida(
         message: message is String
             ? message
             : 'No fue posible modificar el producto',
@@ -307,7 +307,7 @@ class ProductoDataSource {
 
     final data = responseJson['data'];
     if (data is! Map<String, dynamic>) {
-      throw const ApiException(
+      throw const RespuestaInvalida(
         message: 'La respuesta tiene un formato inválido',
       );
     }
@@ -323,7 +323,7 @@ class ProductoDataSource {
 
     if (responseJson['success'] != true) {
       final message = responseJson['message'];
-      throw ApiException(
+      throw RespuestaInvalida(
         message: message is String
             ? message
             : 'No fue posible modificar el producto',
@@ -341,7 +341,7 @@ class ProductoDataSource {
 
     if (responseJson['success'] != true) {
       final message = responseJson['message'];
-      throw ApiException(
+      throw RespuestaInvalida(
         message: message is String
             ? message
             : 'No fue posible eliminar el producto',
