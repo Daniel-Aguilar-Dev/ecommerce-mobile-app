@@ -206,10 +206,11 @@ class ProductoDataSource {
     return ProductoResponseDto.fromJson(data);
   }
 
-  Future<int> validarStockProducto(int id) async{
+  Future<int> validarStockProducto(int id, int cantidad) async{
     final responseJson = await _apiClientPublic.requestJson(
-        "POST",
-        "$_publicPath/validar/producto/$id"
+      "POST",
+      "$_publicPath/validar/producto/$id",
+      body: {"cantidad" : cantidad}
     );
 
     if (responseJson['success'] != true) {
