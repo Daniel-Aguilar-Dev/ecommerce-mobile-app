@@ -68,6 +68,9 @@ class _EditarProductoPageState extends State<_EditarProductoPage>{
   late final _categorias = context.read<CategoriaRepository>();
   Producto? _editable;
 
+  late final Future<void> _cargaInicial;
+  late final Future<List<Categoria>> _categoriasFuture = _categorias.listaPersonal();
+
   final _formKey = GlobalKey<FormState>();
   final _skuFieldKey = GlobalKey<FormFieldState<String>>();
 
@@ -100,6 +103,12 @@ class _EditarProductoPageState extends State<_EditarProductoPage>{
   int? _categoriaId;
   Categoria? _selectedCategoria;
   File? _foto;
+
+  @override
+  void initState() {
+    super.initState();
+    _cargaInicial = _cargarProducto();
+  }
 
   @override
   void dispose() {
@@ -393,7 +402,7 @@ class _EditarProductoPageState extends State<_EditarProductoPage>{
               options: vm.marcas,
             ),
             FutureBuilder<List<Categoria>>(
-              future: _categorias.listaPersonal(),
+              future: _categoriasFuture,
               builder: (context, snapshot) {
                 final categorias = snapshot.data ?? const [];
                 if(snapshot.connectionState == ConnectionState.waiting) return Text("Cargando categorías...");
@@ -717,7 +726,7 @@ class _EditarProductoPageState extends State<_EditarProductoPage>{
       Padding(
         padding: .all(16),
         child: FutureBuilder<void>(
-          future: _cargarProducto(),
+          future: _cargaInicial,
           builder: (context, snapshot) {
             if(snapshot.connectionState != ConnectionState.done) {
               return Column(
