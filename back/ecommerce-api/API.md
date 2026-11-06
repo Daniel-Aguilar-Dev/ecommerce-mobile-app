@@ -78,6 +78,26 @@ En Linux o macOS:
 
 Durante desarrollo, `spring.jpa.hibernate.ddl-auto=update` permite que Hibernate actualice el esquema al iniciar. Úsalo solo con la base local; para producción o cambios compartidos de esquema se deben revisar y versionar las migraciones. Si el arranque falla al crear el `EntityManagerFactory`, revisa primero que MySQL responda en el host/puerto configurado y que la base y credenciales existan.
 
+## Datos iniciales
+
+Al arrancar la API, `RolSeeder` crea los roles faltantes y después `DataInitializer`
+inserta estas cuentas activas si su correo todavía no existe:
+
+| Rol | Correo | Contraseña inicial |
+| --- | --- | --- |
+| ADMINISTRADOR | admin@example.com | admin123 |
+| EMPLEADO | salem.barrera@example.com | empleado123 |
+| CLIENTE | juan.aguilar@example.com | cliente123 |
+
+Los roles se buscan por nombre, sin depender de sus IDs. Las contraseñas iniciales
+se codifican con el `PasswordEncoder` del proyecto al crear cada cuenta, generando
+un hash BCrypt con salt aleatorio. La auditoría JPA
+asigna las fechas de inserción; `created_by` y `updated_by` se inicializan en `1`.
+La carga se ejecuta en una transacción y puede repetirse: no modifica cuentas que
+ya existan, incluso si cambiaron su contraseña o están desactivadas. Una base
+parcialmente inicializada recibe únicamente los usuarios faltantes. Un teléfono
+ocupado por otra cuenta hace fallar la transacción por la restricción de unicidad.
+
 ## Swagger / OpenAPI
 
 Con la aplicación ejecutándose, abre:

@@ -2,12 +2,14 @@ package utez.edu.mx.ecommerceapi.usuarios.config;
 
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import utez.edu.mx.ecommerceapi.usuarios.entity.Rol;
 import utez.edu.mx.ecommerceapi.usuarios.entity.RolEnum;
 import utez.edu.mx.ecommerceapi.usuarios.repository.RolRepository;
 
 @Component
+@Order(1)
 public class RolSeeder implements ApplicationRunner {
 
     private final RolRepository rolRepository;
