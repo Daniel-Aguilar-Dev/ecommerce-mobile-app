@@ -173,7 +173,8 @@ class MainMenuState extends State<MainMenu>{
                   MaterialPageRoute(
                       builder: (_) => DetallesProducto(productoId: prod.id)
                   ),
-                )
+                ),
+                showButton: prod.stock <= 0,
               );
             },
           ),

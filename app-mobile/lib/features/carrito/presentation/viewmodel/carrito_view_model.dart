@@ -71,21 +71,23 @@ class CarritoViewModel extends ChangeNotifier {
   Future<void> agregarUnoAlCarrito(ProductoPublic prod) async{
     _checkingStockId = prod.id;
     await checarStock(prod, 1);
-    if(_errorMessage != ""){
+    if(_errorMessage != null){
       carritoDatasource.agregarAlCarrito(prod, 1);
     }
     _checkingStockId = 0;
     notifyListeners();
   }
 
-  Future<void> agregarAlCarrito(ProductoPublic prod, int cantidad) async{
+  Future<int> agregarAlCarrito(ProductoPublic prod, int cantidad) async{
+    int stock = prod.stock;
     _checkingStockId = prod.id;
-    await checarStock(prod, 1);
+    stock = await checarStock(prod, 1);
     if(_errorMessage != ""){
       carritoDatasource.agregarAlCarrito(prod, cantidad);
     }
     _checkingStockId = 0;
     notifyListeners();
+    return stock;
   }
 
   void removerDelCarrito(ProductoPublic prod){
