@@ -3,6 +3,7 @@ import 'package:ecommerce_app/core/layout/layout_externo.dart';
 import 'package:ecommerce_app/core/layout/status_view.dart';
 import 'package:ecommerce_app/core/theme/colors.dart';
 import 'package:ecommerce_app/core/ui/visor_imagen.dart';
+import 'package:ecommerce_app/features/carrito/presentation/viewmodel/carrito_view_model.dart';
 import 'package:ecommerce_app/features/productos/domain/producto_public.dart';
 import 'package:ecommerce_app/features/productos/presentation/viewmodel/producto_view_model.dart';
 import 'package:ecommerce_app/features/productos/domain/producto_repository.dart';
@@ -36,6 +37,7 @@ class _DetallesViewState extends State<_DetallesView>{
 
   @override
   Widget build(BuildContext context) {
+    final vm = context.watch<CarritoViewModel>();
     final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBarExterno(title: "Detalles del producto"),
@@ -133,6 +135,16 @@ class _DetallesViewState extends State<_DetallesView>{
                             ],
                           ),
                         ),
+                        FutureBuilder(
+                          future: vm.getProudctosSimilares(prod.categoria.id),
+                          builder: (context, snapshot) {
+                            if(snapshot.connectionState != ConnectionState.done) {
+                              return Center(
+                                child: SizedBox(width: 50, height: 50, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.primario.c400)),
+                              );
+                            }
+                            return Text("Productos similares hay: ${snapshot.data?.length}");
+                        }),
                       ],
                     ),
                   ),

@@ -12,13 +12,15 @@ class ProductoCardPublic extends StatelessWidget{
     required this.producto,
     required this.onCardTouch,
     required this.onPressButton,
-    this.loading = false
+    this.loading = false,
+    this.showButton = true,
   });
 
   final ProductoPublic producto;
   final VoidCallback onCardTouch;
   final VoidCallback onPressButton;
   final bool loading;
+  final bool showButton;
 
   String get _precio {
     final p = producto.precio;
@@ -121,7 +123,7 @@ class ProductoCardPublic extends StatelessWidget{
                             ),
                           ),
                         ),
-                        IconButton(
+                        ?showButton ? IconButton(
                           onPressed: onPressButton,
                           icon: const Icon(LucideIcons.shoppingCartPlus, size: 20,),
                           color: Colors.white,
@@ -131,7 +133,7 @@ class ProductoCardPublic extends StatelessWidget{
                               borderRadius: BorderRadius.circular(12),
                             ),
                           ),
-                        )
+                        ) : null
                       ],
                     )
                   ],

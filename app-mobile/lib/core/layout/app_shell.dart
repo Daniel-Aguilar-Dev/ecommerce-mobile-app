@@ -1,3 +1,4 @@
+import 'package:ecommerce_app/features/carrito/presentation/carrito_page.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
@@ -93,7 +94,7 @@ class NavItem {
 List<NavItem> listCliente = [
   NavItem('Inicio', LucideIcons.home, const MainMenu(), "¿Qué necesitas hoy?"),
   NavItem('Pedidos', LucideIcons.package, const Text("Pedidos"), "Tus pedidos"),
-  NavItem('Carrito', LucideIcons.shoppingCart, const Text("Carrito"), "Tu carrito"),
+  NavItem('Carrito', LucideIcons.shoppingCart, const CarritoPage(), "Tu carrito"),
   NavItem('Pagos', LucideIcons.banknote, const Text("Pagos"), "Pagos pendientes"),
   NavItem('Cuenta', LucideIcons.user, const ProfileScreen(), "Cuenta"),
 ];

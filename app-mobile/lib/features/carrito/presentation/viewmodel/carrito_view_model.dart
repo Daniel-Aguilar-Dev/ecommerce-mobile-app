@@ -48,15 +48,6 @@ class CarritoViewModel extends ChangeNotifier {
     if (!_disposed) super.notifyListeners();
   }
 
-  Future<void> agregarUnoAlCarrito(ProductoPublic prod) async{
-    _checkingStockId = prod.id;
-    await checarStock(prod, 1);
-    if(_errorMessage != ""){
-      carritoDatasource.agregarAlCarrito(prod, 1);
-    }
-    _checkingStockId = 0;
-  }
-
   Future<void> cargar() async {
      _comenzarFetch();
      _limpiarErrorObjList();
@@ -73,6 +64,38 @@ class CarritoViewModel extends ChangeNotifier {
 
   void cargarCarrito(){
     carritoDatasource.inicializarCarrito();
+  }
+
+  Carrito obtenerCarrito() => carritoDatasource.obtenerCarrito();
+
+  Future<void> agregarUnoAlCarrito(ProductoPublic prod) async{
+    _checkingStockId = prod.id;
+    await checarStock(prod, 1);
+    if(_errorMessage != ""){
+      carritoDatasource.agregarAlCarrito(prod, 1);
+    }
+    _checkingStockId = 0;
+    notifyListeners();
+  }
+
+  Future<void> agregarAlCarrito(ProductoPublic prod, int cantidad) async{
+    _checkingStockId = prod.id;
+    await checarStock(prod, 1);
+    if(_errorMessage != ""){
+      carritoDatasource.agregarAlCarrito(prod, cantidad);
+    }
+    _checkingStockId = 0;
+    notifyListeners();
+  }
+
+  void removerDelCarrito(ProductoPublic prod){
+    carritoDatasource.quitarDelCarrito(prod.id);
+    notifyListeners();
+  }
+
+  void actualizarCarrito(Carrito carrito){
+    carritoDatasource.actualizarCarrito(carrito);
+    notifyListeners();
   }
 
   Future<ProductoPublic?> obtenerUnoPorId(int id) async{
@@ -122,14 +145,10 @@ class CarritoViewModel extends ChangeNotifier {
   }
 
   Future<List<ProductoPublic>> getProudctosSimilares(int categoria) async{
-    _limpiarErrorObj();
-    _comenzarOperacion();
     try{
       return await _repository.listaPublica(ProductoParamsPublic(categoria: categoria));
     } catch (_){
       return [];
-    } finally{
-      _terminarOperacion();
     }
   }
 
