@@ -158,6 +158,7 @@ class MainMenuState extends State<MainMenu>{
                 loading: vm.checkingStockId == prod.id,
                 onPressButton: () async {
                   if(!context.mounted) return;
+                  if(prod.stock <= 0) return;
                   if(vm.isLoading) return;
                   await vm.agregarUnoAlCarrito(prod);
                   if(vm.errorMessage != null) {
@@ -174,7 +175,6 @@ class MainMenuState extends State<MainMenu>{
                       builder: (_) => DetallesProducto(productoId: prod.id)
                   ),
                 ),
-                showButton: prod.stock <= 0,
               );
             },
           ),

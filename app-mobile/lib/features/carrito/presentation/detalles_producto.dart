@@ -160,34 +160,37 @@ class _DetallesViewState extends State<_DetallesView>{
                     ),
                   ),
                 ),
-                Row(
-                  crossAxisAlignment: .center,
-                  mainAxisAlignment: .spaceBetween,
-                  children: [
-                    CantidadInput(max: stockNuevo == 0 ? prod.stock : stockNuevo, min: 1, acceptZero: false, onChange: (val) => setState(() => cantidad = val)),
-                    FilledButton(
-                      onPressed: () async {
-                        int stockReal =  await vm.agregarAlCarrito(prod, cantidad);
-                        if(vm.errorMessage != null){
-                          if(vm.errorMessage!.contains("Stock insuficiente")){
-                            setState(() {
-                                cantidad = 1;
-                                stockNuevo = stockReal;
-                            });
-                            AppToast.show(context, variant: ToastType.info, title: "¡Información!", message: vm.errorMessage);
-                          } else {
-                            AppToast.show(context, variant: ToastType.info, title: "¡Error!", message: vm.errorMessage);
-                          }
-                        }
-                      },
-                      style: ButtonStyle(
-                        shape: WidgetStatePropertyAll(
-                          RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(8))),
-                        ),
-                      ),
-                      child: vm.isLoading ? CircularProgressIndicator(strokeWidth: 1, color: AppColors.primario.c400,) : const Text("Confirmar")
-                    )
-                  ],
+                Padding(
+                  padding: .only(left: 16, right: 16, bottom: 16),
+                  child: Row(
+                    crossAxisAlignment: .center,
+                    mainAxisAlignment: .spaceBetween,
+                    children: [
+                      CantidadInput(max: stockNuevo == 0 ? prod.stock : stockNuevo, min: 1, acceptZero: false, onChange: (val) => setState(() => cantidad = val)),
+                      FilledButton(
+                          onPressed: () async {
+                            int stockReal =  await vm.agregarAlCarrito(prod, 30);
+                            if(vm.errorMessage != null){
+                              if(vm.errorMessage!.contains("Stock insuficiente")){
+                                setState(() {
+                                  cantidad = 1;
+                                  stockNuevo = stockReal;
+                                });
+                                AppToast.show(context, variant: ToastType.info, title: "¡Información!", message: vm.errorMessage);
+                              } else {
+                                AppToast.show(context, variant: ToastType.info, title: "¡Error!", message: vm.errorMessage);
+                              }
+                            }
+                          },
+                          style: ButtonStyle(
+                            shape: WidgetStatePropertyAll(
+                              RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(8))),
+                            ),
+                          ),
+                          child: vm.isLoading ? CircularProgressIndicator(strokeWidth: 1, color: AppColors.primario.c400,) : const Text("Agregar al carrito")
+                      )
+                    ],
+                  ),
                 )
               ],
             )
