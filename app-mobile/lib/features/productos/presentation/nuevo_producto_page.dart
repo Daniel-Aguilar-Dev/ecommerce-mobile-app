@@ -62,6 +62,8 @@ class _NuevoProductoPage extends StatefulWidget {
 class _NuevoProductoPageState extends State<_NuevoProductoPage>{
   late final _categorias = context.read<CategoriaRepository>();
 
+  late final Future<List<Categoria>> _categoriasFuture = _categorias.listaPersonal();
+
   final _formKey = GlobalKey<FormState>();
   final _skuFieldKey = GlobalKey<FormFieldState<String>>();
 
@@ -367,7 +369,7 @@ class _NuevoProductoPageState extends State<_NuevoProductoPage>{
                 options: vm.marcas,
             ),
             FutureBuilder<List<Categoria>>(
-              future: _categorias.listaPersonal(),
+              future: _categoriasFuture,
               builder: (context, snapshot) {
                 final categorias = snapshot.data ?? const [];
                 if(snapshot.connectionState == ConnectionState.waiting) return Text("Cargando categorías...");
