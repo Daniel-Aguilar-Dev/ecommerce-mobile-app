@@ -72,7 +72,7 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<AuthSession> renovarSesion() async {
     final refreshToken = await _tokenStorage.leerRefreshToken();
     if (refreshToken == null || refreshToken.isEmpty) {
-      throw const ApiException(
+      throw const ErrorAutenticacion(
         message: 'No hay refresh token guardado; inicia sesión nuevamente',
         statusCode: 401,
       );
@@ -82,7 +82,7 @@ class AuthRepositoryImpl implements AuthRepository {
       final respuesta = await _remoteDataSource.renovar(refreshToken);
       await _guardarTokens(respuesta);
       return _crearSesion(respuesta);
-    } on ApiException catch (error) {
+    } on ErrorAutenticacion catch (error) {
       // Si el refresh token venció o fue revocado, ya no hay sesión renovable.
       if (error.statusCode == 401) {
         await _tokenStorage.borrarTokens();

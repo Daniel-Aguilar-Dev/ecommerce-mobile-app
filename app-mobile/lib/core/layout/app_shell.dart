@@ -1,3 +1,4 @@
+import 'package:ecommerce_app/features/carrito/presentation/carrito_page.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
@@ -13,6 +14,7 @@ import 'package:ecommerce_app/features/auth/presentation/profile_page.dart';
 import 'package:ecommerce_app/features/carrito/presentation/main_menu.dart';
 import 'package:ecommerce_app/features/categorias/presentation/categorias_page.dart';
 import 'package:ecommerce_app/features/productos/presentation/productos_page.dart';
+import 'package:ecommerce_app/features/productos/presentation/escanear_producto_page_one.dart';
 
 class AppShell extends StatefulWidget {
   const AppShell({super.key});
@@ -92,7 +94,7 @@ class NavItem {
 List<NavItem> listCliente = [
   NavItem('Inicio', LucideIcons.home, const MainMenu(), "¿Qué necesitas hoy?"),
   NavItem('Pedidos', LucideIcons.package, const Text("Pedidos"), "Tus pedidos"),
-  NavItem('Carrito', LucideIcons.shoppingCart, const Text("Carrito"), "Tu carrito"),
+  NavItem('Carrito', LucideIcons.shoppingCart, const CarritoPage(), "Tu carrito"),
   NavItem('Pagos', LucideIcons.banknote, const Text("Pagos"), "Pagos pendientes"),
   NavItem('Cuenta', LucideIcons.user, const ProfileScreen(), "Cuenta"),
 ];
@@ -100,7 +102,7 @@ List<NavItem> listCliente = [
 List<NavItem> listEmpleado = [
   NavItem('Inicio', LucideIcons.home, const Text("Inicio"), "Inicio"),
   NavItem('Pedidos', LucideIcons.clipboardList, const Text("Inicio"), "Pedidos"),
-  NavItem('Escanear', LucideIcons.scanBox, const Text("Inicio"), "Escanear producto"),
+  NavItem('Escanear', LucideIcons.scanBox, EscanearProductoPageOne(), "Escanear producto"),
   NavItem('Inventario', LucideIcons.packageOpen, const ProductosPage(), "Inventario"),
   NavItem('Ventas', LucideIcons.chartColumn, const Text("Inicio"), "Ventas"),
 ];

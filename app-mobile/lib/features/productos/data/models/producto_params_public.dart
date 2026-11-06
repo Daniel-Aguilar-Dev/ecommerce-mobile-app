@@ -26,4 +26,10 @@ class ProductoParamsPublic {
       categoria: categoria ?? this.categoria,
     );
   }
+
+  bool get isEmpty =>
+    (query == null || query!.isEmpty) &&
+    categoria == null;
+
+  bool get isNotEmpty => !isEmpty;
 }

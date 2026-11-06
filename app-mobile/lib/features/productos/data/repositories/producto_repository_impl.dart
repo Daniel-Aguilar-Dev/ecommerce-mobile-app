@@ -111,7 +111,7 @@ class ProductoRepositoryImpl implements ProductoRepository {
 
   @override
   Future<int> validarStock(int id, int cantidad) async{
-    return _productoDataSource.validarStockProducto(id);
+    return _productoDataSource.validarStockProducto(id, cantidad);
   }
 
   Producto _mapearProducto(ProductoResponseDto response){

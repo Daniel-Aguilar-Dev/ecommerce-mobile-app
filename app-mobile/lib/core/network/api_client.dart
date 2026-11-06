@@ -66,15 +66,20 @@ class ApiClient {
       response = await http.Response.fromStream(
         await _httpClient.send(request).timeout(const Duration(seconds: 20)),
       ).timeout(const Duration(seconds: 20));
+    } on SocketException {
+      // El dispositivo no está conectado a la red
+      throw const SinConexion(message: 'Sin conexión a internet');
     } on http.ClientException {
       // Traducimos el error de la biblioteca HTTP a un error propio de la app.
-      throw const ApiException(message: 'No se pudo conectar con el servidor');
+      throw const SinConexion(message: 'No se pudo conectar con el servidor');
     } on TimeoutException {
       // Un timeout significa que no hubo respuesta dentro del tiempo límite.
-      throw const ApiException(
+      throw const TiempoAgotado(
         message: 'La solicitud tardó demasiado. Intenta de nuevo',
       );
     }
+    
+    final statusCode = response.statusCode;
 
     // La respuesta todavía no se ha validado; se asignará tras decodificarla.
     late final Map<String, dynamic> json;
@@ -93,11 +98,19 @@ class ApiClient {
       json = decoded;
     } on FormatException {
       // Un cuerpo vacío o mal formado tampoco es una respuesta utilizable.
-      throw ApiException(
+      throw PeticionRechazada(
         message: 'El servidor devolvió una respuesta inválida',
         statusCode: response.statusCode,
       );
     }
+
+    final message = json['message'] is String
+        ? json['message'] as String
+        : 'Ocurrió un error al comunicarse con el servidor';
+
+    final code = json['error'] is String ? json['error'] as String : null;
+
+    if (statusCode >= 500) throw ErrorServidor(statusCode: statusCode, message: message);
 
     // Cualquier estado fuera de 200–299 representa un fallo HTTP.
     if (response.statusCode < 200 || response.statusCode >= 300) {
@@ -113,11 +126,9 @@ class ApiClient {
 
       // El mensaje y código vienen del backend; usamos un mensaje de respaldo
       // si la respuesta no tiene el formato esperado.
-      throw ApiException(
-        message: json['message'] is String
-            ? json['message'] as String
-            : 'Ocurrió un error al comunicarse con el servidor',
-        code: json['error'] is String ? json['error'] as String : null,
+      throw DtoInvalido(
+        message: message,
+        code: code,
         statusCode: response.statusCode,
         fieldErrors: fieldErrors,
       );
@@ -168,19 +179,24 @@ class ApiClient {
       response = await http.Response.fromStream(streamed)
           .timeout(const Duration(seconds: 30));
     } on SocketException {
-      throw const ApiException(message: 'No se pudo conectar con el servidor');
+      // El dispositivo no está conectado a la red
+      throw const SinConexion(message: 'Sin conexión a internet');
     } on http.ClientException {
       // Traducimos el error de la biblioteca HTTP a un error propio de la app.
-      throw const ApiException(message: 'No se pudo conectar con el servidor');
+      throw const TiempoAgotado(message: 'No se pudo conectar con el servidor');
     } on TimeoutException {
       // Un timeout significa que no hubo respuesta dentro del tiempo límite.
-      throw const ApiException(
+      throw const TiempoAgotado(
         message: 'La solicitud tardó demasiado. Intenta de nuevo',
       );
     }
 
+    final statusCode = response.statusCode;
+
     // La respuesta todavía no se ha validado; se asignará tras decodificarla.
     late final Map<String, dynamic> json;
+
+    if(response.statusCode == 204) return {};
 
     try {
       // Se decodifican los bytes respetando UTF-8 y luego se interpreta JSON.
@@ -194,11 +210,19 @@ class ApiClient {
       json = decoded;
     } on FormatException {
       // Un cuerpo vacío o mal formado tampoco es una respuesta utilizable.
-      throw ApiException(
+      throw PeticionRechazada(
         message: 'El servidor devolvió una respuesta inválida',
         statusCode: response.statusCode,
       );
     }
+
+    final message = json['message'] is String
+        ? json['message'] as String
+        : 'Ocurrió un error al comunicarse con el servidor';
+
+    final code = json['error'] is String ? json['error'] as String : null;
+
+    if (statusCode >= 500) throw ErrorServidor(statusCode: statusCode, message: message);
 
     // Cualquier estado fuera de 200–299 representa un fallo HTTP.
     if (response.statusCode < 200 || response.statusCode >= 300) {
@@ -214,11 +238,9 @@ class ApiClient {
 
       // El mensaje y código vienen del backend; usamos un mensaje de respaldo
       // si la respuesta no tiene el formato esperado.
-      throw ApiException(
-        message: json['message'] is String
-            ? json['message'] as String
-            : 'Ocurrió un error al comunicarse con el servidor',
-        code: json['error'] is String ? json['error'] as String : null,
+      throw DtoInvalido(
+        message: message,
+        code: code,
         statusCode: response.statusCode,
         fieldErrors: fieldErrors,
       );

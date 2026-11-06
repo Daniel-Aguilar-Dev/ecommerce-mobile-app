@@ -1,3 +1,5 @@
+import 'package:ecommerce_app/core/network/api_exception.dart';
+import 'package:ecommerce_app/core/ui/icono_por_error.dart';
 import 'package:flutter/material.dart';
 import 'package:ecommerce_app/core/theme/colors.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -111,6 +113,22 @@ class StatusView extends StatelessWidget{
     buttonText: 'Reintentar',
     onPressButton: onRetry,
   );
+
+  StatusView.byApiException({
+    Key? key,
+    required ApiException exception,
+    String buttonText = "Reintentar",
+    VoidCallback? onRetry,
+    bool isLoading = false,
+  }) : this(
+    key: key,
+    icon: iconoPorError(exception),
+    title: exception.message,
+    buttonText: buttonText,
+    onPressButton: onRetry,
+    isLoading: isLoading,
+  );
+
 }
 
 

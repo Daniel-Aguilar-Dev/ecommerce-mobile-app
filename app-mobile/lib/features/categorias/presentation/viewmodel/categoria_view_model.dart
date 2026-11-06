@@ -17,6 +17,9 @@ class CategoriaViewModel extends ChangeNotifier{
   String? _errorMessage;
   String? _successMessage;
 
+  ApiException? errorObj;
+  ApiException? errorObjList;
+
   bool get isLoading => _isLoading;
   bool get isFetching => _isFetching;
   String? get errorMessage => _errorMessage;
@@ -39,10 +42,12 @@ class CategoriaViewModel extends ChangeNotifier{
 
   Future<void> cargar([String? query, bool silencioso = false]) async {
     if(!silencioso) _comenzarFetch();
+    _limpiarErrorObjList();
     try {
       _categorias = await _repository.listaPersonal(query);
     } catch (error) {
       _errorMessage = _mensaje(error);
+      _setErrorObjList(error);
     } finally {
       _terminarFetching();
     }
@@ -50,12 +55,14 @@ class CategoriaViewModel extends ChangeNotifier{
 
   Future<Categoria?> obtenerUno(int id) async{
     late final Categoria cat;
+    _limpiarErrorObj();
     _comenzarOperacion();
     try{
       cat = await _repository.unaPorId(id);
       return cat;
     } catch (error){
       _errorMessage = _mensaje(error);
+      _setErrorObj(error);
       return null;
     } finally{
       _terminarOperacion();
@@ -64,6 +71,7 @@ class CategoriaViewModel extends ChangeNotifier{
 
   Future<Categoria?> registrar(CategoriaRequestDto request) async {
     late final Categoria cat;
+    _limpiarErrorObj();
     _comenzarOperacion();
     try{
       cat = await _repository.crear(descripcion:request.descripcion, nombre: request.nombre);
@@ -72,6 +80,7 @@ class CategoriaViewModel extends ChangeNotifier{
       return cat;
     } catch (error){
       _errorMessage = _mensaje(error);
+      _setErrorObj(error);
       return null;
     } finally{
       _terminarOperacion();
@@ -80,6 +89,7 @@ class CategoriaViewModel extends ChangeNotifier{
 
   Future<Categoria?> actualizar(CategoriaRequestDto request, int id) async{
     late final Categoria cat;
+    _limpiarErrorObj();
     _comenzarOperacion();
     try{
       cat = await _repository.modificar(id:id, descripcion:request.descripcion, nombre: request.nombre);
@@ -88,6 +98,7 @@ class CategoriaViewModel extends ChangeNotifier{
       return cat;
     } catch (error){
       _errorMessage = _mensaje(error);
+      _setErrorObj(error);
       return null;
     } finally{
       _terminarOperacion();
@@ -95,6 +106,7 @@ class CategoriaViewModel extends ChangeNotifier{
   }
 
   Future<bool> borrar(int id) async{
+    _limpiarErrorObj();
     _comenzarOperacion();
     try{
       final msj = await _repository.eliminar(id);
@@ -103,6 +115,7 @@ class CategoriaViewModel extends ChangeNotifier{
       return true;
     } catch (error){
       _errorMessage = _mensaje(error);
+      _setErrorObj(error);
     } finally{
       _terminarOperacion();
       return false;
@@ -134,6 +147,23 @@ class CategoriaViewModel extends ChangeNotifier{
     _isLoading = false;
     notifyListeners();
   }
+
+  void _limpiarErrorObjList() => errorObjList = null;
+
+  void _limpiarErrorObj() => errorObj = null;
+
+  void _setErrorObj(Object error){
+    if(error is ApiException){
+      errorObj = error;
+    }
+  }
+
+  void _setErrorObjList(Object error){
+    if(error is ApiException){
+      errorObjList = error;
+    }
+  }
+
 
   String _mensaje(Object error) {
     if (error is ApiException) return error.message;

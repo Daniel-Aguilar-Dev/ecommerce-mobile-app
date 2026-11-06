@@ -169,6 +169,8 @@ class _CategoriasViewState extends State<_CategoriasView> {
       ),
     );
 
+    if(vm.errorObjList != null) return StatusView.byApiException(exception: vm.errorObj!, onRetry: vm.cargar);
+
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Skeletonizer(

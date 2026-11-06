@@ -1,4 +1,5 @@
 import 'package:ecommerce_app/features/auth/domain/role_enum.dart';
+import 'package:ecommerce_app/features/carrito/presentation/viewmodel/carrito_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -32,10 +33,11 @@ class ProfileScreen extends StatefulWidget {
 
 //Este es para el cliente, es lo mismo pero sin el appbar
 class _ProfileScreenState extends State<ProfileScreen>{
-  Future<void> _salir(AuthViewModel viewModel) async {
-    final role = viewModel.session?.usuario.rol;
+  Future<void> _salir(AuthViewModel authViewModel, CarritoViewModel carritoViewModel) async {
+    final role = authViewModel.session?.usuario.rol;
     final isCliente = role == RoleEnum.CLIENTE.name;
-    await viewModel.cerrarSesion();
+    await authViewModel.cerrarSesion();
+    await carritoViewModel.limpiarCarrito();
     if(!isCliente) {
       Navigator.pop(context);
     }
@@ -43,14 +45,15 @@ class _ProfileScreenState extends State<ProfileScreen>{
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = context.watch<AuthViewModel>();
+    final authViewModel = context.watch<AuthViewModel>();
+    final carritoViewModel = context.read<CarritoViewModel>();
     return SafeArea(child:
       Padding(
         padding: .all(16),
         child: Column(
           children: [
             Text("Mi perfil wey"),
-            FilledButton(onPressed: () => _salir(viewModel), child: const Text("cerrar sesión"))
+            FilledButton(onPressed: () => _salir(authViewModel, carritoViewModel), child: const Text("cerrar sesión"))
           ],
         )
       )

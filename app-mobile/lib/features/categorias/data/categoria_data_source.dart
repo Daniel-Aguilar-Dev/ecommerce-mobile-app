@@ -25,7 +25,7 @@ class CategoriaDataSource {
 
     if (responseJson['success'] != true) {
       final message = responseJson['message'];
-      throw ApiException(
+      throw RespuestaInvalida(
         message: message is String
             ? message
             : 'No fue posible obtener las categorías',
@@ -34,7 +34,7 @@ class CategoriaDataSource {
 
     final data = responseJson['data'];
     if (data is! List) {
-      throw const ApiException(
+      throw const RespuestaInvalida(
         message: 'La respuesta tiene un formato inválido',
       );
     }
@@ -56,7 +56,7 @@ class CategoriaDataSource {
 
     if (responseJson['success'] != true) {
       final message = responseJson['message'];
-      throw ApiException(
+      throw RespuestaInvalida(
         message: message is String
             ? message
             : 'No fue posible obtener las categorías',
@@ -65,7 +65,7 @@ class CategoriaDataSource {
 
     final data = responseJson['data'];
     if (data is! List) {
-      throw const ApiException(
+      throw const RespuestaInvalida(
         message: 'La respuesta tiene un formato inválido',
       );
     }
@@ -80,7 +80,7 @@ class CategoriaDataSource {
 
     if (responseJson['success'] != true) {
       final message = responseJson['message'];
-      throw ApiException(
+      throw RespuestaInvalida(
         message: message is String
             ? message
             : 'No fue posible obtener la categoría',
@@ -89,7 +89,7 @@ class CategoriaDataSource {
 
     final data = responseJson['data'];
     if (data is! Map<String, dynamic>) {
-      throw const ApiException(
+      throw const RespuestaInvalida(
         message: 'La respuesta tiene un formato inválido',
       );
     }
@@ -104,7 +104,7 @@ class CategoriaDataSource {
 
     if (responseJson['success'] != true) {
       final message = responseJson['message'];
-      throw ApiException(
+      throw RespuestaInvalida(
         message: message is String
             ? message
             : 'No fue posible obtener la categoría',
@@ -113,7 +113,7 @@ class CategoriaDataSource {
 
     final data = responseJson['data'];
     if (data is! Map<String, dynamic>) {
-      throw const ApiException(
+      throw const RespuestaInvalida(
         message: 'La respuesta tiene un formato inválido',
       );
     }
@@ -131,7 +131,7 @@ class CategoriaDataSource {
 
     if (responseJson['success'] != true) {
       final message = responseJson['message'];
-      throw ApiException(
+      throw RespuestaInvalida(
         message: message is String
             ? message
             : 'No fue posible registrar la categoría',
@@ -140,7 +140,7 @@ class CategoriaDataSource {
 
     final data = responseJson['data'];
     if (data is! Map<String, dynamic>) {
-      throw const ApiException(
+      throw const RespuestaInvalida(
         message: 'La respuesta tiene un formato inválido',
       );
     }
@@ -159,7 +159,7 @@ class CategoriaDataSource {
 
     if (responseJson['success'] != true) {
       final message = responseJson['message'];
-      throw ApiException(
+      throw RespuestaInvalida(
         message: message is String
             ? message
             : 'No fue posible modificar la categoría',
@@ -168,7 +168,7 @@ class CategoriaDataSource {
 
     final data = responseJson['data'];
     if (data is! Map<String, dynamic>) {
-      throw const ApiException(
+      throw const RespuestaInvalida(
         message: 'La respuesta tiene un formato inválido',
       );
     }

@@ -5,7 +5,7 @@ import 'package:ecommerce_app/features/productos/data/models/producto_params.dar
 import 'package:ecommerce_app/features/productos/data/models/producto_request_dto.dart';
 import 'package:ecommerce_app/features/productos/domain/producto.dart';
 import 'package:ecommerce_app/features/productos/domain/producto_repository.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
 class ProductoViewModel extends ChangeNotifier{
   ProductoViewModel({required ProductoRepository productoRepository})
@@ -23,6 +23,9 @@ class ProductoViewModel extends ChangeNotifier{
   bool _isLoadingMarcas = false;
   String? _errorMessage;
   String? _successMessage;
+
+  ApiException? errorObj;
+  ApiException? errorObjList;
 
   bool get isLoading => _isLoading;
   bool get isFetching => _isFetching;
@@ -48,10 +51,12 @@ class ProductoViewModel extends ChangeNotifier{
 
   Future<void> cargar([bool silencioso = false]) async {
     if(!silencioso) _comenzarFetch();
+    _limpiarErrorObjList();
     try {
       _productos = await _repository.listaPersonal(_productoParams);
     } catch (error) {
       _errorMessage = _mensaje(error);
+      _setErrorObjList(error);
     } finally {
       _terminarFetching();
     }
@@ -79,12 +84,14 @@ class ProductoViewModel extends ChangeNotifier{
 
   Future<Producto?> obtenerUnoPorId(int id) async{
     late final Producto prod;
+    _limpiarErrorObj();
     _comenzarOperacion();
     try{
       prod = await _repository.unoPorId(id);
       return prod;
     } catch (error){
       _errorMessage = _mensaje(error);
+      _setErrorObj(error);
       return null;
     } finally{
       _terminarOperacion();
@@ -93,12 +100,14 @@ class ProductoViewModel extends ChangeNotifier{
 
   Future<Producto?> obtenerUnoPorSKU(String sku) async{
     late final Producto prod;
+    _limpiarErrorObj();
     _comenzarOperacion();
     try{
       prod = await _repository.unoPorSku(sku);
       return prod;
     } catch (error){
       _errorMessage = _mensaje(error);
+      _setErrorObj(error);
       return null;
     } finally{
       _terminarOperacion();
@@ -107,12 +116,14 @@ class ProductoViewModel extends ChangeNotifier{
 
   Future<Producto?> obtenerUnoPorNombre(String name) async{
     late final Producto prod;
+    _limpiarErrorObj();
     _comenzarOperacion();
     try{
       prod = await _repository.unoPorNombre(name);
       return prod;
     } catch (error){
       _errorMessage = _mensaje(error);
+      _setErrorObj(error);
       return null;
     } finally{
       _terminarOperacion();
@@ -124,6 +135,7 @@ class ProductoViewModel extends ChangeNotifier{
     required File file
   }) async {
     late final Producto prod;
+    _limpiarErrorObj();
     _comenzarOperacion();
     try{
       prod = await _repository.crear(request,file);
@@ -133,6 +145,7 @@ class ProductoViewModel extends ChangeNotifier{
       return prod;
     } catch (error){
       _errorMessage = _mensaje(error);
+      _setErrorObj(error);
       return null;
     } finally{
       _terminarOperacion();
@@ -141,6 +154,7 @@ class ProductoViewModel extends ChangeNotifier{
 
   Future<Producto?> actualizar(ProductoRequestDto request, File? file, int id) async{
     late final Producto prod;
+    _limpiarErrorObj();
     _comenzarOperacion();
     try{
       prod = await _repository.modificar(request, file ?? null, id);
@@ -150,6 +164,7 @@ class ProductoViewModel extends ChangeNotifier{
       return prod;
     } catch (error){
       _errorMessage = _mensaje(error);
+      _setErrorObj(error);
       return null;
     } finally{
       _terminarOperacion();
@@ -157,6 +172,7 @@ class ProductoViewModel extends ChangeNotifier{
   }
 
   Future<bool> borrar(int id) async{
+    _limpiarErrorObj();
     _comenzarOperacion();
     try{
       final msj = await _repository.eliminar(id);
@@ -166,6 +182,7 @@ class ProductoViewModel extends ChangeNotifier{
       return true;
     } catch (error){
       _errorMessage = _mensaje(error);
+      _setErrorObj(error);
       return false;
     } finally{
       _terminarOperacion();
@@ -173,6 +190,7 @@ class ProductoViewModel extends ChangeNotifier{
   }
 
   Future<bool> cambiarEstado(int id) async{
+    _limpiarErrorObj();
     _comenzarOperacion();
     try{
     final msj = await _repository.cambiarEstado(id);
@@ -182,6 +200,7 @@ class ProductoViewModel extends ChangeNotifier{
       return true;
     } catch (error){
       _errorMessage = _mensaje(error);
+      _setErrorObj(error);
       return false;
     } finally{
       _terminarOperacion();
@@ -223,6 +242,23 @@ class ProductoViewModel extends ChangeNotifier{
     _isLoadingMarcas = false;
     notifyListeners();
   }
+
+  void _limpiarErrorObjList() => errorObjList = null;
+
+  void _limpiarErrorObj() => errorObj = null;
+
+  void _setErrorObj(Object error){
+    if(error is ApiException){
+      errorObj = error;
+    }
+  }
+
+  void _setErrorObjList(Object error){
+    if(error is ApiException){
+      errorObjList = error;
+    }
+  }
+
 
   String _mensaje(Object error) {
     if (error is ApiException) return error.message;
