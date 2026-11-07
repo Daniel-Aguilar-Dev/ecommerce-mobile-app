@@ -124,10 +124,9 @@ class _DetallesViewState extends State<_DetallesView>{
                           child: Hero(
                             tag: 'foto-producto-${prod.id}',
                             child: AspectRatio(
-                              aspectRatio: 1, // cuadrada; usa 4/3 si la quieres menos alta
+                              aspectRatio: 4/3, // cuadrada; usa 4/3 si la quieres menos alta
                               child: SizedBox(
                                 width: double.infinity,
-                                height: 250,
                                 child: CachedNetworkImage(
                                   imageUrl: prod.imagen,
                                   fit: BoxFit.cover,

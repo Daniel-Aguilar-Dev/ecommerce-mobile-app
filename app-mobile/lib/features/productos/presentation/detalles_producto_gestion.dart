@@ -119,11 +119,11 @@ class _DetallesViewState extends State<_DetallesView>{
                     child: SeccionTitulo(title: "Datos generales"),
                   ),
                   GestureDetector(
-                    onTap: () => mostrarImagenCompleta('foto-producto-detalle'),
+                    onTap: () => mostrarImagenCompleta('foto-producto-detalle-${prod.id}'),
                     child: Hero(
-                      tag: 'foto-producto-detalle',
+                      tag: 'foto-producto-detalle-${prod.id}',
                       child: AspectRatio(
-                        aspectRatio: 1, // cuadrada; usa 4/3 si la quieres menos alta
+                        aspectRatio: 4/3, // cuadrada; usa 4/3 si la quieres menos alta
                         child: SizedBox(
                           width: double.infinity,
                           child: CachedNetworkImage(
