@@ -154,7 +154,7 @@ class _DetallesViewState extends State<_DetallesView>{
                             mainAxisAlignment: .start,
                             crossAxisAlignment: .start,
                             children: [
-                              Text(prod.marca, style: theme.textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.w300, color: AppColors.primario.c900, decoration: TextDecoration.underline)),
+                              Text(prod.marca, style: theme.textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.w300, color: AppColors.primario.c900)),
                               Text(prod.nombre, style: theme.textTheme.titleLarge!.copyWith(fontWeight: FontWeight.w500, fontSize: 24)),
                               Text("\$ ${prod.precio.toStringAsFixed(2)}", style: TextStyle(fontSize: 36, fontWeight: FontWeight.w600)),
                               Container(
