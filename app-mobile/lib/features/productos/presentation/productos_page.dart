@@ -6,8 +6,12 @@ import 'package:ecommerce_app/features/auth/presentation/auth_view_model.dart';
 import 'package:ecommerce_app/core/ui/bottom_sheet_container.dart';
 import 'package:ecommerce_app/core/ui/pressable_item.dart';
 import 'package:ecommerce_app/core/theme/colors.dart';
+import 'package:ecommerce_app/features/auth/domain/role_enum.dart';
 import 'package:ecommerce_app/features/categorias/domain/categoria.dart';
 import 'package:ecommerce_app/features/categorias/domain/categoria_repository.dart';
+import 'package:ecommerce_app/features/inventario/presentation/historial_entradas_producto.dart';
+import 'package:ecommerce_app/features/inventario/presentation/widgets/entrada_individual_modal.dart';
+import 'package:ecommerce_app/features/inventario/presentation/widgets/perdida_individual_modal.dart';
 import 'package:ecommerce_app/features/productos/data/models/producto_params.dart';
 import 'package:ecommerce_app/features/productos/domain/producto_estado.dart';
 import 'package:ecommerce_app/features/productos/domain/producto_repository.dart';
@@ -163,6 +167,9 @@ class _ProductosViewState extends State<_ProductosView> {
     final vm = context.watch<ProductoViewModel>();
     final categorias = context.read<CategoriaRepository>();
 
+    final rol = context.read<AuthViewModel>().session?.usuario.rol;
+    final esAdmin = rol == RoleEnum.ADMINISTRADOR.name;
+
     Widget pictureOptions(Producto prod, BuildContext sheetContext) {
       return BottomSheetContainer(
         children: [
@@ -171,43 +178,62 @@ class _ProductosViewState extends State<_ProductosView> {
           Text("En stock: ${prod.stockActual}", style: Theme.of(sheetContext).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.w600, color: prod.stockActual <= prod.stockMinimo ? AppColors.error.main : AppColors.info.main)),
           const SizedBox(height: 8),
           PressableItem(
-              icon: LucideIcons.edit,
-              text: "Modificar",
-              onPress: () => _editProductoPage(prod, vm, sheetContext),
-              contentPadding: .symmetric(horizontal: 0, vertical: 0)
+            icon: LucideIcons.edit,
+            text: "Modificar",
+            onPress: () => _editProductoPage(prod, vm, sheetContext),
+            contentPadding: .symmetric(horizontal: 0, vertical: 0)
           ),
           PressableItem(
-              icon: LucideIcons.vault,
-              text: prod.estado.name == ProductoEstado.PROD_ACTIVO.name
-                  ? 'Descontinuar'
-                  : 'Reanudar',
-              onPress: () => _changeStatusProductoModal(prod, vm, sheetContext),
-              contentPadding: .symmetric(horizontal: 0, vertical: 0)
+            icon: LucideIcons.vault,
+            text: prod.estado.name == ProductoEstado.PROD_ACTIVO.name
+                ? 'Descontinuar'
+                : 'Reanudar',
+            onPress: () => _changeStatusProductoModal(prod, vm, sheetContext),
+            contentPadding: .symmetric(horizontal: 0, vertical: 0)
           ),
           PressableItem(
-              icon: LucideIcons.trash,
-              text: "Eliminar",
-              onPress: () => _deleteProductoModal(prod, vm, sheetContext),
-              contentPadding: .symmetric(horizontal: 0, vertical: 0)
-          ),
-          //TODO Implementar estas funciones para reabastecer, merma y movimientos
-          PressableItem(
-              icon: LucideIcons.packagePlus,
-              text: "Reabastecer",
-              onPress: () { Navigator.pop(sheetContext); },
-              contentPadding: .symmetric(horizontal: 0, vertical: 0)
+            icon: LucideIcons.trash,
+            text: "Eliminar",
+            onPress: () => _deleteProductoModal(prod, vm, sheetContext),
+            contentPadding: .symmetric(horizontal: 0, vertical: 0)
           ),
           PressableItem(
-              icon: LucideIcons.packageMinus,
-              text: "Registrar merma",
-              onPress: () { Navigator.pop(sheetContext); },
-              contentPadding: .symmetric(horizontal: 0, vertical: 0)
+            icon: LucideIcons.packagePlus,
+            text: "Reabastecer",
+            onPress: () {
+              Navigator.pop(sheetContext);
+              showDialog(
+                context: context,
+                builder: (context) => EntradaIndividualModal(producto: prod)
+              );
+            },
+            contentPadding: .symmetric(horizontal: 0, vertical: 0)
           ),
           PressableItem(
-              icon: LucideIcons.bookBookmark,
-              text: "Movimientos",
-              onPress: () { Navigator.pop(sheetContext); },
-              contentPadding: .symmetric(horizontal: 0, vertical: 0)
+            icon: LucideIcons.packageMinus,
+            text: "Registrar merma",
+            onPress: () {
+              Navigator.pop(sheetContext);
+              showDialog(
+                context: context,
+                builder: (context) => PerdidaIndividualModal(producto: prod)
+              );
+            },
+            contentPadding: .symmetric(horizontal: 0, vertical: 0)
+          ),
+          if(esAdmin) PressableItem(
+            icon: LucideIcons.bookBookmark,
+            text: "Movimientos",
+            onPress: () {
+              Navigator.pop(sheetContext);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => HistorialEntradasProducto(productoId: prod.id),
+                ),
+              );
+            },
+            contentPadding: .symmetric(horizontal: 0, vertical: 0)
           )
         ]
       );

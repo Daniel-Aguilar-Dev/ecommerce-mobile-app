@@ -56,10 +56,13 @@ class _AppShellState extends State<AppShell>{
       _ => AppBarCliente(title: listCliente[index].title),
       },
       drawer: role == "ADMINISTRADOR" ? AdminDrawer(items: listAdmin, index: index, onSelect: (i) => setState(() => _index = i)) : null,
-      body: SafeArea(child:
-        IndexedStack(
+      body: SafeArea(
+        child: IndexedStack(
           index: index,
-          children: [for (final i in pages) i.page],
+          children: [
+            for (var n = 0; n < pages.length; n++)
+              (pages[n].soloActiva && n != index) ? const SizedBox.shrink() : pages[n].page,
+          ],
         ),
       ),
       bottomNavigationBar: role != "ADMINISTRADOR" ?
@@ -84,11 +87,12 @@ class _AppShellState extends State<AppShell>{
 }
 
 class NavItem {
-  const NavItem(this.label, this.icon, this.page, this.title);
+  const NavItem(this.label, this.icon, this.page, this.title, {this.soloActiva = false});
   final String label;
   final IconData icon;
   final Widget page;
   final String title;
+  final bool soloActiva; // no mantener viva en el IndexedStack
 }
 
 List<NavItem> listCliente = [
@@ -102,7 +106,7 @@ List<NavItem> listCliente = [
 List<NavItem> listEmpleado = [
   NavItem('Inicio', LucideIcons.home, const Text("Inicio"), "Inicio"),
   NavItem('Pedidos', LucideIcons.clipboardList, const Text("Inicio"), "Pedidos"),
-  NavItem('Escanear', LucideIcons.scanBox, EscanearProductoPageOne(), "Escanear producto"),
+  NavItem('Escanear', LucideIcons.scanBox, EscanearProductoPageOne(), "Escanear producto", soloActiva: true),
   NavItem('Inventario', LucideIcons.packageOpen, const ProductosPage(), "Inventario"),
   NavItem('Ventas', LucideIcons.chartColumn, const Text("Inicio"), "Ventas"),
 ];

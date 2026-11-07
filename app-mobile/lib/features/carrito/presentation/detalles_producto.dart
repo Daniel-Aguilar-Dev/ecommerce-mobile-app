@@ -124,23 +124,20 @@ class _DetallesViewState extends State<_DetallesView>{
                           child: Hero(
                             tag: 'foto-producto-${prod.id}',
                             child: AspectRatio(
-                              aspectRatio: 4/3, // cuadrada; usa 4/3 si la quieres menos alta
-                              child: SizedBox(
-                                width: double.infinity,
-                                child: CachedNetworkImage(
-                                  imageUrl: prod.imagen,
+                              aspectRatio: 1, // cuadrada; usa 4/3 si la quieres menos alta
+                              child: CachedNetworkImage(
+                                imageUrl: prod.imagen,
+                                fit: BoxFit.cover,
+                                placeholder: (_, __) => const Center(
+                                  child: SizedBox(
+                                    width: 24,
+                                    height: 24,
+                                    child: CircularProgressIndicator(strokeWidth: 2),
+                                  ),
+                                ),
+                                errorWidget: (_, __, ___) => Image.asset(
+                                  'assets/images/prod_placeholder.png',
                                   fit: BoxFit.cover,
-                                  placeholder: (_, __) => const Center(
-                                    child: SizedBox(
-                                      width: 24,
-                                      height: 24,
-                                      child: CircularProgressIndicator(strokeWidth: 2),
-                                    ),
-                                  ),
-                                  errorWidget: (_, __, ___) => Image.asset(
-                                    'assets/images/prod_placeholder.png',
-                                    fit: BoxFit.cover,
-                                  ),
                                 ),
                               ),
                             ),
