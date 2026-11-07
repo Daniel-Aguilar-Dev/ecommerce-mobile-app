@@ -113,15 +113,15 @@ class MainMenuState extends State<MainMenu>{
         slivers: [
           SliverToBoxAdapter(
             child: Padding(
-                padding: const EdgeInsets.only(bottom: 16),
-                child: CustomField(
-                  onChanged: _onSearchChanged,
-                  controller: _searchController,
-                  hint: 'Buscar un producto',
-                  icon: LucideIcons.search,
-                  keyboardType: TextInputType.name,
-                  textInputAction: TextInputAction.done,
-                ),
+              padding: const EdgeInsets.only(bottom: 16),
+              child: CustomField(
+                onChanged: _onSearchChanged,
+                controller: _searchController,
+                hint: 'Buscar un producto',
+                icon: LucideIcons.search,
+                keyboardType: TextInputType.name,
+                textInputAction: TextInputAction.done,
+              ),
             ),
           ),
           SliverToBoxAdapter(
@@ -158,6 +158,7 @@ class MainMenuState extends State<MainMenu>{
                   if(!context.mounted) return;
                   if(prod.stock <= 0) return;
                   if(vm.isLoading) return;
+                  vm.limpiarMensajes();
                   await vm.agregarUnoAlCarrito(prod);
                   if(vm.errorMessage != null) {
                     AppToast.show(context, variant: ToastType.info,

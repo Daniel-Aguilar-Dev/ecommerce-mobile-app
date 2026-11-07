@@ -37,6 +37,15 @@ class _DetallesView extends StatefulWidget{
 class _DetallesViewState extends State<_DetallesView>{
   late final productoId = widget.productoId;
 
+  late final Future<Producto?> _productoFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _productoFuture =
+        context.read<ProductoRepository>().unoPorId(productoId);
+  }
+
   String _getEstado(int stockActual, int stockMinimo, ProductoEstado estado){
     if(estado.name == ProductoEstado.PROD_DESCONTINUADO.name) return "Descontinuado";
     if(stockActual == 0) return "Agotado";
@@ -64,7 +73,7 @@ class _DetallesViewState extends State<_DetallesView>{
     return Scaffold(
       appBar: AppBarExterno(title: "Detalles del producto"),
       body: FutureBuilder<Producto?>(
-        future: context.read<ProductoRepository>().unoPorId(productoId),
+        future: _productoFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState != ConnectionState.done) {
             return Center(
@@ -113,23 +122,26 @@ class _DetallesViewState extends State<_DetallesView>{
                     onTap: () => mostrarImagenCompleta('foto-producto-detalle'),
                     child: Hero(
                       tag: 'foto-producto-detalle',
-                      child: SizedBox(
-                        height: 250,
-                        child: AspectRatio(aspectRatio: 1, child: CachedNetworkImage(
-                          imageUrl: prod.imagenUrl,
-                          fit: BoxFit.fill,
-                          placeholder: (_, __) => const Center(
-                            child: SizedBox(
-                              width: 24,
-                              height: 24,
-                              child: CircularProgressIndicator(strokeWidth: 2),
+                      child: AspectRatio(
+                        aspectRatio: 1, // cuadrada; usa 4/3 si la quieres menos alta
+                        child: SizedBox(
+                          width: double.infinity,
+                          child: CachedNetworkImage(
+                            imageUrl: prod.imagenUrl,
+                            fit: BoxFit.cover,
+                            placeholder: (_, __) => const Center(
+                              child: SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(strokeWidth: 2),
+                              ),
+                            ),
+                            errorWidget: (_, __, ___) => Image.asset(
+                              'assets/images/prod_placeholder.png',
+                              fit: BoxFit.cover,
                             ),
                           ),
-                          errorWidget: (_, __, ___) => Image.asset(
-                            'assets/images/prod_placeholder.png',
-                            fit: BoxFit.fill,
-                          ),
-                        ),),
+                        ),
                       ),
                     ),
                   ),
@@ -141,18 +153,17 @@ class _DetallesViewState extends State<_DetallesView>{
                       mainAxisAlignment: .start,
                       crossAxisAlignment: .start,
                       children: [
-                        Text("Marca: ${prod.marca}", style: theme.textTheme.bodyMedium),
-                        Text(prod.nombre, style: theme.textTheme.titleLarge),
-                        Text("\$ ${prod.precioVenta.toStringAsFixed(2)}", style: TextStyle(fontSize: 36, fontWeight: FontWeight.w700)),
-                        if(prod.sku != null) Text("Código: ${prod.sku}", style: theme.textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.w400)),
+                        Text(prod.marca, style: theme.textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.w300, color: AppColors.primario.c900, decoration: TextDecoration.underline)),
+                        Text(prod.nombre, style: theme.textTheme.titleLarge!.copyWith(fontWeight: FontWeight.w500, fontSize: 24)),
+                        Text("\$ ${prod.precioCompra.toStringAsFixed(2)}", style: TextStyle(fontSize: 36, fontWeight: FontWeight.w600)),
                         Row(
                           spacing: 8,
                           children: [
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                               decoration: BoxDecoration(
                                 color: _getBackground(prod.stockActual, prod.stockMinimo, prod.estado),
-                                borderRadius: BorderRadius.circular(999),
+                                borderRadius: BorderRadius.circular(4),
                               ),
                               child: Text(
                                 _getEstado(prod.stockActual, prod.stockMinimo, prod.estado),
@@ -162,10 +173,11 @@ class _DetallesViewState extends State<_DetallesView>{
                                 ),
                               ),
                             ),
-                            Text("Stock: ${prod.stockActual} piezas", style: theme.textTheme.labelSmall),
+                            const Text("·"),
+                            Text("Stock: ${prod.stockActual} piezas", style: theme.textTheme.labelMedium),
                           ],
                         ),
-                        Text(prod.descripcion, style: Theme.of(context).textTheme.labelLarge),
+                        Text(prod.descripcion, style: Theme.of(context).textTheme.bodyLarge,),
                         const SizedBox(height: 8),
                         SeccionTitulo(title: "Datos de inventario"),
                         Text.rich(

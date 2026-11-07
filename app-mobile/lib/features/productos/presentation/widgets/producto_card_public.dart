@@ -98,12 +98,11 @@ class ProductoCardPublic extends StatelessWidget{
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.titleSmall!.copyWith(
-                        fontWeight: FontWeight.w400,
+                        fontWeight: FontWeight.w600,
                         color: AppColors.texto.c900,
                         height: 1.4,
                       ),
                     ),
-
                     SizedBox(height: 4),
                     Row(
                       crossAxisAlignment: .center,
@@ -116,8 +115,8 @@ class ProductoCardPublic extends StatelessWidget{
                               _precio,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: theme.textTheme.titleLarge!.copyWith(
-                                fontWeight: FontWeight.w600,
+                              style: theme.textTheme.titleMedium!.copyWith(
+                                fontWeight: FontWeight.w400,
                               ),
                             ),
                           ),

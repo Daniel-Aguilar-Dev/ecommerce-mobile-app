@@ -69,6 +69,7 @@ class CarritoViewModel extends ChangeNotifier {
   Carrito obtenerCarrito() => carritoDatasource.obtenerCarrito();
 
   Future<void> agregarUnoAlCarrito(ProductoPublic prod) async{
+    //TODO No agrega, ver eso después
     _checkingStockId = prod.id;
     await checarStock(prod, 1);
     if(_errorMessage != null){
@@ -80,12 +81,13 @@ class CarritoViewModel extends ChangeNotifier {
 
   Future<int> agregarAlCarrito(ProductoPublic prod, int cantidad) async{
     int stock = prod.stock;
-    _checkingStockId = prod.id;
-    stock = await checarStock(prod, 1);
-    if(_errorMessage != ""){
+    stock = await checarStock(prod, cantidad);
+    if(cantidad <= stock){
       carritoDatasource.agregarAlCarrito(prod, cantidad);
+      _successMessage = "Se agregó ${prod.nombre} al carrito";
+    } else {
+      _errorMessage = "Stock insuficiente, quedan $stock unidades";
     }
-    _checkingStockId = 0;
     notifyListeners();
     return stock;
   }

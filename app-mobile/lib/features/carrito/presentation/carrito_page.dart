@@ -20,7 +20,7 @@ class _CarritoPageState extends State<CarritoPage>{
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     carrito = context.watch<CarritoViewModel>().obtenerCarrito();
-    final total = carrito.items.fold(0.0, (sum, item) => sum + item.producto.precio);
+    final total = carrito.items.fold(0.0, (sum, item) => sum + (item.producto.precio * item.cantidad));
     return Scaffold(
       body: Padding(
         padding: .all(16),
