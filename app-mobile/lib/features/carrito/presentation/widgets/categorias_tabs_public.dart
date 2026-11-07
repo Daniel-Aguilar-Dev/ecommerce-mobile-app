@@ -10,8 +10,8 @@ class CategoriasTabsPublic extends StatelessWidget {
     required this.onSelect,
   });
 
-  final List<CategoriaPublic> categorias;   // tu modelo
-  final int seleccionada;             // 0 = Todo
+  final List<CategoriaPublic> categorias;
+  final int seleccionada;
   final ValueChanged<int> onSelect;
 
   @override

@@ -96,7 +96,7 @@ public class ProductoDto {
         producto.setUnidadMedida(this.unidadMedida);
         producto.setCategoria(categoriaEntity);
         producto.setEstado(this.estado);
-        producto.setCostoPromedio(this.getCostoPromedio());
+        producto.setCostoPromedio(this.costoPromedio);
         return producto;
     }
 

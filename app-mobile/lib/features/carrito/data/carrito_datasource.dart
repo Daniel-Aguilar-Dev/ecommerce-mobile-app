@@ -55,6 +55,6 @@ class CarritoLocalDatasource {
   }
 
   Future<void> limpiarCarrito() async{
-    await _db.close();
+    await _db.clear();
   }
 }
