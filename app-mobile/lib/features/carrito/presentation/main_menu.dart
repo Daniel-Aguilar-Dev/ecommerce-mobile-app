@@ -14,6 +14,7 @@ import 'package:ecommerce_app/features/productos/data/models/producto_params_pub
 import 'package:ecommerce_app/features/productos/presentation/widgets/categorias_tabs.dart';
 import 'package:ecommerce_app/features/productos/presentation/widgets/producto_card_public.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -137,20 +138,17 @@ class MainMenuState extends State<MainMenu>{
               );
             }),
           ),
+          const SliverToBoxAdapter(child: SizedBox(height: 16)),
           vm.productos.isEmpty ?
           SliverFillRemaining(
             hasScrollBody: false,
             child: Center(child: StatusView.noResults()),
           ) :
-          SliverGrid.builder(
-            itemCount: vm.productos.length,
-            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-              maxCrossAxisExtent: 220, // ancho máximo por card
-              mainAxisSpacing: 8,
-              crossAxisSpacing: 8,
-              childAspectRatio: 0.62,
-              mainAxisExtent: 340, // alto fijo de cada card
-            ),
+          SliverMasonryGrid.count(
+            crossAxisCount: 2,
+            mainAxisSpacing: 4,
+            crossAxisSpacing: 4,
+            childCount: vm.productos.length,
             itemBuilder: (_, i) {
               final prod = vm.productos[i];
               return ProductoCardPublic(

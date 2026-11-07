@@ -20,6 +20,7 @@ import 'package:ecommerce_app/features/productos/presentation/widgets/categorias
 import 'package:ecommerce_app/features/productos/presentation/widgets/producto_card.dart';
 import 'package:ecommerce_app/features/productos/presentation/widgets/producto_dialogs.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:lucide_icons_flutter/lucide_icons_600.dart';
 import 'package:provider/provider.dart';
@@ -122,8 +123,8 @@ class _ProductosViewState extends State<_ProductosView> {
     }
   }
 
-  Future<void> _editProductoPage(Producto p, ProductoViewModel vm) async {
-    Navigator.pop(context); // cierra el bottom sheet
+  Future<void> _editProductoPage(Producto p, ProductoViewModel vm, BuildContext sheetContext) async {
+    Navigator.pop(sheetContext); // cierra el bottom sheet
     final cambio = await Navigator.push<bool>(
       context,
       MaterialPageRoute(
@@ -135,8 +136,8 @@ class _ProductosViewState extends State<_ProductosView> {
     }
   }
 
-  void _deleteProductoModal(Producto prod, ProductoViewModel vm) {
-    Navigator.pop(context);
+  void _deleteProductoModal(Producto prod, ProductoViewModel vm, BuildContext sheetContext) {
+    Navigator.pop(sheetContext);
     vm.limpiarMensajes();
     showDialog<bool?>(
       context: context,
@@ -145,8 +146,8 @@ class _ProductosViewState extends State<_ProductosView> {
     );
   }
 
-  void _changeStatusProductoModal(Producto prod, ProductoViewModel vm) {
-    Navigator.pop(context);
+  void _changeStatusProductoModal(Producto prod, ProductoViewModel vm, BuildContext sheetContext) {
+    Navigator.pop(sheetContext);
     vm.limpiarMensajes();
     showDialog<bool?>(
       context: context,
@@ -162,17 +163,17 @@ class _ProductosViewState extends State<_ProductosView> {
     final vm = context.watch<ProductoViewModel>();
     final categorias = context.read<CategoriaRepository>();
 
-    Widget pictureOptions(Producto prod) {
+    Widget pictureOptions(Producto prod, BuildContext sheetContext) {
       return BottomSheetContainer(
         children: [
-          Text(prod.nombre, style: Theme.of(context).textTheme.titleLarge!.copyWith(fontWeight: FontWeight.bold)),
+          Text(prod.nombre, style: Theme.of(sheetContext).textTheme.titleLarge!.copyWith(fontWeight: FontWeight.bold)),
           const SizedBox(height: 4),
-          Text("En stock: ${prod.stockActual}", style: Theme.of(context).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.w600, color: prod.stockActual <= prod.stockMinimo ? AppColors.error.main : AppColors.info.main)),
+          Text("En stock: ${prod.stockActual}", style: Theme.of(sheetContext).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.w600, color: prod.stockActual <= prod.stockMinimo ? AppColors.error.main : AppColors.info.main)),
           const SizedBox(height: 8),
           PressableItem(
               icon: LucideIcons.edit,
               text: "Modificar",
-              onPress: () => _editProductoPage(prod, vm),
+              onPress: () => _editProductoPage(prod, vm, sheetContext),
               contentPadding: .symmetric(horizontal: 0, vertical: 0)
           ),
           PressableItem(
@@ -180,32 +181,32 @@ class _ProductosViewState extends State<_ProductosView> {
               text: prod.estado.name == ProductoEstado.PROD_ACTIVO.name
                   ? 'Descontinuar'
                   : 'Reanudar',
-              onPress: () => _changeStatusProductoModal(prod, vm),
+              onPress: () => _changeStatusProductoModal(prod, vm, sheetContext),
               contentPadding: .symmetric(horizontal: 0, vertical: 0)
           ),
           PressableItem(
               icon: LucideIcons.trash,
               text: "Eliminar",
-              onPress: () => _deleteProductoModal(prod, vm),
+              onPress: () => _deleteProductoModal(prod, vm, sheetContext),
               contentPadding: .symmetric(horizontal: 0, vertical: 0)
           ),
           //TODO Implementar estas funciones para reabastecer, merma y movimientos
           PressableItem(
               icon: LucideIcons.packagePlus,
               text: "Reabastecer",
-              onPress: () { Navigator.pop(context); },
+              onPress: () { Navigator.pop(sheetContext); },
               contentPadding: .symmetric(horizontal: 0, vertical: 0)
           ),
           PressableItem(
               icon: LucideIcons.packageMinus,
               text: "Registrar merma",
-              onPress: () { Navigator.pop(context); },
+              onPress: () { Navigator.pop(sheetContext); },
               contentPadding: .symmetric(horizontal: 0, vertical: 0)
           ),
           PressableItem(
               icon: LucideIcons.bookBookmark,
               text: "Movimientos",
-              onPress: () { Navigator.pop(context); },
+              onPress: () { Navigator.pop(sheetContext); },
               contentPadding: .symmetric(horizontal: 0, vertical: 0)
           )
         ]
@@ -321,28 +322,35 @@ class _ProductosViewState extends State<_ProductosView> {
               );
             }),
           ),
+          const SliverToBoxAdapter(child: SizedBox(height: 16)),
           vm.productos.isEmpty ?
           SliverFillRemaining(
             hasScrollBody: false,
             child: Center(child: StatusView.noResults()),
           ) :
-          SliverGrid.builder(
-            itemCount: vm.productos.length,
-            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-              maxCrossAxisExtent: 220, // ancho máximo por card
-              mainAxisSpacing: 8,
-              crossAxisSpacing: 8,
-              childAspectRatio: 0.62,
-              mainAxisExtent: 340, // alto fijo de cada card
-            ),
+          SliverMasonryGrid.count(
+            crossAxisCount: 2,
+            mainAxisSpacing: 4,
+            crossAxisSpacing: 4,
+            childCount: vm.productos.length,
             itemBuilder: (_, i) {
               final prod = vm.productos[i];
               return ProductoCard(
                 producto: prod,
                 onPressButton: () => showModalBottomSheet<void>(
                   context: context,
-                  backgroundColor: Colors.transparent,
-                  builder: (_) => pictureOptions(prod),
+                  isScrollControlled: true,
+                  useSafeArea: true,
+                  showDragHandle: true,
+                  enableDrag: true,
+                  backgroundColor: Colors.white,
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(20),
+                    ),
+                  ),
+                  clipBehavior: Clip.antiAlias,
+                  builder: (sheetContext) => pictureOptions(prod, sheetContext),
                 ),
                 onCardTouch: () => Navigator.push<bool>(
                   context,
