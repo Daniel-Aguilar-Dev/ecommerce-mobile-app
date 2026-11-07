@@ -10,9 +10,9 @@ class EscanearProductoPageOne extends StatefulWidget {
       _EscanearProductoPageOneState();
 }
 
-class _EscanearProductoPageOneState
-    extends State<EscanearProductoPageOne> {
+class _EscanearProductoPageOneState extends State<EscanearProductoPageOne> {
   late final MobileScannerController _controller;
+  bool _procesando = false;
 
   @override
   void initState() {
@@ -30,8 +30,32 @@ class _EscanearProductoPageOneState
 
   @override
   void dispose() {
-    _controller.dispose();
+    _controller.dispose(); // dispose ya detiene la cámara
     super.dispose();
+  }
+
+  Future<void> _onDetect(BarcodeCapture capture) async {
+    if (_procesando) return;
+
+    final codigo = capture.barcodes.firstOrNull?.rawValue;
+    if (codigo == null) return;
+
+    _procesando = true;
+    await _controller.stop(); // pausa la cámara mientras estás en la otra pantalla
+
+    if (!mounted) return;
+
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => EscanearProductoPageTwo(sku: codigo),
+      ),
+    );
+
+    // Al regresar: reanudar
+    if (!mounted) return;
+    _procesando = false;
+    await _controller.start();
   }
 
   @override
@@ -39,22 +63,7 @@ class _EscanearProductoPageOneState
     return Scaffold(
       body: MobileScanner(
         controller: _controller,
-        onDetect: (capture) async{
-          final codigo = capture.barcodes.firstOrNull?.rawValue;
-
-          if (codigo == null) return;
-
-          await _controller.stop();
-
-          if (!context.mounted) return;
-
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => EscanearProductoPageTwo(sku: codigo),
-            ),
-          );
-        },
+        onDetect: _onDetect,
       ),
     );
   }

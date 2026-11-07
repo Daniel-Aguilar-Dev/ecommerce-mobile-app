@@ -68,6 +68,9 @@ class _EditarProductoPageState extends State<_EditarProductoPage>{
   late final _categorias = context.read<CategoriaRepository>();
   Producto? _editable;
 
+  late final Future<void> _cargaInicial;
+  late final Future<List<Categoria>> _categoriasFuture = _categorias.listaPersonal();
+
   final _formKey = GlobalKey<FormState>();
   final _skuFieldKey = GlobalKey<FormFieldState<String>>();
 
@@ -100,6 +103,12 @@ class _EditarProductoPageState extends State<_EditarProductoPage>{
   int? _categoriaId;
   Categoria? _selectedCategoria;
   File? _foto;
+
+  @override
+  void initState() {
+    super.initState();
+    _cargaInicial = _cargarProducto();
+  }
 
   @override
   void dispose() {
@@ -152,21 +161,21 @@ class _EditarProductoPageState extends State<_EditarProductoPage>{
     );
   }
 
-  Widget pictureOptions() {
+  Widget pictureOptions(BuildContext sheetContext) {
     return BottomSheetContainer(
         children: [
-          Text(_foto != null ? "Cambiar foto" : "Elegir foto", style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600)),
+          Text(_foto != null ? "Cambiar foto" : "Elegir foto", style: Theme.of(sheetContext).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600)),
           const SizedBox(height: 8),
           PressableItem(
               icon: LucideIcons.camera,
               text: "Desde la camara",
-              onPress: () { Navigator.pop(context, ImageSource.camera); },
+              onPress: () { Navigator.pop(sheetContext, ImageSource.camera); },
               contentPadding: .symmetric(horizontal: 0)
           ),
           PressableItem(
               icon: LucideIcons.images,
               text: "Desde la galeria",
-              onPress: () { Navigator.pop(context, ImageSource.gallery); },
+              onPress: () { Navigator.pop(sheetContext, ImageSource.gallery); },
               contentPadding: .symmetric(horizontal: 0)
           )
         ]
@@ -265,8 +274,18 @@ class _EditarProductoPageState extends State<_EditarProductoPage>{
     bool existiaImagen = _foto != null;
     final source = await showModalBottomSheet<ImageSource>(
       context: context,
-      backgroundColor: Colors.transparent,
-      builder: (_) => pictureOptions(),
+      isScrollControlled: true,
+      useSafeArea: true,
+      showDragHandle: true,
+      enableDrag: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(20),
+        ),
+      ),
+      clipBehavior: Clip.antiAlias,
+      builder: (sheetContext) => pictureOptions(sheetContext),
     );
     if (source == null) return null;
 
@@ -393,7 +412,7 @@ class _EditarProductoPageState extends State<_EditarProductoPage>{
               options: vm.marcas,
             ),
             FutureBuilder<List<Categoria>>(
-              future: _categorias.listaPersonal(),
+              future: _categoriasFuture,
               builder: (context, snapshot) {
                 final categorias = snapshot.data ?? const [];
                 if(snapshot.connectionState == ConnectionState.waiting) return Text("Cargando categorías...");
@@ -434,7 +453,10 @@ class _EditarProductoPageState extends State<_EditarProductoPage>{
                 maxLength: 150,
                 keyboardType: TextInputType.text,
                 textInputAction: TextInputAction.done,
-                validator: (value) => letrasNumerosValidator(value, 'El descripción del producto es obligatoria')
+                validator: (value) {
+                  if(value == null || value.trim().isEmpty) return 'El descripción del producto es obligatoria';
+                  return null;
+                }
             ),
             CamposObligatoriosText()
           ],
@@ -717,7 +739,7 @@ class _EditarProductoPageState extends State<_EditarProductoPage>{
       Padding(
         padding: .all(16),
         child: FutureBuilder<void>(
-          future: _cargarProducto(),
+          future: _cargaInicial,
           builder: (context, snapshot) {
             if(snapshot.connectionState != ConnectionState.done) {
               return Column(

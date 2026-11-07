@@ -1,4 +1,5 @@
 import 'package:ecommerce_app/core/layout/status_view.dart';
+import 'package:ecommerce_app/core/ui/cantidad_input.dart';
 import 'package:ecommerce_app/features/carrito/domain/carrito.dart';
 import 'package:ecommerce_app/features/carrito/presentation/viewmodel/carrito_view_model.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +18,9 @@ class _CarritoPageState extends State<CarritoPage>{
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     carrito = context.watch<CarritoViewModel>().obtenerCarrito();
+    final total = carrito.items.fold(0.0, (sum, item) => sum + item.producto.precio);
     return Scaffold(
       body: Padding(
         padding: .all(16),
@@ -28,19 +31,40 @@ class _CarritoPageState extends State<CarritoPage>{
         ) : Column(
           spacing: 16,
           children: [
-            Flex(
-              direction: Axis.vertical,
+            Expanded(
+              child: SingleChildScrollView(
+                child:  Column(
+                  children: [
+                    Text("Tiene productos ${carrito.items.length}"),
+                    CantidadInput(max: 10, min: 0, onChange: (val) => debugPrint("[DEBUG] Es: $val"))
+                  ],
+                ),
+              )
+            ),
+            Row(
+              crossAxisAlignment: .center,
+              mainAxisAlignment: .spaceBetween,
               children: [
-                SingleChildScrollView(
-                  child:  Column(
-                    children: [
-                      Text("Tiene productos ${carrito.items.length}")
-                    ],
+                Column(
+                  mainAxisSize: .min,
+                  mainAxisAlignment: .center,
+                  crossAxisAlignment: .start,
+                  children: [
+                    Text("Total", style: theme.textTheme.labelLarge!.copyWith(fontWeight: FontWeight.w500)),
+                    Text("\$ ${total.toStringAsFixed(2)} MXN", style: theme.textTheme.titleLarge!.copyWith(fontWeight: FontWeight.bold))
+                  ],
+                ),
+                FilledButton(
+                  onPressed: () {},
+                  style: ButtonStyle(
+                    shape: WidgetStatePropertyAll(
+                      RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(8))),
+                    ),
                   ),
+                  child: const Text("Confirmar")
                 )
               ],
-            ),
-            Row()
+            )
           ],
         ),
       )

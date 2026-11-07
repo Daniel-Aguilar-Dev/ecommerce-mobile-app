@@ -7,27 +7,17 @@ class BottomSheetContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(16),
-              topRight: Radius.circular(16),
-            )
+    return SafeArea(
+      top: false,
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          spacing: spacing,
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: children,
         ),
-        padding: .all(24),
-        child: SafeArea(
-          top: false,
-          child: Column(
-            spacing: spacing,
-            mainAxisAlignment: .start,
-            crossAxisAlignment: .start,
-            mainAxisSize: .min,
-            children: [
-              ...children,
-            ],
-          ),
-        )
+      ),
     );
   }
 }

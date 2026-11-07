@@ -48,26 +48,25 @@ class ProductoCardPublic extends StatelessWidget{
         child: Card(
           color: Colors.white,
           elevation: .5,
+          clipBehavior: Clip.antiAlias,
           child: Column(
             mainAxisSize: .min,
             children: [
-              Expanded(
-                child: AspectRatio(
-                  aspectRatio: 1,
-                  child: CachedNetworkImage(
-                    imageUrl: producto.imagen,
-                    fit: BoxFit.contain,
-                    placeholder: (_, __) => const Center(
-                      child: SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      ),
+              AspectRatio(
+                aspectRatio: 1,
+                child: CachedNetworkImage(
+                  imageUrl: producto.imagen,
+                  fit: BoxFit.fill,
+                  placeholder: (_, __) => const Center(
+                    child: SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(strokeWidth: 2),
                     ),
-                    errorWidget: (_, __, ___) => Image.asset(
-                      'assets/images/prod_placeholder.png',
-                      fit: BoxFit.contain,
-                    ),
+                  ),
+                  errorWidget: (_, __, ___) => Image.asset(
+                    'assets/images/prod_placeholder.png',
+                    fit: BoxFit.fill,
                   ),
                 ),
               ),
@@ -78,33 +77,33 @@ class ProductoCardPublic extends StatelessWidget{
                   mainAxisAlignment: .start,
                   crossAxisAlignment: .start,
                   children: [
-                    SizedBox(
-                      height: theme.textTheme.bodyMedium!.fontSize! * 1.4 * 2,
-                      child: Text(
-                        producto.nombre,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.bodyMedium!.copyWith(
-                          fontWeight: FontWeight.w400,
-                          height: 1.4,
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 12),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
                         color: disp.fondo,
-                        borderRadius: BorderRadius.circular(999),
+                        borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
                         producto.estadoStock,
-                        style: theme.textTheme.labelMedium!.copyWith(
-                          color: disp.color,
-                          fontWeight: FontWeight.w600,
+                        style: theme.textTheme.labelSmall!.copyWith(
+                            color: disp.color,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 10
                         ),
                       ),
                     ),
+                    SizedBox(height: 4),
+                    Text(
+                      producto.nombre,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.titleSmall!.copyWith(
+                        fontWeight: FontWeight.w400,
+                        color: AppColors.texto.c900,
+                        height: 1.4,
+                      ),
+                    ),
+
                     SizedBox(height: 4),
                     Row(
                       crossAxisAlignment: .center,
@@ -118,7 +117,7 @@ class ProductoCardPublic extends StatelessWidget{
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: theme.textTheme.titleLarge!.copyWith(
-                                fontWeight: FontWeight.bold,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
                           ),
@@ -128,7 +127,7 @@ class ProductoCardPublic extends StatelessWidget{
                           icon: const Icon(LucideIcons.shoppingCartPlus, size: 20,),
                           color: Colors.white,
                           style: IconButton.styleFrom(
-                            backgroundColor: loading ? AppColors.texto.c500 : AppColors.primario.c400,
+                            backgroundColor: producto.stock <= 0 ? AppColors.border :  loading ? AppColors.texto.c500 : AppColors.primario.c400,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
