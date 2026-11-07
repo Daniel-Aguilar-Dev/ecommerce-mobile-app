@@ -177,7 +177,6 @@ class MainMenuState extends State<MainMenu>{
               );
             },
           ),
-          const SliverToBoxAdapter(child: SizedBox(height: 80)), // espacio para el FAB
         ],
       ),
     );
