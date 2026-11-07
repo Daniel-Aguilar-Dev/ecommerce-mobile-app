@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:ecommerce_app/features/productos/domain/producto.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
+//TODO Este modal es para registro de una entrada, checar el figma
 class EntradaIndividualModal extends StatelessWidget {
   EntradaIndividualModal({
     super.key,
