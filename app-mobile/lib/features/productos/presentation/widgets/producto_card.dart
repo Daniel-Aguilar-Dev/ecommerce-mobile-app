@@ -77,29 +77,30 @@ class ProductoCard extends StatelessWidget{
                   mainAxisAlignment: .start,
                   crossAxisAlignment: .start,
                   children: [
-                    Text(
-                      producto.nombre,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.bodyMedium!.copyWith(
-                        fontWeight: FontWeight.w400,
-                        height: 1.4,
-                      ),
-                    ),
-                    SizedBox(height: 12),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
                         color: disp.fondo,
-                        borderRadius: BorderRadius.circular(999),
+                        borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
                         disp.texto,
                         style: theme.textTheme.labelSmall!.copyWith(
-                          color: disp.color,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 10
+                            color: disp.color,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 10
                         ),
+                      ),
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      producto.nombre,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.titleSmall!.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.texto.c900,
+                        height: 1.4,
                       ),
                     ),
                     SizedBox(height: 4),
@@ -114,9 +115,8 @@ class ProductoCard extends StatelessWidget{
                               _precio,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: theme.textTheme.titleLarge!.copyWith(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20
+                              style: theme.textTheme.titleMedium!.copyWith(
+                                fontWeight: FontWeight.w400,
                               ),
                             ),
                           ),
