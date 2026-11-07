@@ -42,12 +42,14 @@ class StatusView extends StatelessWidget{
             ),
           ),
           Center(
-            child:Text(title, style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+            child:Text(title,
+                textAlign: .center,
+                style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                 fontWeight: FontWeight.bold
             )),
           ),
           if(subtitle != null) Center(
-            child:Text(subtitle ?? "", style: Theme.of(context).textTheme.bodySmall),
+            child:Text(subtitle ?? "", textAlign: .center, style: Theme.of(context).textTheme.bodySmall),
           ),
           if(onPressButton != null) FilledButton(
               style: _buttonStyle,
@@ -136,7 +138,7 @@ final _buttonStyle = ButtonStyle(
   backgroundColor: WidgetStatePropertyAll(AppColors.primario.c400),
   foregroundColor: WidgetStatePropertyAll(Colors.white),
   textStyle: WidgetStatePropertyAll(
-    TextStyle(fontSize: 1, fontWeight: FontWeight.w600),
+    TextStyle(fontWeight: FontWeight.w600),
   ),
   shape: WidgetStatePropertyAll(
     RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(8))),

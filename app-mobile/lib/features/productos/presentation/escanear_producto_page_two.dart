@@ -79,13 +79,13 @@ class _DetallesViewState extends State<_DetallesView>{
             );
           }
 
-          if (snapshot.hasError) {
-            return StatusView.error(message: snapshot.error.toString());
-          }
-
           final prod = snapshot.data;
           if (prod == null) {
             return StatusView(icon: LucideIcons.cartonOff, title: "Producto no encontrado", subtitle: "No se encontró ningún producto con ese código de barras", buttonText:"Volver a escanear", onPressButton: () => Navigator.pop(context));
+          }
+
+          if (snapshot.hasError) {
+            return StatusView.error(message: snapshot.error.toString());
           }
 
           void mostrarImagenCompleta(String tag) {
