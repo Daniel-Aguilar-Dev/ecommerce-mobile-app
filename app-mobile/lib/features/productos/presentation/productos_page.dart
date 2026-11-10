@@ -181,7 +181,6 @@ class _ProductosViewState extends State<_ProductosView> {
             icon: LucideIcons.edit,
             text: "Modificar",
             onPress: () => _editProductoPage(prod, vm, sheetContext),
-            contentPadding: .symmetric(horizontal: 0, vertical: 0)
           ),
           PressableItem(
             icon: LucideIcons.vault,
@@ -189,13 +188,11 @@ class _ProductosViewState extends State<_ProductosView> {
                 ? 'Descontinuar'
                 : 'Reanudar',
             onPress: () => _changeStatusProductoModal(prod, vm, sheetContext),
-            contentPadding: .symmetric(horizontal: 0, vertical: 0)
           ),
           PressableItem(
             icon: LucideIcons.trash,
             text: "Eliminar",
             onPress: () => _deleteProductoModal(prod, vm, sheetContext),
-            contentPadding: .symmetric(horizontal: 0, vertical: 0)
           ),
           PressableItem(
             icon: LucideIcons.packagePlus,
@@ -207,7 +204,6 @@ class _ProductosViewState extends State<_ProductosView> {
                 builder: (context) => EntradaIndividualModal(producto: prod)
               );
             },
-            contentPadding: .symmetric(horizontal: 0, vertical: 0)
           ),
           PressableItem(
             icon: LucideIcons.packageMinus,
@@ -219,7 +215,6 @@ class _ProductosViewState extends State<_ProductosView> {
                 builder: (context) => PerdidaIndividualModal(producto: prod)
               );
             },
-            contentPadding: .symmetric(horizontal: 0, vertical: 0)
           ),
           if(esAdmin) PressableItem(
             icon: LucideIcons.bookBookmark,
@@ -233,7 +228,6 @@ class _ProductosViewState extends State<_ProductosView> {
                 ),
               );
             },
-            contentPadding: .symmetric(horizontal: 0, vertical: 0)
           )
         ]
       );

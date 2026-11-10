@@ -10,7 +10,7 @@ class BottomSheetContainer extends StatelessWidget {
     return SafeArea(
       top: false,
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.only(left: 16, top: 8, bottom: 24, right: 16),
         child: Column(
           spacing: spacing,
           mainAxisSize: MainAxisSize.min,

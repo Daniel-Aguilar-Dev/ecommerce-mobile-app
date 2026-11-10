@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:ecommerce_app/core/layout/status_view.dart';
+import 'package:ecommerce_app/core/ui/bottom_sheet_container.dart';
 import 'package:ecommerce_app/core/ui/custom_form_field.dart';
+import 'package:ecommerce_app/core/ui/pressable_item.dart';
 import 'package:ecommerce_app/features/categorias/domain/categoria.dart';
 import 'package:ecommerce_app/features/categorias/domain/categoria_repository.dart';
 import 'package:ecommerce_app/features/categorias/presentation/viewmodel/categoria_view_model.dart';
@@ -55,6 +57,45 @@ class _CategoriasViewState extends State<_CategoriasView> {
         true
       );
     });
+  }
+
+  void _categoriaBottomSheet(Categoria categoria){
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      showDragHandle: true,
+      enableDrag: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(20),
+        ),
+      ),
+      clipBehavior: Clip.antiAlias,
+      builder: (sheetContext) => BottomSheetContainer(
+        children: [
+          Text(categoria.nombre, style: Theme.of(sheetContext).textTheme.titleLarge!.copyWith(fontWeight: FontWeight.bold)),
+          const SizedBox(height: 8),
+          PressableItem(
+            icon: LucideIcons.edit,
+            text: "Modificar",
+            onPress: (){
+              Navigator.pop(sheetContext);
+              _editCategoriaModal(categoria);
+            },
+          ),
+          if(!categoria.tieneProductos) PressableItem(
+            icon: LucideIcons.trash,
+            text: "Eliminar",
+            onPress: () {
+              Navigator.pop(sheetContext);
+              _deleteCategoriaModal(categoria);
+            },
+          )
+        ]
+      )
+    );
   }
 
   void _deleteCategoriaModal(Categoria categoria) async {
@@ -144,8 +185,7 @@ class _CategoriasViewState extends State<_CategoriasView> {
               final cat = vm.categorias[i];
               return CategoriaCard(
                 categoria: cat,
-                onDelete: (categoria) => _deleteCategoriaModal(categoria),
-                onEdit: (categoria) => _editCategoriaModal(categoria),
+                onPressButton: (categoria) => _categoriaBottomSheet(categoria),
               );
             },
           ),
