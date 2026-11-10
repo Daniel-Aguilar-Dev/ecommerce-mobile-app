@@ -139,13 +139,11 @@ class _NuevoProductoPageState extends State<_NuevoProductoPage>{
             icon: LucideIcons.camera,
             text: "Desde la camara",
             onPress: () { Navigator.pop(sheetContext, ImageSource.camera); },
-            contentPadding: .symmetric(horizontal: 0)
         ),
         PressableItem(
             icon: LucideIcons.images,
             text: "Desde la galeria",
             onPress: () { Navigator.pop(sheetContext, ImageSource.gallery); },
-            contentPadding: .symmetric(horizontal: 0)
         )
       ]
     );

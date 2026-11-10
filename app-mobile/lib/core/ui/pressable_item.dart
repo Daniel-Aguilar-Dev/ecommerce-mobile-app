@@ -6,13 +6,13 @@ class PressableItem extends StatelessWidget {
     required this.icon,
     required this.text,
     required this.onPress,
-    this.contentPadding,
+    this.contentPadding = const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
   });
 
   final IconData icon;
   final String text;
   final VoidCallback onPress;
-  final EdgeInsets? contentPadding;
+  final EdgeInsets contentPadding;
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +22,7 @@ class PressableItem extends StatelessWidget {
       title: Text(text),
       onTap: onPress,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(4),
       ),
     );
   }
