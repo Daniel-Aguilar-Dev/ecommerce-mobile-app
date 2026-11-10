@@ -38,6 +38,7 @@ class _AppShellState extends State<AppShell>{
 
     final items = switch (role) {
       "EMPLEADO" => [for (final i in listEmpleado) NavigationDestination(icon: Icon(i.icon), label: i.label)],
+      "ADMINISTRADOR" => [for (final i in listAdmin) NavigationDestination(icon: Icon(i.icon), label: i.label)],
       _ => [for (final i in listCliente) NavigationDestination(icon: Icon(i.icon), label: i.label)],
     };
 
