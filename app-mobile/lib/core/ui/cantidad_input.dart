@@ -15,7 +15,8 @@ class CantidadInput extends StatefulWidget{
     required this.min,
     required this.onChange,
     this.acceptZero = true,
-    this.size = InputSize.large
+    this.size = InputSize.large,
+    this.defaultValue
   }):assert(min >= 0);
 
   final int min;
@@ -23,13 +24,28 @@ class CantidadInput extends StatefulWidget{
   final void Function(int) onChange;
   final bool acceptZero;
   final InputSize size;
+  final int? defaultValue;
 
   @override
   State<StatefulWidget> createState() => _CantidadInputState();
 }
 
 class _CantidadInputState extends State<CantidadInput> {
-  late int val = widget.acceptZero ? 0 : 1;
+  late int val = _clamp(widget.defaultValue ?? (widget.acceptZero ? 0 : 1));
+
+  int _clamp(int v) => v.clamp(widget.min, widget.max < widget.min ? widget.min : widget.max);
+
+  @override
+  void didUpdateWidget(covariant CantidadInput oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    final nuevo = _clamp(widget.defaultValue ?? val);
+
+    // Sincroniza si el padre cambió el valor o si cambió el límite de stock
+    if (nuevo != val) {
+      setState(() => val = nuevo);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
