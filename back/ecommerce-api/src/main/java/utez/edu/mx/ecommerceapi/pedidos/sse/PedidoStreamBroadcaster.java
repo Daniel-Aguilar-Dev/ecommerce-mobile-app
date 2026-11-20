@@ -47,6 +47,14 @@ public class PedidoStreamBroadcaster {
                 .data(event, MediaType.APPLICATION_JSON));
     }
 
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void onPedidoCancelado(PedidoCanceladoEvent event) {
+        broadcast(SseEmitter.event()
+                .name("pedido-cancelado")
+                .id(String.valueOf(event.pedidoId()))
+                .data(event, MediaType.APPLICATION_JSON));
+    }
+
     @Scheduled(fixedRate = 25_000)
     public void heartbeat() {
         broadcast(SseEmitter.event().comment("hb"));

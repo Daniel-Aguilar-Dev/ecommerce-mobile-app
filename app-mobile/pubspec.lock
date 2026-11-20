@@ -685,6 +685,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.2.1"
+  qr:
+    dependency: transitive
+    description:
+      name: qr
+      sha256: f9461594b257c2ec882159fb8100db28408f6aacdba5b21f109708bce2e482b6
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.0.1"
+  qr_flutter_plus:
+    dependency: "direct main"
+    description:
+      name: qr_flutter_plus
+      sha256: "2ab01df72a9036c80a57c8a7407fd64c5d0192c61f2be50823b1e38202ea9095"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.1"
   record_use:
     dependency: transitive
     description:

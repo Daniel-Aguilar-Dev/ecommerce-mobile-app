@@ -15,12 +15,14 @@ import utez.edu.mx.ecommerceapi.pedidos.repository.PedidoRepository;
 import utez.edu.mx.ecommerceapi.pedidos.repository.PedidoSecuenciaRepository;
 import utez.edu.mx.ecommerceapi.pedidos.service.VentaPedidoPort.LineaVentaPedido;
 import utez.edu.mx.ecommerceapi.pedidos.sse.PedidoCreadoEvent;
+import utez.edu.mx.ecommerceapi.pedidos.sse.PedidoCanceladoEvent;
 import utez.edu.mx.ecommerceapi.productos.entity.Producto;
 import utez.edu.mx.ecommerceapi.productos.service.ProductoService;
 import utez.edu.mx.ecommerceapi.shared.exception.BusinessException;
 import utez.edu.mx.ecommerceapi.shared.exception.ErrorCode;
 import utez.edu.mx.ecommerceapi.shared.exception.RecursoNoEncontradoException;
 import utez.edu.mx.ecommerceapi.shared.response.ApiResponse;
+import utez.edu.mx.ecommerceapi.shared.util.SecurityUtils;
 import utez.edu.mx.ecommerceapi.usuarios.entity.Usuario;
 import utez.edu.mx.ecommerceapi.usuarios.repository.UsuarioRepository;
 
@@ -56,10 +58,14 @@ public class PedidoService {
     @Autowired
     private ApplicationEventPublisher eventPublisher;
 
+    @Autowired
+    private PedidoEscaneoAuditService pedidoEscaneoAuditService;
+
     // ======================= CONSULTAS =======================
 
     @Transactional(readOnly = true)
-    public ApiResponse<List<PedidoPublicDto>> getPedidosByCliente(Long clienteId, PedidoEstadoEnum estado) {
+    public ApiResponse<List<PedidoPublicDto>> getPedidosByCliente(PedidoEstadoEnum estado) {
+        Long clienteId = SecurityUtils.usuarioActualId();
         List<Pedido> pedidos = (estado == null)
                 ? pedidoRepository.findByCliente(clienteId)
                 : pedidoRepository.findByClienteAndEstado(clienteId, estado);
@@ -68,7 +74,10 @@ public class PedidoService {
                 pedidos.stream().map(PedidoPublicDto::fromEntityParaCliente).toList());
     }
 
-    /** HU-6.4: pedidos entrantes para ADMIN/EMPLEADO, filtrables por estado. */
+    /**
+     * HU-6.4: pedidos entrantes para ADMIN/EMPLEADO, filtrables por estado.
+     * Devuelve PedidoPublicDto (no PedidoDto): este último incluye las entidades Usuario completas.
+     */
     @Transactional(readOnly = true)
     public ApiResponse<List<PedidoPublicDto>> getPedidosEntrantes(PedidoEstadoEnum estado) {
         List<Pedido> pedidos = (estado == null)
@@ -80,7 +89,8 @@ public class PedidoService {
 
     /** HU-6.11: el CLIENTE solo ve los suyos; el personal ve cualquiera. */
     @Transactional(readOnly = true)
-    public ApiResponse<PedidoPublicDto> getPedido(Long id, Long usuarioId, boolean esPersonal) {
+    public ApiResponse<PedidoPublicDto> getPedido(Long id, boolean esPersonal) {
+        Long usuarioId = SecurityUtils.usuarioActualId();
         Pedido pedido = findByIdOrThrow(id);
         if (!esPersonal && !pedido.getCliente().getId().equals(usuarioId))
             throw new RecursoNoEncontradoException("Pedido no encontrado con el id: ", id);
@@ -90,10 +100,21 @@ public class PedidoService {
     }
 
     /** HU-6.9: identifica el pedido a partir del QR. */
-    @Transactional(readOnly = true)
+    @Transactional
     public ApiResponse<PedidoPublicDto> getPedidoByQr(String codigoQr) {
-        Pedido pedido = pedidoRepository.findByCodigoQr(codigoQr)
-                .orElseThrow(() -> new RecursoNoEncontradoException("El código no corresponde a un pedido válido: ", codigoQr));
+        Optional<Pedido> encontrado = pedidoRepository.findByCodigoQr(codigoQr);
+        if (encontrado.isEmpty()) {
+            pedidoEscaneoAuditService.registrar(codigoQr, null, "NO_ENCONTRADO");
+            throw new RecursoNoEncontradoException("El código no corresponde a un pedido válido: ", codigoQr);
+        }
+        Pedido pedido = encontrado.get();
+        String resultado = switch (pedido.getEstado()) {
+            case PED_ENTREGADO -> "YA_ENTREGADO";
+            case PED_CANCELADO -> "CANCELADO";
+            case PED_LISTO -> "LISTO_PARA_ENTREGA";
+            default -> "NO_LISTO";
+        };
+        pedidoEscaneoAuditService.registrar(codigoQr, pedido, resultado);
         return ApiResponse.ok("Pedido recuperado", PedidoPublicDto.fromEntity(pedido));
     }
 
@@ -104,7 +125,8 @@ public class PedidoService {
      * Aquí NO se reserva stock: solo se valida la disponibilidad (la reserva ocurre al confirmar).
      */
     @Transactional
-    public ApiResponse<PedidoPublicDto> postPedido(PedidoPublicDto dto, Long clienteId) {
+    public ApiResponse<PedidoPublicDto> postPedido(PedidoPublicDto dto) {
+        Long clienteId = SecurityUtils.usuarioActualId();
         Usuario cliente = usuarioRepository.findById(clienteId)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Cliente no encontrado con el id: ", clienteId));
 
@@ -126,10 +148,15 @@ public class PedidoService {
                 continue;
             }
             // El JSON del carrito es el snapshot del pedido: su precio debe ser el vigente.
-            if (producto.getPrecioVenta().compareTo(item.getProducto().getPrecioVenta()) != 0) {
+            // (CarritoItem lleva ProductoPublicDto, cuyo precio se llama "precio".)
+            if (item.getProducto().getPrecioVenta() == null
+                    || producto.getPrecioVenta().compareTo(item.getProducto().getPrecioVenta()) != 0) {
                 problemas.add(producto.getNombre() + ": el precio cambió, actualiza tu carrito");
                 continue;
             }
+            // El snapshot guardado usa los datos de la BD, no los del body.
+            item.getProducto().setNombre(producto.getNombre());
+            item.getProducto().setPrecioVenta(producto.getPrecioVenta());
             // TODO HU-2.6: rechazar productos descontinuados.
 
             long disponible = producto.getStockActual() - producto.getStockReservado();
@@ -173,7 +200,8 @@ public class PedidoService {
 
     /** HU-6.3: solo PED_PENDIENTE, que aún no tiene reserva (nada que liberar). */
     @Transactional
-    public ApiResponse<Void> cancelarPedido(Long id, Long clienteId) {
+    public ApiResponse<Void> cancelarPedido(Long id) {
+        Long clienteId = SecurityUtils.usuarioActualId();
         Pedido pedido = lockOrThrow(id);
         if (!pedido.getCliente().getId().equals(clienteId))
             throw new RecursoNoEncontradoException("Pedido no encontrado con el id: ", id);
@@ -182,6 +210,8 @@ public class PedidoService {
 
         pedido.setEstado(PedidoEstadoEnum.PED_CANCELADO);
         pedidoRepository.save(pedido);
+        eventPublisher.publishEvent(
+                new PedidoCanceladoEvent(pedido.getId(), pedido.getEstado(), LocalDateTime.now()));
         return ApiResponse.ok("Pedido cancelado correctamente");
     }
 
@@ -189,7 +219,8 @@ public class PedidoService {
 
     /** HU-6.5: reserva el stock (valida disponibilidad real y producto activo). Todo o nada. */
     @Transactional
-    public ApiResponse<PedidoPublicDto> confirmarPedido(Long id, Long userId) {
+    public ApiResponse<PedidoPublicDto> confirmarPedido(Long id) {
+        Long userId = SecurityUtils.usuarioActualId();
         Usuario responsable = usuarioOrThrow(userId);
         Pedido pedido = lockOrThrow(id);
         exigirEstado(pedido, PedidoEstadoEnum.PED_PENDIENTE, "Solo se pueden confirmar pedidos pendientes");
@@ -206,7 +237,8 @@ public class PedidoService {
 
     /** HU-6.6: motivo obligatorio; libera la reserva solo si el pedido la tenía. */
     @Transactional
-    public ApiResponse<PedidoPublicDto> rechazarPedido(Long id, Long userId, String motivo) {
+    public ApiResponse<PedidoPublicDto> rechazarPedido(Long id, String motivo) {
+        Long userId = SecurityUtils.usuarioActualId();
         if (motivo == null || motivo.isBlank())
             throw new BusinessException(ErrorCode.VALIDACION_FALLIDA, "El motivo de rechazo es obligatorio");
 
@@ -224,13 +256,18 @@ public class PedidoService {
 
         pedido.setResponsable(responsable);
         pedido.setMotivoRechazo(motivo.trim());
-        pedido.setEstado(PedidoEstadoEnum.PED_RECHAZADO);
-        return ApiResponse.ok("Pedido rechazado", PedidoPublicDto.fromEntity(pedidoRepository.save(pedido)));
+        // La historia de usuario define el estado terminal de rechazo como CANCELADO.
+        pedido.setEstado(PedidoEstadoEnum.PED_CANCELADO);
+        Pedido rechazado = pedidoRepository.save(pedido);
+        eventPublisher.publishEvent(new PedidoCanceladoEvent(
+                rechazado.getId(), rechazado.getEstado(), LocalDateTime.now()));
+        return ApiResponse.ok("Pedido rechazado", PedidoPublicDto.fromEntity(rechazado));
     }
 
     /** HU-6.7 + HU-6.8: la reserva se mantiene; se genera el código opaco del QR. */
     @Transactional
-    public ApiResponse<PedidoPublicDto> marcarListo(Long id, Long userId) {
+    public ApiResponse<PedidoPublicDto> marcarListo(Long id) {
+        Long userId = SecurityUtils.usuarioActualId();
         Usuario responsable = usuarioOrThrow(userId);
         Pedido pedido = lockOrThrow(id);
         exigirEstado(pedido, PedidoEstadoEnum.PED_CONFIRMADO, "Solo un pedido confirmado puede marcarse como listo");
@@ -243,9 +280,10 @@ public class PedidoService {
 
     /** HU-6.10 (+ HU-4.3): consume la reserva, crea la venta y los movimientos en una sola transacción. */
     @Transactional
-    public ApiResponse<PedidoPublicDto> entregarPedido(Long id, Long userId, String metodoPago) {
+    public ApiResponse<PedidoPublicDto> entregarPedido(Long id, String metodoPago) {
+        Long userId = SecurityUtils.usuarioActualId();
         if (metodoPago == null || metodoPago.isBlank())
-            throw new BusinessException(ErrorCode.ACCESO_DENEGADO, "El método de pago es obligatorio");
+            throw new BusinessException(ErrorCode.VALIDACION_FALLIDA, "El método de pago es obligatorio");
 
         Usuario responsable = usuarioOrThrow(userId);
         Pedido pedido = lockOrThrow(id);
@@ -270,6 +308,22 @@ public class PedidoService {
         pedido.setResponsable(responsable);
         pedido.setEstado(PedidoEstadoEnum.PED_ENTREGADO);
         return ApiResponse.ok("Pedido entregado", PedidoPublicDto.fromEntity(pedidoRepository.save(pedido)));
+    }
+
+    /** La entrega por el flujo de cliente requiere presentar el QR leído por personal. */
+    @Transactional
+    public ApiResponse<PedidoPublicDto> entregarPedidoPorQr(String codigoQr, String metodoPago) {
+        Pedido pedido = pedidoRepository.findByCodigoQr(codigoQr)
+                .orElseThrow(() -> new RecursoNoEncontradoException(
+                        "El código no corresponde a un pedido válido: ", codigoQr));
+        if (pedido.getEstado() == PedidoEstadoEnum.PED_ENTREGADO
+                || pedido.getEstado() == PedidoEstadoEnum.PED_CANCELADO) {
+            throw new BusinessException(ErrorCode.PEDIDO_ESTADO_INVALIDO,
+                    "El pedido ya fue entregado o cancelado y no puede entregarse nuevamente");
+        }
+        exigirEstado(pedido, PedidoEstadoEnum.PED_LISTO,
+                "El pedido no está listo para recoger");
+        return entregarPedido(pedido.getId(), metodoPago);
     }
 
     /*

@@ -8,6 +8,7 @@ import utez.edu.mx.ecommerceapi.pedidos.entity.PedidoEstadoEnum;
 
 import java.math.BigDecimal;
 import java.sql.Time;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -30,12 +31,16 @@ public class PedidoPublicDto {
     private Long numPedido;
     private String textPedido;
     private String motivoRechazo;
+    private LocalDateTime fechaEntrega;
 
     /** Solo se envía al CLIENTE dueño y con el pedido en PED_LISTO (HU-6.8). */
     private String codigoQr;
 
     /** true cuando el pedido puede entregarse (PED_LISTO). Útil al escanear el QR (HU-6.9). */
     private boolean entregable;
+
+    /** El cliente debe ver cuando creó el pedido */
+    private LocalDateTime createdAt;
 
     /** Vista del personal: sin código QR. */
     public static PedidoPublicDto fromEntity(Pedido pedido) {
@@ -55,6 +60,7 @@ public class PedidoPublicDto {
         dto.setNumPedido(pedido.getNumPedido());
         dto.setTextPedido(pedido.getTextPedido());
         dto.setMotivoRechazo(pedido.getMotivoRechazo());
+        dto.setFechaEntrega(pedido.getFechaEntrega());
         dto.setEntregable(pedido.getEstado() == PedidoEstadoEnum.PED_LISTO);
         return dto;
     }

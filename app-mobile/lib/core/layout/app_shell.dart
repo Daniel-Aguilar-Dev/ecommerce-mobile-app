@@ -15,6 +15,7 @@ import 'package:ecommerce_app/features/carrito/presentation/main_menu.dart';
 import 'package:ecommerce_app/features/categorias/presentation/categorias_page.dart';
 import 'package:ecommerce_app/features/productos/presentation/productos_page.dart';
 import 'package:ecommerce_app/features/productos/presentation/escanear_producto_page_one.dart';
+import 'package:ecommerce_app/features/pedidos/presentation/pedidos_page.dart';
 
 class AppShell extends StatefulWidget {
   const AppShell({super.key});
@@ -98,7 +99,7 @@ class NavItem {
 
 List<NavItem> listCliente = [
   NavItem('Inicio', LucideIcons.home, const MainMenu(), "¿Qué necesitas hoy?"),
-  NavItem('Pedidos', LucideIcons.package, const Text("Pedidos"), "Tus pedidos"),
+  NavItem('Pedidos', LucideIcons.package, const PedidosPage(), "Tus pedidos"),
   NavItem('Carrito', LucideIcons.shoppingCart, const CarritoPage(), "Tu carrito"),
   NavItem('Pagos', LucideIcons.banknote, const Text("Pagos"), "Pagos pendientes"),
   NavItem('Cuenta', LucideIcons.user, const ProfileScreen(), "Cuenta"),
@@ -106,7 +107,7 @@ List<NavItem> listCliente = [
 
 List<NavItem> listEmpleado = [
   NavItem('Inicio', LucideIcons.home, const Text("Inicio"), "Inicio"),
-  NavItem('Pedidos', LucideIcons.clipboardList, const Text("Inicio"), "Pedidos"),
+  NavItem('Pedidos', LucideIcons.clipboardList, const PedidosPage(), "Pedidos"),
   NavItem('Escanear', LucideIcons.scanBox, EscanearProductoPageOne(), "Escanear producto", soloActiva: true),
   NavItem('Inventario', LucideIcons.packageOpen, const ProductosPage(), "Inventario"),
   NavItem('Ventas', LucideIcons.chartColumn, const Text("Inicio"), "Ventas"),
@@ -115,7 +116,7 @@ List<NavItem> listEmpleado = [
 List<NavItem> listAdmin = [
   NavItem('Inicio', LucideIcons.layoutDashboard, const Text("Dashboard"), "Inicio"),
   NavItem('Usuarios', LucideIcons.userRoundGroup, const Text("Usuarios"), "Usuarios"),
-  NavItem('Pedidos', LucideIcons.clipboardList, const Text("Pediods"), "Pedidos"),
+  NavItem('Pedidos', LucideIcons.clipboardList, const PedidosPage(), "Pedidos"),
   NavItem('Productos', LucideIcons.carton, const ProductosPage(), "Productos"),
   NavItem('Categorías', LucideIcons.tags, const CategoriasPage(), "Categorías"),
   NavItem('Ventas', LucideIcons.fileChartColumn, const Text("Ventas"), "Ventas"),

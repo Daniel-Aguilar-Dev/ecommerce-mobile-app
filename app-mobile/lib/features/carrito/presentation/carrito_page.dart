@@ -1,10 +1,10 @@
 import 'package:ecommerce_app/core/layout/status_view.dart';
 import 'package:ecommerce_app/core/ui/app_toast.dart';
-import 'package:ecommerce_app/core/ui/cantidad_input.dart';
 import 'package:ecommerce_app/features/carrito/domain/carrito.dart';
 import 'package:ecommerce_app/features/carrito/presentation/viewmodel/carrito_view_model.dart';
 import 'package:ecommerce_app/features/carrito/presentation/widgets/carrito_card.dart';
 import 'package:ecommerce_app/features/productos/data/models/stock_linea_response_dto.dart';
+import 'package:ecommerce_app/features/pedidos/presentation/viewmodel/pedido_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
@@ -75,7 +75,9 @@ class _CarritoPageState extends State<CarritoPage>{
                 FilledButton(
                   onPressed: () async {
                     if(vm.isLoading) return;
+                    final pedidoVm = context.read<PedidoViewModel>();
                     final res = await vm.checarStockCarrito(carrito);
+                    if (!context.mounted) return;
                     debugPrint("[CARRITO] devolvió: ${res.length}");
                     if(res.isNotEmpty){
                       setState(() {
@@ -83,12 +85,19 @@ class _CarritoPageState extends State<CarritoPage>{
                       });
                       if(vm.errorMessage != null) AppToast.show(context, variant: ToastType.error, title: vm.errorMessage ?? "Carrito no válido");
                     } else {
-                      //TODO Función para generar el pedido posteriormente
-                      AppToast.show(
-                        context, variant: ToastType.success,
-                        title: "¡Éxito!",
-                        message: "Pedido generado"
-                      );
+                      final pedido = await pedidoVm.crear(carrito);
+                      if (!context.mounted) return;
+                      if (pedido == null) {
+                        AppToast.show(context, variant: ToastType.error, title: pedidoVm.errorMessage ?? "No se pudo generar el pedido");
+                      } else {
+                        vm.vaciarCarrito();
+                        setState(() { carritoErrors = []; });
+                        AppToast.show(
+                          context, variant: ToastType.success,
+                          title: "Pedido ${pedido.textPedido} registrado",
+                          message: "Estado: pendiente"
+                        );
+                      }
                     }
                   },
                   style: ButtonStyle(

@@ -107,6 +107,11 @@ class CarritoViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  void vaciarCarrito() {
+    carritoDatasource.vaciarCarrito();
+    notifyListeners();
+  }
+
   Future<ProductoPublic?> obtenerUnoPorId(int id) async{
     late final ProductoPublic prod;
     _comenzarOperacion();

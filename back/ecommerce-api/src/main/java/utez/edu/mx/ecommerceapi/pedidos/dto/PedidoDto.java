@@ -23,6 +23,9 @@ public class PedidoDto {
     private Carrito carrito;
     private Long numPedido;
     private String textPedido;
+    private String codigoQr;
+    private String motivoRechazo;
+    private LocalDateTime fechaEntrega;
 
     // Campos auditables
     private LocalDateTime createdAt;
@@ -44,6 +47,8 @@ public class PedidoDto {
         pedido.setNumPedido(this.numPedido);
         pedido.setTextPedido(String.format("%05d", this.numPedido));
         pedido.setEstado(this.estado);
+        pedido.setCodigoQr(this.codigoQr);
+        pedido.setMotivoRechazo(this.motivoRechazo);
         return pedido;
     }
 
@@ -59,6 +64,9 @@ public class PedidoDto {
         pedidoDto.setNumPedido(pedido.getNumPedido());
         pedidoDto.setTextPedido(pedido.getTextPedido());
         pedidoDto.setEstado(pedido.getEstado());
+        pedidoDto.setCodigoQr(pedido.getCodigoQr());
+        pedidoDto.setMotivoRechazo(pedido.getMotivoRechazo());
+        pedidoDto.setFechaEntrega(pedido.getFechaEntrega());
         // Campos auditables
         pedidoDto.setCreatedAt(pedido.getCreatedAt());
         pedidoDto.setUpdatedAt(pedido.getUpdatedAt());

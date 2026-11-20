@@ -12,6 +12,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface PedidoRepository extends JpaRepository<Pedido, Long> {
+    @Query("select coalesce(max(p.numPedido), 0) from Pedido p")
+    long findMaxNumPedido();
+
     @Query("select p from Pedido p where p.cliente.id = :clienteId order by p.id desc")
     List<Pedido> findByCliente(Long clienteId);
 
