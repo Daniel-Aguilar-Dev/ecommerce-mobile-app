@@ -289,6 +289,7 @@ public class ProductoService {
         return ApiResponse.ok("Producto actualizado correctamente", ProductoDto.fromEntity(put, url));
     }
 
+    @Transactional
     public ApiResponse<Void> patchProduct(Long id) {
         Producto existente = findByIdOrThrow(id);
 
@@ -307,6 +308,7 @@ public class ProductoService {
         return ApiResponse.ok(mensaje);
     }
 
+    @Transactional
     public ApiResponse<Void> deleteProduct(Long id) {
         Producto existente = findByIdOrThrow(id);
         existente.setEstado(ProductoEstadoEnum.PROD_ELIMINADO);
@@ -406,6 +408,14 @@ public class ProductoService {
         return p.getCostoPromedio();
     }
 
+    @Transactional
+    public Producto findEntityByIdOrThrow(Long id){
+        return productoRepository.findById(id)
+                .filter(producto -> producto.getEstado() != ProductoEstadoEnum.PROD_ELIMINADO)
+                .orElseThrow(() ->
+                        new RecursoNoEncontradoException("Producto no encontrado con el id: ", id));
+    }
+
     /*
      * Si existen por X campo
      * */
@@ -423,6 +433,10 @@ public class ProductoService {
 
     private boolean existsOtherBySku(String sku, Long id) {
         return productoRepository.findBySkuIgnoreCaseAndIdNot(sku, id).isPresent();
+    }
+
+    public boolean existsById(Long id){
+        return productoRepository.existsById(id);
     }
 
     /*

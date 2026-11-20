@@ -69,13 +69,18 @@ class CarritoViewModel extends ChangeNotifier {
   Carrito obtenerCarrito() => carritoDatasource.obtenerCarrito();
 
   Future<void> agregarUnoAlCarrito(ProductoPublic prod) async{
-    //TODO No agrega, ver eso después
     _checkingStockId = prod.id;
-    await checarStock(prod, 1);
-    if(_errorMessage != null){
+    int stock = await checarStock(prod, 1);
+    if(stock >= 1){
       carritoDatasource.agregarAlCarrito(prod, 1);
+      _checkingStockId = 0;
+    } else {
+      if(_errorMessage == null){
+        _errorMessage = "Producto agotado";
+        _checkingStockId = 0;
+        cargar();
+      }
     }
-    _checkingStockId = 0;
     notifyListeners();
   }
 
@@ -99,6 +104,11 @@ class CarritoViewModel extends ChangeNotifier {
 
   void actualizarCarrito(Carrito carrito){
     carritoDatasource.actualizarCarrito(carrito);
+    notifyListeners();
+  }
+
+  void vaciarCarrito() {
+    carritoDatasource.vaciarCarrito();
     notifyListeners();
   }
 

@@ -2,6 +2,7 @@ package utez.edu.mx.ecommerceapi.productos.entity;
 
 import java.math.BigDecimal;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import jakarta.validation.constraints.PositiveOrZero;
@@ -79,6 +80,7 @@ public class Producto extends AuditableEntity {
     @JoinColumn(nullable = false, name = "categoria_id")
     private Categoria categoria;
 
+    @JsonIgnore
     public int getStockDisponible() {
         return stockActual - stockReservado;
     }

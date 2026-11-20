@@ -33,6 +33,40 @@ class AuthenticatedApiClient {
     return requestJson('GET', path);
   }
 
+  /// Abre un stream protegido. Si el access token venció, renueva la sesión
+  /// y vuelve a abrir el stream una sola vez, igual que las llamadas JSON.
+  Stream<String> getEventStream(String path) async* {
+    final tokenUsado = await _obtenerAccessToken();
+    late final Stream<String> stream;
+    try {
+      stream = await _apiClient.getEventStream(
+        path,
+        headers: {'Authorization': 'Bearer $tokenUsado'},
+      );
+    } on ApiException catch (error) {
+      if (error.statusCode != 401) rethrow;
+      final tokenActual = await _tokenStorage.leerAccessToken();
+      final tokenReintento = tokenActual != null &&
+              tokenActual.isNotEmpty &&
+              tokenActual != tokenUsado
+          ? tokenActual
+          : await _renovarOExpirar();
+      try {
+        stream = await _apiClient.getEventStream(
+          path,
+          headers: {'Authorization': 'Bearer $tokenReintento'},
+        );
+      } on ApiException catch (retryError) {
+        if (retryError.statusCode == 401) {
+          await _tokenStorage.borrarTokens();
+          _onSessionExpired();
+        }
+        rethrow;
+      }
+    }
+    yield* stream;
+  }
+
   Future<Map<String, dynamic>> postJson(
     String path, {
     required Map<String, Object?> body,
