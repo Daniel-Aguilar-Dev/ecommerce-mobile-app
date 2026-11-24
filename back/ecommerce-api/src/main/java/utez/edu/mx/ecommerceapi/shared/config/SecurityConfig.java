@@ -72,9 +72,16 @@ public class SecurityConfig {
                                                 .hasAnyRole("EMPLEADO", "ADMINISTRADOR")
                                                 .requestMatchers("/api/v1/ping")
                                                 .hasAnyRole("CLIENTE", "EMPLEADO", "ADMINISTRADOR")
+                                                .requestMatchers(HttpMethod.POST, "/api/v1/pedidos").hasRole("CLIENTE")
+                                                .requestMatchers(HttpMethod.GET, "/api/v1/pedidos/cliente", "/api/v1/pedidos/one/cliente/*").hasRole("CLIENTE")
+                                                .requestMatchers(HttpMethod.PATCH, "/api/v1/pedidos/cancelar/*").hasRole("CLIENTE")
+                                                .requestMatchers(HttpMethod.GET, "/api/v1/pedidos/personal", "/api/v1/pedidos/personal/stream",
+                                                        "/api/v1/pedidos/one/personal/*", "/api/v1/pedidos/qr/*").hasAnyRole("EMPLEADO", "ADMINISTRADOR")
+                                                .requestMatchers(HttpMethod.PATCH, "/api/v1/pedidos/confirmar/*", "/api/v1/pedidos/rechazar/*",
+                                                        "/api/v1/pedidos/listo/*", "/api/v1/pedidos/entregar/*",
+                                                        "/api/v1/pedidos/entregar/qr/*").hasAnyRole("EMPLEADO", "ADMINISTRADOR")
                                                 .anyRequest().denyAll())
                                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-
                 return http.build();
         }
 }

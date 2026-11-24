@@ -10,6 +10,10 @@ import 'package:ecommerce_app/features/categorias/domain/categoria_repository.da
 import 'package:ecommerce_app/features/productos/data/producto_data_source.dart';
 import 'package:ecommerce_app/features/productos/data/repositories/producto_repository_impl.dart';
 import 'package:ecommerce_app/features/productos/domain/producto_repository.dart';
+import 'package:ecommerce_app/features/pedidos/data/pedido_data_source.dart';
+import 'package:ecommerce_app/features/pedidos/data/repositories/pedido_repository_impl.dart';
+import 'package:ecommerce_app/features/pedidos/domain/pedido_repository.dart';
+import 'package:ecommerce_app/features/pedidos/presentation/viewmodel/pedido_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
@@ -37,7 +41,7 @@ Future<void> main() async {
   // En el emulador Android, 10.0.2.2 apunta al host donde corre Spring Boot.
   const baseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'http://10.0.2.2:8080',
+    defaultValue: 'http://192.168.1.66:8080',
   );
   final apiClient = ApiClient(baseUrl: baseUrl);
   final tokenStorage = SecureAuthTokenStorage();
@@ -66,6 +70,9 @@ Future<void> main() async {
           apiClientPublic: publicApiClient
       )
   );
+  final pedidoRepository = PedidoRepositoryImpl(
+    dataSource: PedidoDataSource(apiClient: protectedApiClient),
+  );
   final carritoViewModel = CarritoViewModel(productoRepository: productoRepository, carritoDatasource: CarritoLocalDatasource(db: db));
   // La revisión inicial rota el refresh token guardado si todavía es válido.
   unawaited(authViewModel.inicializar());
@@ -77,9 +84,13 @@ Future<void> main() async {
         Provider<AuthRepository>.value(value: authRepository),
         Provider<CategoriaRepository>.value(value: categoriaRepository),
         Provider<ProductoRepository>.value(value: productoRepository),
+        Provider<PedidoRepository>.value(value: pedidoRepository),
         Provider<AuthenticatedApiClient>.value(value: protectedApiClient),
         ChangeNotifierProvider<AuthViewModel>.value(value: authViewModel),
         ChangeNotifierProvider<CarritoViewModel>.value(value: carritoViewModel),
+        ChangeNotifierProvider<PedidoViewModel>(
+          create: (_) => PedidoViewModel(pedidoRepository: pedidoRepository),
+        ),
       ],
       child: const EcommerceApp(),
     ),

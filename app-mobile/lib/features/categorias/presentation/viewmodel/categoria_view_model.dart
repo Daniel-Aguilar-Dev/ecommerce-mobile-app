@@ -116,9 +116,9 @@ class CategoriaViewModel extends ChangeNotifier{
     } catch (error){
       _errorMessage = _mensaje(error);
       _setErrorObj(error);
+      return false;
     } finally{
       _terminarOperacion();
-      return false;
     }
   }
 
