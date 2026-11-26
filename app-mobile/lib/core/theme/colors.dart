@@ -19,6 +19,8 @@ class SemanticColor {
 class AppColors {
   AppColors._();
 
+  static const border = Color(0xFFE0E0E0);
+
   static const primario = ColorScale(
     c50: Color(0xFFFFF6ED),
     c100: Color(0xFFFFEAD4),

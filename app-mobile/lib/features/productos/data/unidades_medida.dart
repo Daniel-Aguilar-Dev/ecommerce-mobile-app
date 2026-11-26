@@ -1,0 +1,1 @@
+const unidades = ['pieza', 'caja', 'paquete', 'litro', 'kilogramo', 'gramo', 'botella'];

@@ -88,6 +88,7 @@ public class ProductoService {
         }
 
         List<ProductoDto> productoDtos = productos.stream()
+                .filter(p -> p.getEstado() != ProductoEstadoEnum.PROD_ELIMINADO)
                 .map(p -> {
                     String url = urlBuilder.thumbnail(p.getImagenPublicId(), p.getImagenVersion());
                     return ProductoDto.fromEntity(p, url);
@@ -126,6 +127,8 @@ public class ProductoService {
         Collections.shuffle(productos);
 
         List<ProductoPublicDto> dtos = productos.stream()
+                .filter(p -> p.getEstado() != ProductoEstadoEnum.PROD_ELIMINADO)
+                .filter(p -> p.getEstado() != ProductoEstadoEnum.PROD_DESCONTINUADO)
                 .map(p -> {
                     String url = urlBuilder.thumbnail(p.getImagenPublicId(), p.getImagenVersion());
                     return ProductoPublicDto.fromEntity(p, url);
@@ -137,7 +140,7 @@ public class ProductoService {
 
     @Transactional(readOnly = true)
     public ApiResponse<List<String>> getMarcas() {
-        List<String> marcas = productoRepository.findMarcasDistintas();
+        List<String> marcas = productoRepository.findMarcasDistintasExceptoEstado(ProductoEstadoEnum.PROD_ELIMINADO);
 
         String mensaje = marcas.isEmpty() ? "Sin marcas registradas" : "Marcas obtenidas";
 
@@ -204,6 +207,7 @@ public class ProductoService {
 
         Producto producto = dto.toEntity();
         producto.setCategoria(categoria);
+        producto.setEstado(ProductoEstadoEnum.PROD_ACTIVO);
         producto.setCostoPromedio(dto.getPrecioCompra());
 
         String prodSlug = slugify.slugify(dto.getNombre());
@@ -224,7 +228,8 @@ public class ProductoService {
             throw e;
         }
 
-        return ApiResponse.ok("Producto registrado correctamente", ProductoDto.fromEntity(post, null));
+        String url = urlBuilder.thumbnail(post.getImagenPublicId(), post.getImagenVersion());
+        return ApiResponse.ok("Producto registrado correctamente", ProductoDto.fromEntity(post, url));
     }
 
     @Transactional
@@ -280,34 +285,35 @@ public class ProductoService {
             throw e;
         }
 
-        return ApiResponse.ok("Producto actualizado correctamente", ProductoDto.fromEntity(put, null));
+        String url = urlBuilder.thumbnail(put.getImagenPublicId(), put.getImagenVersion());
+        return ApiResponse.ok("Producto actualizado correctamente", ProductoDto.fromEntity(put, url));
     }
 
+    @Transactional
     public ApiResponse<Void> patchProduct(Long id) {
         Producto existente = findByIdOrThrow(id);
 
         switch (existente.getEstado()) {
             case PROD_ACTIVO -> existente.setEstado(ProductoEstadoEnum.PROD_DESCONTINUADO);
             case PROD_DESCONTINUADO -> existente.setEstado(ProductoEstadoEnum.PROD_ACTIVO);
+            case PROD_ELIMINADO -> throw new RecursoNoEncontradoException("Producto no encontrado con el id: ", id);
         }
 
         String mensaje = existente.getEstado() == ProductoEstadoEnum.PROD_ACTIVO ?
                 "¡Producto disponible nuevamente!"
                 :
-                "¡Producto descontinuado";
+                "¡Producto descontinuado!";
 
         productoRepository.save(existente);
         return ApiResponse.ok(mensaje);
     }
 
+    @Transactional
     public ApiResponse<Void> deleteProduct(Long id) {
         Producto existente = findByIdOrThrow(id);
-
-        if (tieneMovimientosAsociados(id))
-            throw new BusinessException(ErrorCode.PRODUCTO_CON_MOVIMIENTOS, "No se puede eliminar un producto con movimientos registrados");
-
-        productoRepository.delete(existente);
-        return ApiResponse.ok("¡Producto eliminado permanentemente!");
+        existente.setEstado(ProductoEstadoEnum.PROD_ELIMINADO);
+        productoRepository.save(existente);
+        return ApiResponse.ok("Producto eliminado correctamente");
     }
 
     /*
@@ -402,6 +408,14 @@ public class ProductoService {
         return p.getCostoPromedio();
     }
 
+    @Transactional
+    public Producto findEntityByIdOrThrow(Long id){
+        return productoRepository.findById(id)
+                .filter(producto -> producto.getEstado() != ProductoEstadoEnum.PROD_ELIMINADO)
+                .orElseThrow(() ->
+                        new RecursoNoEncontradoException("Producto no encontrado con el id: ", id));
+    }
+
     /*
      * Si existen por X campo
      * */
@@ -421,21 +435,31 @@ public class ProductoService {
         return productoRepository.findBySkuIgnoreCaseAndIdNot(sku, id).isPresent();
     }
 
+    public boolean existsById(Long id){
+        return productoRepository.existsById(id);
+    }
+
     /*
      * Funciones de apoyo para no repetir código a lo marrano
      * */
     private Producto findByIdOrThrow(Long id) {
-        return productoRepository.findById(id).orElseThrow(() ->
+        return productoRepository.findById(id)
+                .filter(producto -> producto.getEstado() != ProductoEstadoEnum.PROD_ELIMINADO)
+                .orElseThrow(() ->
                 new RecursoNoEncontradoException("Producto no encontrado con el id: ", id));
     }
 
     private Producto findBySKUOrThrow(String sku) {
-        return productoRepository.findBySkuIgnoreCase(sku).orElseThrow(() ->
+        return productoRepository.findBySkuIgnoreCase(sku)
+                .filter(producto -> producto.getEstado() != ProductoEstadoEnum.PROD_ELIMINADO)
+                .orElseThrow(() ->
                 new RecursoNoEncontradoException("Producto no encontrado con el código: ", sku));
     }
 
     private Producto findByNombreOrThrow(String nombre) {
-        return productoRepository.findByNombreIgnoreCase(nombre).orElseThrow(() ->
+        return productoRepository.findByNombreIgnoreCase(nombre)
+                .filter(producto -> producto.getEstado() != ProductoEstadoEnum.PROD_ELIMINADO)
+                .orElseThrow(() ->
                 new RecursoNoEncontradoException("Producto no encontrado con el nombre: ", nombre));
     }
 
@@ -446,6 +470,8 @@ public class ProductoService {
 
     private Producto findActiveLockedOrThrow(Long id) {
         Producto p = findByIdLockedOrThrow(id);
+        if (p.getEstado() == ProductoEstadoEnum.PROD_ELIMINADO)
+            throw new RecursoNoEncontradoException("Producto no encontrado con el id: ", id);
         if (p.getEstado() == ProductoEstadoEnum.PROD_DESCONTINUADO)
             throw new BusinessException(ErrorCode.PRODUCTO_DESCONTINUADO, "¡Este producto está descontinuado!");
         return p;
@@ -474,9 +500,4 @@ public class ProductoService {
                 .divide(BigDecimal.valueOf(p.getStockActual() + cantidad), 4, RoundingMode.HALF_UP);
     }
 
-    private boolean tieneMovimientosAsociados(Long id) {
-        boolean inSales = productoRepository.existSalesWithProduct(id);
-        boolean inOrders = productoRepository.existOrdersWithProduct(id);
-        return inOrders || inSales;
-    }
 }

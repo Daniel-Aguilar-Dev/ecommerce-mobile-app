@@ -1,8 +1,24 @@
 import 'dart:async';
 
+import 'package:ecommerce_app/core/network/public_api_client.dart';
+import 'package:ecommerce_app/core/theme/app_theme.dart';
+import 'package:ecommerce_app/features/carrito/data/carrito_datasource.dart';
+import 'package:ecommerce_app/features/carrito/presentation/viewmodel/carrito_view_model.dart';
+import 'package:ecommerce_app/features/categorias/data/categoria_data_source.dart';
+import 'package:ecommerce_app/features/categorias/data/repositories/categoria_repository_impl.dart';
+import 'package:ecommerce_app/features/categorias/domain/categoria_repository.dart';
+import 'package:ecommerce_app/features/productos/data/producto_data_source.dart';
+import 'package:ecommerce_app/features/productos/data/repositories/producto_repository_impl.dart';
+import 'package:ecommerce_app/features/productos/domain/producto_repository.dart';
+import 'package:ecommerce_app/features/pedidos/data/pedido_data_source.dart';
+import 'package:ecommerce_app/features/pedidos/data/repositories/pedido_repository_impl.dart';
+import 'package:ecommerce_app/features/pedidos/domain/pedido_repository.dart';
+import 'package:ecommerce_app/features/pedidos/presentation/viewmodel/pedido_view_model.dart';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
-
+import 'package:intl/date_symbol_data_local.dart';
 import 'core/network/api_client.dart';
 import 'core/network/authenticated_api_client.dart';
 import 'features/auth/data/auth_remote_data_source.dart';
@@ -12,13 +28,20 @@ import 'features/auth/domain/auth_repository.dart';
 import 'features/auth/presentation/auth_gate.dart';
 import 'features/auth/presentation/auth_view_model.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  final dir = await getApplicationDocumentsDirectory();
+  Hive.init(dir.path);
+  final db = await Hive.openBox('ecommerce_box');
+
+  await db.clear();
+
+  await initializeDateFormatting('es_MX', null);
   // En el emulador Android, 10.0.2.2 apunta al host donde corre Spring Boot.
   const baseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'http://10.0.2.2:8080',
+    defaultValue: 'http://192.168.1.66:8080',
   );
   final apiClient = ApiClient(baseUrl: baseUrl);
   final tokenStorage = SecureAuthTokenStorage();
@@ -34,16 +57,40 @@ void main() {
     authRepository: authRepository,
     onSessionExpired: authViewModel.expirarSesion,
   );
-
+  final publicApiClient = PublicApiClient(apiClient: apiClient);
+  final categoriaRepository = CategoriaRepositoryImpl(
+      datasource: CategoriaDataSource(
+          apiClientAuth: protectedApiClient,
+          apiClientPublic: publicApiClient
+      )
+  );
+  final productoRepository = ProductoRepositoryImpl(
+      datasource: ProductoDataSource(
+          apiClientAuth: protectedApiClient,
+          apiClientPublic: publicApiClient
+      )
+  );
+  final pedidoRepository = PedidoRepositoryImpl(
+    dataSource: PedidoDataSource(apiClient: protectedApiClient),
+  );
+  final carritoViewModel = CarritoViewModel(productoRepository: productoRepository, carritoDatasource: CarritoLocalDatasource(db: db));
   // La revisión inicial rota el refresh token guardado si todavía es válido.
   unawaited(authViewModel.inicializar());
+  carritoViewModel.cargarCarrito();
 
   runApp(
     MultiProvider(
       providers: [
         Provider<AuthRepository>.value(value: authRepository),
+        Provider<CategoriaRepository>.value(value: categoriaRepository),
+        Provider<ProductoRepository>.value(value: productoRepository),
+        Provider<PedidoRepository>.value(value: pedidoRepository),
         Provider<AuthenticatedApiClient>.value(value: protectedApiClient),
         ChangeNotifierProvider<AuthViewModel>.value(value: authViewModel),
+        ChangeNotifierProvider<CarritoViewModel>.value(value: carritoViewModel),
+        ChangeNotifierProvider<PedidoViewModel>(
+          create: (_) => PedidoViewModel(pedidoRepository: pedidoRepository),
+        ),
       ],
       child: const EcommerceApp(),
     ),
@@ -55,28 +102,10 @@ class EcommerceApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const navy = Color(0xFF303C55);
-    const orange = Color(0xFFFF8438);
-
     return MaterialApp(
-      title: 'EcoTrack Store',
+      title: 'Ecommerce App',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        useMaterial3: true,
-        scaffoldBackgroundColor: Colors.white,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: orange,
-          primary: orange,
-          secondary: navy,
-          surface: Colors.white,
-        ),
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.white,
-          foregroundColor: navy,
-          elevation: 0,
-          centerTitle: false,
-        ),
-      ),
+      theme: ECommerceAppTheme.build(),
       home: const AuthGate(),
     );
   }

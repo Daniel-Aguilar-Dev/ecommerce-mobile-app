@@ -1,0 +1,126 @@
+import 'package:ecommerce_app/features/carrito/presentation/carrito_page.dart';
+import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:provider/provider.dart';
+
+import 'package:ecommerce_app/core/layout/layout_admin.dart';
+import 'package:ecommerce_app/core/layout/layout_cliente.dart';
+import 'package:ecommerce_app/core/layout/layout_empleado.dart';
+import 'package:ecommerce_app/features/auth/presentation/auth_view_model.dart';
+import 'package:ecommerce_app/core/theme/colors.dart';
+
+//Importar páginas aquí
+import 'package:ecommerce_app/features/auth/presentation/profile_page.dart';
+import 'package:ecommerce_app/features/carrito/presentation/main_menu.dart';
+import 'package:ecommerce_app/features/categorias/presentation/categorias_page.dart';
+import 'package:ecommerce_app/features/productos/presentation/productos_page.dart';
+import 'package:ecommerce_app/features/productos/presentation/escanear_producto_page_one.dart';
+import 'package:ecommerce_app/features/pedidos/presentation/pedidos_page.dart';
+
+class AppShell extends StatefulWidget {
+  const AppShell({super.key});
+
+  @override
+  State<AppShell> createState() => _AppShellState();
+}
+
+class _AppShellState extends State<AppShell>{
+  int _index = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    /*
+    * Para probar los roles:
+    * late final role = "EMPLEADO";
+    * late final role = "ADMINISTRADOR";
+    * late final role = "CLIENTE";
+     */
+    late final role = context.select<AuthViewModel, String?>((a) => a.session?.usuario.rol);
+
+    final items = switch (role) {
+      "EMPLEADO" => [for (final i in listEmpleado) NavigationDestination(icon: Icon(i.icon), label: i.label)],
+      "ADMINISTRADOR" => [for (final i in listAdmin) NavigationDestination(icon: Icon(i.icon), label: i.label)],
+      _ => [for (final i in listCliente) NavigationDestination(icon: Icon(i.icon), label: i.label)],
+    };
+
+    final pages = switch (role) {
+      "EMPLEADO" => listEmpleado,
+      "ADMINISTRADOR" => listAdmin,
+      _ => listCliente,
+    };
+
+    final index = _index.clamp(0, items.length - 1);
+
+    return Scaffold(
+      appBar: switch (role) {
+      "ADMINISTRADOR" => AppBarAdmin(title: listAdmin[index].title),
+      "EMPLEADO" => AppBarEmpleado(title: listEmpleado[index].title),
+      _ => AppBarCliente(title: listCliente[index].title),
+      },
+      drawer: role == "ADMINISTRADOR" ? AdminDrawer(items: listAdmin, index: index, onSelect: (i) => setState(() => _index = i)) : null,
+      body: SafeArea(
+        child: IndexedStack(
+          index: index,
+          children: [
+            for (var n = 0; n < pages.length; n++)
+              (pages[n].soloActiva && n != index) ? const SizedBox.shrink() : pages[n].page,
+          ],
+        ),
+      ),
+      bottomNavigationBar: role != "ADMINISTRADOR" ?
+        DecoratedBox(
+          position: DecorationPosition.foreground,
+          decoration: const BoxDecoration(
+            border: Border(top: BorderSide(color: AppColors.border, width: 1)),
+          ),
+          child: NavigationBar(
+            backgroundColor: Colors.white,
+            selectedIndex: _index,
+            onDestinationSelected: (i) => setState(() => _index = i),
+            destinations: items,
+            elevation: 0,
+            indicatorColor: Colors.transparent,
+          ),
+        )
+        :
+        null,
+    );
+  }
+}
+
+class NavItem {
+  const NavItem(this.label, this.icon, this.page, this.title, {this.soloActiva = false});
+  final String label;
+  final IconData icon;
+  final Widget page;
+  final String title;
+  final bool soloActiva; // no mantener viva en el IndexedStack
+}
+
+List<NavItem> listCliente = [
+  NavItem('Inicio', LucideIcons.home, const MainMenu(), "¿Qué necesitas hoy?"),
+  NavItem('Pedidos', LucideIcons.package, const PedidosPage(), "Tus pedidos"),
+  NavItem('Carrito', LucideIcons.shoppingCart, const CarritoPage(), "Tu carrito"),
+  NavItem('Pagos', LucideIcons.banknote, const Text("Pagos"), "Pagos pendientes"),
+  NavItem('Cuenta', LucideIcons.user, const ProfileScreen(), "Cuenta"),
+];
+
+List<NavItem> listEmpleado = [
+  NavItem('Inicio', LucideIcons.home, const Text("Inicio"), "Inicio"),
+  NavItem('Pedidos', LucideIcons.clipboardList, const PedidosPage(), "Pedidos"),
+  NavItem('Escanear', LucideIcons.scanBox, EscanearProductoPageOne(), "Escanear producto", soloActiva: true),
+  NavItem('Inventario', LucideIcons.packageOpen, const ProductosPage(), "Inventario"),
+  NavItem('Ventas', LucideIcons.chartColumn, const Text("Inicio"), "Ventas"),
+];
+
+List<NavItem> listAdmin = [
+  NavItem('Inicio', LucideIcons.layoutDashboard, const Text("Dashboard"), "Inicio"),
+  NavItem('Usuarios', LucideIcons.userRoundGroup, const Text("Usuarios"), "Usuarios"),
+  NavItem('Pedidos', LucideIcons.clipboardList, const PedidosPage(), "Pedidos"),
+  NavItem('Productos', LucideIcons.carton, const ProductosPage(), "Productos"),
+  NavItem('Categorías', LucideIcons.tags, const CategoriasPage(), "Categorías"),
+  NavItem('Ventas', LucideIcons.fileChartColumn, const Text("Ventas"), "Ventas"),
+  NavItem('Entradas', LucideIcons.packagePlus, const Text("Entradas"), "Entradas"),
+  NavItem('Salidas', LucideIcons.packageMinus, const Text("Salidas"), "Salidas"),
+  NavItem('Pagos pendientes', LucideIcons.wallet, const Text("Pagos"), "Pagos pendientes"),
+];

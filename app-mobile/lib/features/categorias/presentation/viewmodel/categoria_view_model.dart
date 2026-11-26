@@ -1,0 +1,173 @@
+import 'package:ecommerce_app/core/network/api_exception.dart';
+import 'package:ecommerce_app/features/categorias/data/models/categoria_request_dto.dart';
+import 'package:ecommerce_app/features/categorias/domain/categoria.dart';
+import 'package:ecommerce_app/features/categorias/domain/categoria_repository.dart';
+import 'package:flutter/cupertino.dart';
+
+class CategoriaViewModel extends ChangeNotifier{
+  CategoriaViewModel({required CategoriaRepository categoriaRepository})
+      : _repository = categoriaRepository;
+
+  final CategoriaRepository _repository;
+
+  List<Categoria> _categorias = [];
+
+  bool _isFetching = false;
+  bool _isLoading = false;
+  String? _errorMessage;
+  String? _successMessage;
+
+  ApiException? errorObj;
+  ApiException? errorObjList;
+
+  bool get isLoading => _isLoading;
+  bool get isFetching => _isFetching;
+  String? get errorMessage => _errorMessage;
+  String? get successMessage => _successMessage;
+  List<Categoria> get categorias => _categorias;
+
+
+  bool _disposed = false;
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
+  }
+
+  @override
+  void notifyListeners() {
+    if (!_disposed) super.notifyListeners();
+  }
+
+  Future<void> cargar([String? query, bool silencioso = false]) async {
+    if(!silencioso) _comenzarFetch();
+    _limpiarErrorObjList();
+    try {
+      _categorias = await _repository.listaPersonal(query);
+    } catch (error) {
+      _errorMessage = _mensaje(error);
+      _setErrorObjList(error);
+    } finally {
+      _terminarFetching();
+    }
+  }
+
+  Future<Categoria?> obtenerUno(int id) async{
+    late final Categoria cat;
+    _limpiarErrorObj();
+    _comenzarOperacion();
+    try{
+      cat = await _repository.unaPorId(id);
+      return cat;
+    } catch (error){
+      _errorMessage = _mensaje(error);
+      _setErrorObj(error);
+      return null;
+    } finally{
+      _terminarOperacion();
+    }
+  }
+
+  Future<Categoria?> registrar(CategoriaRequestDto request) async {
+    late final Categoria cat;
+    _limpiarErrorObj();
+    _comenzarOperacion();
+    try{
+      cat = await _repository.crear(descripcion:request.descripcion, nombre: request.nombre);
+      _successMessage = 'Categoría registrada correctamente';
+      cargar();
+      return cat;
+    } catch (error){
+      _errorMessage = _mensaje(error);
+      _setErrorObj(error);
+      return null;
+    } finally{
+      _terminarOperacion();
+    }
+  }
+
+  Future<Categoria?> actualizar(CategoriaRequestDto request, int id) async{
+    late final Categoria cat;
+    _limpiarErrorObj();
+    _comenzarOperacion();
+    try{
+      cat = await _repository.modificar(id:id, descripcion:request.descripcion, nombre: request.nombre);
+      _successMessage = 'Categoría actualizada correctamente';
+      cargar();
+      return cat;
+    } catch (error){
+      _errorMessage = _mensaje(error);
+      _setErrorObj(error);
+      return null;
+    } finally{
+      _terminarOperacion();
+    }
+  }
+
+  Future<bool> borrar(int id) async{
+    _limpiarErrorObj();
+    _comenzarOperacion();
+    try{
+      final msj = await _repository.eliminar(id);
+      _successMessage = msj;
+      cargar();
+      return true;
+    } catch (error){
+      _errorMessage = _mensaje(error);
+      _setErrorObj(error);
+      return false;
+    } finally{
+      _terminarOperacion();
+    }
+  }
+
+  void limpiarMensajes() {
+    _errorMessage = null;
+    _successMessage = null;
+    notifyListeners();
+  }
+
+  void _comenzarFetch() {
+    _isFetching = true;
+    notifyListeners();
+  }
+
+  void _comenzarOperacion() {
+    _isLoading = true;
+    notifyListeners();
+  }
+
+  void _terminarFetching() {
+    _isFetching = false;
+    notifyListeners();
+  }
+
+  void _terminarOperacion() {
+    _isLoading = false;
+    notifyListeners();
+  }
+
+  void _limpiarErrorObjList() => errorObjList = null;
+
+  void _limpiarErrorObj() => errorObj = null;
+
+  void _setErrorObj(Object error){
+    if(error is ApiException){
+      errorObj = error;
+    }
+  }
+
+  void _setErrorObjList(Object error){
+    if(error is ApiException){
+      errorObjList = error;
+    }
+  }
+
+
+  String _mensaje(Object error) {
+    if (error is ApiException) return error.message;
+    if (error is String) return error;
+    return 'Ocurrió un error inesperado. Intenta de nuevo.';
+  }
+}

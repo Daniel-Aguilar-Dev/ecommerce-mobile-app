@@ -56,7 +56,7 @@ class AuthRemoteDataSource {
 
     if (responseJson['success'] != true) {
       final message = responseJson['message'];
-      throw ApiException(
+      throw RespuestaInvalida(
         message: message is String
             ? message
             : 'No fue posible cerrar la sesión en el servidor',
@@ -74,7 +74,7 @@ class AuthRemoteDataSource {
 
     if (responseJson['success'] != true) {
       final message = responseJson['message'];
-      throw ApiException(
+      throw RespuestaInvalida(
         message: message is String
             ? message
             : 'No fue posible realizar el registro',
@@ -83,7 +83,7 @@ class AuthRemoteDataSource {
 
     final data = responseJson['data'];
     if (data is! Map<String, dynamic>) {
-      throw const ApiException(
+      throw const RespuestaInvalida(
         message: 'La respuesta tiene un formato inválido',
       );
     }
@@ -98,7 +98,7 @@ class AuthRemoteDataSource {
     // La API devuelve el resultado dentro de success/message/data.
     if (responseJson['success'] != true) {
       final message = responseJson['message'];
-      throw ApiException(
+      throw RespuestaInvalida(
         message: message is String ? message : mensajeFallback,
       );
     }
@@ -106,7 +106,7 @@ class AuthRemoteDataSource {
     // El DTO modela solo `data`, que contiene ambos tokens y el usuario.
     final data = responseJson['data'];
     if (data is! Map<String, dynamic>) {
-      throw const ApiException(
+      throw const RespuestaInvalida(
         message: 'La respuesta de autenticación tiene un formato inválido',
       );
     }

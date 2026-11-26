@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import utez.edu.mx.ecommerceapi.carrito.entity.Carrito;
 
+import utez.edu.mx.ecommerceapi.productos.dto.CantidadRequest;
 import utez.edu.mx.ecommerceapi.productos.dto.ProductoDto;
 import utez.edu.mx.ecommerceapi.productos.dto.ProductoPublicDto;
 import utez.edu.mx.ecommerceapi.productos.dto.StockLineaDto;
@@ -68,7 +69,6 @@ public class ProductoController {
         return ResponseEntity.ok(response);
     }
 
-
     @Operation(summary = "Obtiene un producto por su ID para el uso del personal")
     @GetMapping("/id/{id}")
     public ResponseEntity<ApiResponse<ProductoDto>> getProductoById(@PathVariable Long id) {
@@ -99,8 +99,8 @@ public class ProductoController {
 
     @Operation(summary = "Valida que un producto cuente con la cantidad solicitada en stock")
     @PostMapping("/public/validar/producto/{id}")
-    public ResponseEntity<ApiResponse<Integer>> validarStockProducto(@RequestBody int cantidad, @PathVariable Long id) {
-        ApiResponse<Integer> response = productoService.validarStockIndividual(id, cantidad);
+    public ResponseEntity<ApiResponse<Integer>> validarStockProducto(@Valid @RequestBody CantidadRequest request, @PathVariable Long id) {
+        ApiResponse<Integer> response = productoService.validarStockIndividual(id, request.getCantidad());
         return ResponseEntity.ok(response);
     }
 
@@ -137,7 +137,7 @@ public class ProductoController {
         return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "Elimina un producto definitivamente")
+    @Operation(summary = "Elimina lógicamente un producto del catálogo")
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> eliminarProducto(@PathVariable Long id) {
         ApiResponse<Void> response = productoService.deleteProduct(id);

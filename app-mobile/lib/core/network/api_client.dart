@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
+import 'package:mime/mime.dart';
 
 import 'package:http/http.dart' as http;
 
@@ -42,6 +44,48 @@ class ApiClient {
     Map<String, String> headers = const {},
   }) => requestJson('GET', path, headers: headers);
 
+  /// Abre un endpoint de eventos de texto (por ejemplo, Server-Sent Events).
+  /// La autenticación y renovación de credenciales se resuelven en la capa superior.
+  Future<Stream<String>> getEventStream(
+    String path, {
+    Map<String, String> headers = const {},
+  }) async {
+    late final http.StreamedResponse response;
+    try {
+      final request = http.Request('GET', _baseUrl.resolve(path))
+        ..headers.addAll({
+          'Accept': 'text/event-stream',
+          'Cache-Control': 'no-cache',
+          ...headers,
+        });
+      response = await _httpClient.send(request).timeout(const Duration(seconds: 20));
+    } on SocketException {
+      throw const SinConexion(message: 'Sin conexión con el servidor de pedidos');
+    } on http.ClientException {
+      throw const SinConexion(message: 'No se pudo conectar con el servidor de pedidos');
+    } on TimeoutException {
+      throw const TiempoAgotado(message: 'No se pudo abrir la conexión de pedidos');
+    }
+
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      await response.stream.drain<void>();
+      if (response.statusCode >= 500) {
+        throw ErrorServidor(
+          statusCode: response.statusCode,
+          message: 'El servidor no pudo abrir la conexión de pedidos',
+        );
+      }
+      throw DtoInvalido(
+        message: 'No se pudo abrir la conexión de pedidos',
+        code: null,
+        statusCode: response.statusCode,
+        fieldErrors: const {},
+      );
+    }
+
+    return response.stream.transform(utf8.decoder);
+  }
+
   /// Envía una solicitud JSON sin conocer el recurso ni su DTO.
   /// La autenticación vive en [AuthenticatedApiClient], no en este adaptador.
   Future<Map<String, dynamic>> requestJson(
@@ -64,18 +108,25 @@ class ApiClient {
       response = await http.Response.fromStream(
         await _httpClient.send(request).timeout(const Duration(seconds: 20)),
       ).timeout(const Duration(seconds: 20));
+    } on SocketException {
+      // El dispositivo no está conectado a la red
+      throw const SinConexion(message: 'Sin conexión a internet');
     } on http.ClientException {
       // Traducimos el error de la biblioteca HTTP a un error propio de la app.
-      throw const ApiException(message: 'No se pudo conectar con el servidor');
+      throw const SinConexion(message: 'No se pudo conectar con el servidor');
     } on TimeoutException {
       // Un timeout significa que no hubo respuesta dentro del tiempo límite.
-      throw const ApiException(
+      throw const TiempoAgotado(
         message: 'La solicitud tardó demasiado. Intenta de nuevo',
       );
     }
+    
+    final statusCode = response.statusCode;
 
     // La respuesta todavía no se ha validado; se asignará tras decodificarla.
     late final Map<String, dynamic> json;
+
+    if(response.statusCode == 204) return {};
 
     try {
       // Se decodifican los bytes respetando UTF-8 y luego se interpreta JSON.
@@ -89,11 +140,19 @@ class ApiClient {
       json = decoded;
     } on FormatException {
       // Un cuerpo vacío o mal formado tampoco es una respuesta utilizable.
-      throw ApiException(
+      throw PeticionRechazada(
         message: 'El servidor devolvió una respuesta inválida',
         statusCode: response.statusCode,
       );
     }
+
+    final message = json['message'] is String
+        ? json['message'] as String
+        : 'Ocurrió un error al comunicarse con el servidor';
+
+    final code = json['error'] is String ? json['error'] as String : null;
+
+    if (statusCode >= 500) throw ErrorServidor(statusCode: statusCode, message: message);
 
     // Cualquier estado fuera de 200–299 representa un fallo HTTP.
     if (response.statusCode < 200 || response.statusCode >= 300) {
@@ -109,11 +168,121 @@ class ApiClient {
 
       // El mensaje y código vienen del backend; usamos un mensaje de respaldo
       // si la respuesta no tiene el formato esperado.
-      throw ApiException(
-        message: json['message'] is String
-            ? json['message'] as String
-            : 'Ocurrió un error al comunicarse con el servidor',
-        code: json['error'] is String ? json['error'] as String : null,
+      throw DtoInvalido(
+        message: message,
+        code: code,
+        statusCode: response.statusCode,
+        fieldErrors: fieldErrors,
+      );
+    }
+
+    // Devuelve la envoltura JSON completa. La fuente remota extraerá `data`
+    // y lo convertirá al DTO específico de login o registro.
+    return json;
+  }
+
+  /*
+   Envía una solicitud Multipart sin conocer el recurso ni su DTO.
+   La autenticación vive en [AuthenticatedApiClient], no en este adaptador.
+   */
+  Future<Map<String, dynamic>> requestMultipart(
+      String method,
+      String path, {
+        Map<String, Object?>? body,
+        File? file,
+        Map<String, String> headers = const {},
+      }) async {
+
+    /*
+    `late` permite declarar la respuesta antes del try y asignarla una vez
+    cuando la solicitud termina correctamente.
+     */
+    late final http.Response response;
+
+    try {
+      final request = http.MultipartRequest(method, _baseUrl.resolve(path))
+        ..headers.addAll({...headers});
+      if (body != null) {
+        request.files.add(http.MultipartFile.fromString(
+          'data',
+          jsonEncode(body),
+          contentType: http.MediaType('application', 'json'),
+        ));
+      }
+      if(file != null){
+        final mime = lookupMimeType(file.path) ?? 'image/jpeg';
+        request.files.add(await http.MultipartFile.fromPath(
+          'imagen',
+          file.path,
+          contentType: http.MediaType.parse(mime),
+        ));
+      }
+      final streamed = await _httpClient.send(request);
+      response = await http.Response.fromStream(streamed)
+          .timeout(const Duration(seconds: 30));
+    } on SocketException {
+      // El dispositivo no está conectado a la red
+      throw const SinConexion(message: 'Sin conexión a internet');
+    } on http.ClientException {
+      // Traducimos el error de la biblioteca HTTP a un error propio de la app.
+      throw const TiempoAgotado(message: 'No se pudo conectar con el servidor');
+    } on TimeoutException {
+      // Un timeout significa que no hubo respuesta dentro del tiempo límite.
+      throw const TiempoAgotado(
+        message: 'La solicitud tardó demasiado. Intenta de nuevo',
+      );
+    }
+
+    final statusCode = response.statusCode;
+
+    // La respuesta todavía no se ha validado; se asignará tras decodificarla.
+    late final Map<String, dynamic> json;
+
+    if(response.statusCode == 204) return {};
+
+    try {
+      // Se decodifican los bytes respetando UTF-8 y luego se interpreta JSON.
+      final decoded = jsonDecode(utf8.decode(response.bodyBytes));
+
+      // La API debe devolver un objeto JSON en la raíz, no una lista o texto.
+      if (decoded is! Map<String, dynamic>) {
+        throw const FormatException('La respuesta no es un objeto JSON');
+      }
+
+      json = decoded;
+    } on FormatException {
+      // Un cuerpo vacío o mal formado tampoco es una respuesta utilizable.
+      throw PeticionRechazada(
+        message: 'El servidor devolvió una respuesta inválida',
+        statusCode: response.statusCode,
+      );
+    }
+
+    final message = json['message'] is String
+        ? json['message'] as String
+        : 'Ocurrió un error al comunicarse con el servidor';
+
+    final code = json['error'] is String ? json['error'] as String : null;
+
+    if (statusCode >= 500) throw ErrorServidor(statusCode: statusCode, message: message);
+
+    // Cualquier estado fuera de 200–299 representa un fallo HTTP.
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      // El backend puede enviar errores específicos de campos en su envoltura.
+      final rawErrors = json['errors'];
+      final fieldErrors = rawErrors is Map
+          ? rawErrors.map(
+        // Convertimos claves y valores a String para cumplir el contrato
+        // Map<String, String> de ApiException.
+            (key, value) => MapEntry(key.toString(), value.toString()),
+      )
+          : const <String, String>{};
+
+      // El mensaje y código vienen del backend; usamos un mensaje de respaldo
+      // si la respuesta no tiene el formato esperado.
+      throw DtoInvalido(
+        message: message,
+        code: code,
         statusCode: response.statusCode,
         fieldErrors: fieldErrors,
       );

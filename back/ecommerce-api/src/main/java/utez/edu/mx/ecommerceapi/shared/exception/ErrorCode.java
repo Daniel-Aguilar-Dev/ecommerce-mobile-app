@@ -19,7 +19,8 @@ public enum ErrorCode {
     REFRESH_TOKEN_INVALIDO(HttpStatus.UNAUTHORIZED),
     USUARIO_DESACTIVADO(HttpStatus.FORBIDDEN),
     DATO_DUPLICADO(HttpStatus.CONFLICT),
-    IMAGEN_INCORRECTA(HttpStatus.BAD_REQUEST);
+    IMAGEN_INCORRECTA(HttpStatus.BAD_REQUEST),
+    PEDIDO_SIN_PRODUCTOS(HttpStatus.BAD_REQUEST);
 
     private final HttpStatus status;
 
