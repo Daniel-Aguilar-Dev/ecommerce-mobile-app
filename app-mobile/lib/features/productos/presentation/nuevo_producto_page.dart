@@ -99,7 +99,42 @@ class _NuevoProductoPageState extends State<_NuevoProductoPage>{
   File? _foto;
 
   @override
+  void initState() {
+    super.initState();
+    for (final controller in [
+      _nombreController,
+      _descripcionController,
+      _marcaController,
+      _precioCompraController,
+      _precioVentaController,
+      _stockInicialController,
+      _stockMinimoController,
+      _unidadController,
+      _skuController,
+    ]) {
+      controller.addListener(_actualizarResumen);
+    }
+  }
+
+  void _actualizarResumen() {
+    if (mounted) setState(() {});
+  }
+
+  @override
   void dispose() {
+    for (final controller in [
+      _nombreController,
+      _descripcionController,
+      _marcaController,
+      _precioCompraController,
+      _precioVentaController,
+      _stockInicialController,
+      _stockMinimoController,
+      _unidadController,
+      _skuController,
+    ]) {
+      controller.removeListener(_actualizarResumen);
+    }
     _nombreController.dispose();
     _descripcionController.dispose();
     _marcaController.dispose();
@@ -495,7 +530,7 @@ class _NuevoProductoPageState extends State<_NuevoProductoPage>{
                     controller: _skuController,
                     hint: 'Código de barras',
                     label: 'Código de barras del producto',
-                    isRequired: true,
+                    isRequired: false,
                     maxLength: 13,
                     inputFormatters: _skuFormatter,
                     keyboardType: TextInputType.number,

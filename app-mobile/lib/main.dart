@@ -14,11 +14,14 @@ import 'package:ecommerce_app/features/pedidos/data/pedido_data_source.dart';
 import 'package:ecommerce_app/features/pedidos/data/repositories/pedido_repository_impl.dart';
 import 'package:ecommerce_app/features/pedidos/domain/pedido_repository.dart';
 import 'package:ecommerce_app/features/pedidos/presentation/viewmodel/pedido_view_model.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'core/logs/ambiente.dart';
+import 'core/logs/logger.dart';
 import 'core/network/api_client.dart';
 import 'core/network/authenticated_api_client.dart';
 import 'features/auth/data/auth_remote_data_source.dart';
@@ -41,7 +44,7 @@ Future<void> main() async {
   // En el emulador Android, 10.0.2.2 apunta al host donde corre Spring Boot.
   const baseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'http://192.168.1.66:8080',
+    defaultValue: 'http://10.0.2.2:8080',
   );
   final apiClient = ApiClient(baseUrl: baseUrl);
   final tokenStorage = SecureAuthTokenStorage();
@@ -78,6 +81,11 @@ Future<void> main() async {
   unawaited(authViewModel.inicializar());
   carritoViewModel.cargarCarrito();
 
+  Logger.info('Arranque', 'E-commerce app · ambiente=${Ambiente.actual.nombre}');
+  if (kDebugMode) {
+    Logger.debug('API_URL', 'Url del servidor: $baseUrl');
+  }
+
   runApp(
     MultiProvider(
       providers: [
@@ -102,9 +110,10 @@ class EcommerceApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final banner = Ambiente.actual.mostrarBanner;
     return MaterialApp(
       title: 'Ecommerce App',
-      debugShowCheckedModeBanner: false,
+      debugShowCheckedModeBanner: banner,
       theme: ECommerceAppTheme.build(),
       home: const AuthGate(),
     );
